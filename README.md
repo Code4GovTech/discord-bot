@@ -1,7 +1,7 @@
 ### C4GT Discord Bot
 
 Features
-- [ ] Allow tagging a `discordId` to a `githubId` so that contributions can be managed. Everyone coming to the server will be required to register themselves on the bot.
+- [ ] Allow tagging a `discordId` to a `githubId` so that contributions can be managed. Everyone coming to the server will be required to register themselves on the bot. Ask every contributor to connect their Github to Discord. The bot will take this publicly available info and add it to the database.
 - [ ] Seeing the list of projects and their quick links. Should allow for navigation to projects.
     - [ ] Documentation links
     - [ ] Repositories
