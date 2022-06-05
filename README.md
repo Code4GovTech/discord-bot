@@ -18,3 +18,16 @@ Features
     - [ ] Top 5 contributors
     - [ ] Contributions for the day (Issues list)
 
+
+### Registration Steps (WIP)
+
+#### Step 1
+Connect your Github with Discord. 
+
+#### Step 2
+Got to [this URL](https://discord.com/api/oauth2/authorize?client_id=982859834355499088&redirect_uri=https%3A%2F%2Fbot.c4gt.samagra.io&response_type=code&scope=identify%20connections%20email) to register yourself. This URL allows the discord bot to get
+- email
+- identity
+- connections (githubId)
+This registeres a token with us that we can use to check your GithubId that was connected in step 1.
+
