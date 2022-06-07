@@ -17,6 +17,12 @@ Features
     - [ ] Total PRs Merged by Contributors (not mentors)
     - [ ] Top 5 contributors
     - [ ] Contributions for the day (Issues list)
+- [ ] Draft proposals
+    - [ ] Share with mentors
+    - [ ] Allow mentors ping contributors when the proposal is reviewed (not sure how this can be accomplished)
+    - [ ] Dashboard to show all proposals a mentors needs to review
+- [ ] Final proposals
+    - [ ] Submission
 
 
 ### Registration Steps (WIP)
