@@ -29,7 +29,7 @@ client.remove_command("help")
 # Buttons ext - "https://github.com/LLimeOn/discord_py_buttons"
 
 
-# ------------- ENVIRONMENT VARIABLES ON REPLit ----------
+# ------------- ENVIRONMENT VARIABLES ----------
 WELCOME_CHANNEL= os.getenv('CHANNEL_ID')
 API_ENDPOINT = os.getenv('API_ENDPOINT')
 CLIENT_ID = os.getenv('CLIENT_ID')
@@ -38,13 +38,12 @@ REDIRECT_URI = os.getenv('REDIRECT_URI')
 token = os.getenv('PERSONAL_TOKEN')
 
 
-
+# ------------- When Bot is ready ---------------
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
 
-# Welcome-Function
-
+# -------------- Welcome-Function ---------------
 @client.event
 async def on_member_join(member):
   channel = client.get_channel(WELCOME_CHANNEL)
@@ -55,13 +54,15 @@ async def on_member_join(member):
   embed2.set_author(name="PULSE", url="https://github.com/Code4GovTech/discord-bot#c4gt-discord-bot", icon_url="https://raw.githubusercontent.com/ArshpreetS/Pulse/main/images/pulse.png?token=GHSAT0AAAAAABVIOJBGDJZAQGVPH7YS7CBSYU4ON2Q")
   await member.send(embed=embed2)
 
+# ----------- When Someone Messages ----------
 @client.event
 async def on_message(message):
   discordId = message.author.id
   cur.execute(f"Update public.contributors set message_counter = message_counter + 1 where discord_id = '{discordId}'")
   conn.commit()
   await client.process_commands(message)
-  
+
+# ------------ Someone Reacted ---------------
 @client.event
 async def on_raw_reaction_add(reaction):
   discordId = reaction.user_id
@@ -70,16 +71,16 @@ async def on_raw_reaction_add(reaction):
 
 # --------------------------------------- COMMANDS ------------------------------------------------------
 
-# Help-Function
+# ------------- Help-Function --------------
 @client.command(aliases = ["HELP","Help"])
 async def help(ctx):
 	await ctx.send("Hello There! I am Pulse!\n \
     Get yourself register by typing `!register`\n \
       Check all projects using `!projects`\n \
         Check user Profiles using `!userInfo` ")
+# --------------------------------------------
 
-
-# UserInfo-embed
+# -------------- UserInfo-embed ---------------
 @client.command()
 async def userInfo(ctx):
   if(ctx.message.mentions):
@@ -91,6 +92,7 @@ async def userInfo(ctx):
       title = f"{target.name} #{target.discriminator}",
       colour = 0x9208ea
     )
+
 
 # CONTRIBUTION INFO
   git_id = "Not Registered"
@@ -133,8 +135,11 @@ async def userInfo(ctx):
     
   
   await ctx.send(embed=embed)
-  
-# Register Function
+
+# ---------------------------------------------------------
+
+
+# ----------------- Register Function ----------------------
 @client.command()
 async def register(ctx):
   user = await client.fetch_user(ctx.message.author.id)
@@ -142,19 +147,17 @@ async def register(ctx):
       title = f"{ctx.message.author.name}",
       colour = 0x9208ea
     )
-  
-
   # Section 1 -> Opening The link
   embed.add_field(name="REGISTRATION", value="To get yourself register with Code4Gov - You must go to the [link](https://discord.com/api/oauth2/authorize?client_id=982859834355499088&redirect_uri=https%3A%2F%2Fbot.c4gt.samagra.io&response_type=code&scope=identify%20connections%20email)", inline=False)
-
   # Sharing the code -> 
-
   embed.add_field(name="Share The Code", value="You must share the code with us using the command `!code <YOUR CODE>`",inline=False)
-
+ 
   embed.set_author(name="REGISTRATION", url="https://github.com/Code4GovTech/discord-bot#c4gt-discord-bot", icon_url="https://raw.githubusercontent.com/ArshpreetS/Pulse/main/images/pulse.png?token=GHSAT0AAAAAABVIOJBGDJZAQGVPH7YS7CBSYU4ON2Q")
-    
+  
   await user.send(embed=embed)
+# ------------------------------------------------------------------------
 
+# -------------- Add the Code ----------------
 @client.command()
 async def code(ctx):
   code = str((ctx.message.content).split()[1])
@@ -192,11 +195,10 @@ async def code(ctx):
     await ctx.send(f"{git_id}... You are registered!")
     var = discord.utils.get(ctx.message.guild.roles, name = "accessTest")
     await ctx.message.author.add_roles(var)
-    
-
-
 # -------------------------------------------------------------------------------------------------------------
 
+
+# ----------------- Listing Projects --------------------
 @client.command()
 async def projects(ctx):
   embed = discord.Embed(
@@ -221,6 +223,9 @@ async def projects(ctx):
   embed.set_author(name="Code4Gov", url="https://github.com/Code4GovTech/discord-bot#c4gt-discord-bot", icon_url="https://raw.githubusercontent.com/ArshpreetS/Pulse/main/images/pulse.png?token=GHSAT0AAAAAABVIOJBGDJZAQGVPH7YS7CBSYU4ON2Q")
   await ctx.send(embed=embed)
 
+# ------------------------------------------------------------------
+
+# ------------- Issues -------------------
 @client.command()
 async def issues(ctx):
   response = ctx.message.content.split()[1]
@@ -245,8 +250,9 @@ async def issues(ctx):
   embed.set_author(name="Code4Gov", url="https://github.com/Code4GovTech/discord-bot#c4gt-discord-bot", icon_url="https://raw.githubusercontent.com/ArshpreetS/Pulse/main/images/pulse.png?token=GHSAT0AAAAAABVIOJBGDJZAQGVPH7YS7CBSYU4ON2Q")
   
   await ctx.send(embed=embed)
+# -------------------------------------------
 
-
+# ------------- Project Infos ---------------
 @client.command()
 async def projectInfo(ctx):
   response = ctx.message.content.split()[1]
@@ -269,8 +275,9 @@ async def projectInfo(ctx):
   embed.set_author(name=f"{target[0]}", url=f"", icon_url="https://raw.githubusercontent.com/ArshpreetS/Pulse/main/images/pulse.png?token=GHSAT0AAAAAABVIOJBGDJZAQGVPH7YS7CBSYU4ON2Q")
   embed.set_footer(text=f"{target[0]}'s Info")
   await ctx.send(embed=embed)
+# ---------------------------------------------
 
-
+# --------------- Commits adder Function --------------
 def addCommits():
   cur.execute("select distinct repo_name, repo_url from public.projects")
   allProjects = cur.fetchall()
@@ -296,11 +303,11 @@ def addCommits():
         cur.execute(f"UPDATE public.contributions SET commits = commits + 1 where github_id = '{user}'")
     time.sleep(5)
   conn.commit()
-# addCommits()
+# ---------------------------------------------------------
 
 
 
-
+# --------------------- PR adder Function -------------------
 def addPRs():
   cur.execute("select distinct repo_name, repo_url from public.projects")
   allProjects = cur.fetchall()
@@ -330,9 +337,10 @@ def addPRs():
         cur.execute(f"Update public.contributions set pr = pr + 1 where github_id = '{user}'")
     time.sleep(5)
   conn.commit()
-# addPRs()
+# --------------------------------------------------------------------
 
 
+# --------------------- Issues adder Function ------------------------
 def addissues():
   cur.execute("select distinct repo_name, repo_url from public.projects")
   allProjects = cur.fetchall()
@@ -361,16 +369,16 @@ def addissues():
         cur.execute(f"Update public.contributions set issues = issues + 1 where github_id = '{user}'")
     time.sleep(3)
   conn.commit()
-# addissues()
+# --------------------------------------------------------------------
 
 
-
-# -------------------------------------------------------------------------------------------------------------
-
+# ---------------------- DM message --------------------------
 @client.command()
 async def dm(ctx):
   user = await client.fetch_user(ctx.message.author.id)
   await user.send(" ".join((ctx.message.content).split()[1:]))
+# ------------------------------------------------------------
+
 
 # keep_alive()
 client.run(os.getenv("DISCORD_TOKEN"))
