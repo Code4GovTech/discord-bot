@@ -2,23 +2,12 @@ import discord
 from discord.ext import commands
 import requests
 import os
-from keep_alive import keep_alive
-import psycopg2 as pg
-from dotenv import load_dotenv
 from requests.auth import HTTPBasicAuth
+from db import conn, cur
 import time
 
 # Loading environment variables 
-load_dotenv()
-
-# ----------- Database Connection ------------
-conn = pg.connect(
-  user="postgres", 
-  password="passISstrong123",
-  host="db.kowqkxjlhqsevcosjxkr.supabase.co",
-  port="5432",
-  database="postgres")
-cur = conn.cursor()
+# load_dotenv()
 
 # ----------- SETTING UP THE CLIENT -----------
 client = discord.Client()
@@ -36,7 +25,6 @@ CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 REDIRECT_URI = os.getenv('REDIRECT_URI')
 token = os.getenv('PERSONAL_TOKEN')
-
 
 # ------------- When Bot is ready ---------------
 @client.event
@@ -380,5 +368,4 @@ async def dm(ctx):
 # ------------------------------------------------------------
 
 
-# keep_alive()
-client.run(os.getenv("DISCORD_TOKEN"))
+# client.run(os.getenv("DISCORD_TOKEN"))
