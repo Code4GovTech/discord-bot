@@ -37,3 +37,27 @@ Got to [this URL](https://discord.com/api/oauth2/authorize?client_id=98285983435
 - connections (githubId)
 This registeres a token with us that we can use to check your GithubId that was connected in step 1.
 
+## Get Started
+
+> **Dependencies**:
+1. Flask
+2. Discord.py
+3. Discord.ext 
+4. psycopg2
+5. requests 
+
+### Step 1
+Clone the repo using the command:
+`git clone https://github.com/Code4GovTech/discord-bot.git`
+
+### Step 2
+Change directory to `discord-bot`:
+`cd discord-bot`
+
+### Step 3
+Setup your `.env` variables
+
+### Step 4
+Run The *main.py* file using `python3 main.py` to run the bot locally.
+
+### *You are done!*
