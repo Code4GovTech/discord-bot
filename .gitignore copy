@@ -1,0 +1,7 @@
+#all files relating to python vitual env
+/.venv
+#environment variables and cache
+*.env
+*/__pycache__/*
+*.csv
+/local_only
