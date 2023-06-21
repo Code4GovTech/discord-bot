@@ -36,3 +36,4 @@ Got to [this URL](https://discord.com/api/oauth2/authorize?client_id=98285983435
 - identity
 - connections (githubId)
 This registeres a token with us that we can use to check your GithubId that was connected in step 1.
+
