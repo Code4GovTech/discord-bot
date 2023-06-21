@@ -29,43 +29,56 @@ class UserHandler(commands.Cog):
         view = AuthenticationView(userdata)
         await dmchannel.send("Please authenticate your github account to register for Code for GovTech 2023", view=view)
 
-     
+    @commands.command(aliases=["badges"])
+    async def list_badges(self, ctx):
+
+        description = f'''Well done *{ctx.author.name}*! 👏
+    You have engaged on the C4GT  discord community  with 10  or more messages and earned the **Converser Badge!** 💬 This badge shows that you are a friendly and helpful member of our community! 😊 '''
+        converseEmbed = discord.Embed(title="Converse Badge", description=description)
+        converseEmbed.set_image(url="https://raw.githubusercontent.com/KDwevedi/testing_for_github_app/main/WhatsApp%20Image%202023-06-20%20at%202.57.12%20PM.jpeg")
+
+        description2 = f'''Amazing *{ctx.author.name}*! 🙌
+    You have received 5 upvotes on your message and earned the **Rockstar Badge!** 🌟 You add so much value to our community and we are grateful for your contribution! 💖 
+    Please keep up the good work and share your expertise with us! 🙌
+    '''
+        reactionsEmbed = discord.Embed(title="Rockstar Badge", description=description2)
+        reactionsEmbed.set_image(url="https://raw.githubusercontent.com/KDwevedi/testing_for_github_app/main/WhatsApp%20Image%202023-06-20%20at%202.57.12%20PM.jpeg")
 
 
+        await ctx.channel.send(embed=converseEmbed)
+        await ctx.channel.send(embed=reactionsEmbed)
+
+
+        return
 
     
+    @commands.command(aliases=["my_points"])
+    async def get_points(self, ctx):
 
-    @commands.command()
-    async def announce(self, ctx):
-        guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        count = 0
-        with open('introduced.csv', 'w') as file:
-            writer = csv.writer(file)
-            data = []
-            
-        print(count)
+        discord_id = ctx.author.id
+        contributor = SupabaseInterface(table="contributors").read(query_key="discord_id", query_value=discord_id)
+        print(contributor)
+        github_id = contributor[0]["github_id"]
+        prs_raised = SupabaseInterface(table="pull_requests").read(query_key="raised_by", query_value=github_id)
+        prs_merged = SupabaseInterface(table="pull_requests").read(query_key="merged_by", query_value=github_id)
+        raise_points = 0
+        merge_points = 0
+        for pr in prs_raised:
+            raise_points+=pr["points"]
+        for pr in prs_raised:
+            merge_points+=pr["points"]
 
-        # async for member in guild.fetch_members(limit=None):
-        #     print(member.id)
-        #     count+=1
-        # print(count)
-        # members = [476285280811483140]
-        # for member_id in members:
-            # member = await guild.fetch_member(member_id)
-            # dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-            # await dmchannel.send("Test Announcement")
+        text = f'''
+        Hey {ctx.author.name}
 
+**You have a total of {raise_points+merge_points} points**🌟 
 
+▶️**Points Basis PRs accepted - {raise_points} points**🔥 
 
-    @commands.command()
-    async def test(self,ctx):
-        # print(os.getenv("SERVER_ID"))
-        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        channel = await guild.fetch_channel(973851473131761677)
-        async for message in channel.history(limit=20):
-            print(message.content, type(message.content))
-            if message.content == '':
-                print(True)
+▶️ **Points as per PRs reviewed - {merge_points} points**🙌 
+
+Woah, awesome! Get coding and earn more points to get a spot on the leaderboard📈'''
+        await ctx.channel.send(text)
     
      
 async def setup(bot):

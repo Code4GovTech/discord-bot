@@ -11,6 +11,7 @@ import csv
 #CONSTANTS
 RUNTIME_DATA_DIRECTORY = 'scraping-runtime-data'
 RUNTIME_DATA_FILE = 'discordScraperRuntimeData.json'
+CONTRIBUTOR_ROLE_ID = 973852365188907048
 
 #check id directory exists for scraping runtime data and create one if it doesn't
 def createRuntimeDataDirectory():
@@ -42,6 +43,36 @@ class DiscordDataScaper(commands.Cog):
                     count+=1
                     data.append(row)
             writer.writerows(data)
+    
+
+    
+    @tasks.loop(minutes=10)
+    async def update_contributors(self):
+        contributors = SupabaseInterface("contributors").read_all()
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+        contributor_role = guild.get_role(CONTRIBUTOR_ROLE_ID)
+        for contributor in contributors:
+            member = await guild.fetch_member(contributor["discord_id"])
+            if contributor_role not in member.roles:
+                #Give Contributor Role
+                await member.add_roles([contributor_role])
+            #add to discord engagement
+            SupabaseInterface("discord_engagement").insert({"contributor": member.id})
+        
+        #update engagement
+        contributor_data = []
+        for contributor in contributors:
+            contributor_data.append({
+                "contributor": contributor["discord_id"],
+                "has_introduced": False,
+                "total_message_count": 0,
+                "total_reaction_count": 0
+            })  
+        return
+    
+    @update_contributors.before_loop
+    async def before_update_loop(self):
+        await self.bot.wait_until_ready()
     
     @commands.command()
     async def not_contributors(self, ctx):
