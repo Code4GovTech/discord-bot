@@ -1,0 +1,16 @@
+version: '3.6'
+services:
+  discord-bot:
+    container_name: discord-bot
+    image: ghcr.io/code4govtech/discord-bot:main
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      TOKEN: ${TOKEN}
+      SERVER_ID: ${SERVER_ID}
+      INTRODUCTIONS_CHANNEL: ${INTRODUCTIONS_CHANNEL}
+      NON_CONTRIBUTOR_ROLES: ${NON_CONTRIBUTOR_ROLES}
+      FLASK_HOST: ${FLASK_HOST}
+      SUPABASE_URL: ${SUPABASE_URL}
+      SUPABASE_KEY: ${SUPABASE_KEY}
