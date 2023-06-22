@@ -56,6 +56,10 @@ class DiscordDataScaper(commands.Cog):
         channels = await guild.fetch_channels()
         engagmentData = {}
 
+        await ctx.channel.send('1')
+
+
+
         async for member in guild.fetch_members(limit=None):
             memberData = {
                 "contributor": member.id,
@@ -65,9 +69,10 @@ class DiscordDataScaper(commands.Cog):
 
             }
             engagmentData[member.id]= memberData
+        await ctx.channel.send('2')
 
         for channel in channels:
-            print(channel.name, file=sys.stderr)
+            await ctx.channel.send(channel.name)
             if isinstance(channel, TextChannel): #See Channel Types for info on text channels https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild#discord.ChannelType
                 async for message in channel.history(limit=None):
                     if message.content=='':
@@ -78,6 +83,7 @@ class DiscordDataScaper(commands.Cog):
                             engagmentData[message.author.id]["has_introduced"] =True
                     if message.reactions:
                         engagmentData[message.author.id]["total_reaction_count"]+=len(message.reactions)
+        await ctx.channel.send('3')
         addEngagmentData(list(engagmentData.values()))
         print("Complete!", file=sys.stderr)
         await ctx.channel.send("ended")
@@ -85,33 +91,6 @@ class DiscordDataScaper(commands.Cog):
     
 
     
-    @tasks.loop(minutes=10)
-    async def update_contributors(self):
-        contributors = SupabaseInterface("contributors").read_all()
-        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        contributor_role = guild.get_role(CONTRIBUTOR_ROLE_ID)
-        for contributor in contributors:
-            member = await guild.fetch_member(contributor["discord_id"])
-            if contributor_role not in member.roles:
-                #Give Contributor Role
-                await member.add_roles([contributor_role])
-            #add to discord engagement
-            SupabaseInterface("discord_engagement").insert({"contributor": member.id})
-        
-        #update engagement
-        contributor_data = []
-        for contributor in contributors:
-            contributor_data.append({
-                "contributor": contributor["discord_id"],
-                "has_introduced": False,
-                "total_message_count": 0,
-                "total_reaction_count": 0
-            })  
-        return
-    
-    @update_contributors.before_loop
-    async def before_update_loop(self):
-        await self.bot.wait_until_ready()
     
     @commands.command()
     async def not_contributors(self, ctx):

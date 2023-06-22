@@ -5,6 +5,8 @@ import time, csv
 from utils.db import SupabaseInterface
 from utils.api import GithubAPI
 
+CONTRIBUTOR_ROLE_ID = 973852365188907048
+
 class Badges():
     def __init__(self, name) -> None:
         apprentinceDesc = f'''Welcome *{name}*!!
@@ -42,6 +44,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.update_contributors.start()
 
     #Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command 
     @commands.command(aliases=['join'])
@@ -73,6 +76,33 @@ class UserHandler(commands.Cog):
 
 
         return
+    
+    @tasks.loop(minutes=10)
+    async def update_contributors(self):
+        contributors = SupabaseInterface("contributors").read_all()
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+        contributor_role = guild.get_role(CONTRIBUTOR_ROLE_ID)
+        for contributor in contributors:
+            member = await guild.fetch_member(contributor["discord_id"])
+            if contributor_role not in member.roles:
+                #Give Contributor Role
+                await member.add_roles([contributor_role])
+            #add to discord engagement
+            SupabaseInterface("discord_engagement").insert({"contributor": member.id})
+        
+        #update engagement
+        for contributor in contributors:
+            contributorData = SupabaseInterface("discord_engagement").read("contributor", contributor["discord_id"])
+            member = await guild.fetch_member(contributorData["contributor"])
+            dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
+            dmchannel.send("badges")
+            
+
+        return
+    
+    @update_contributors.before_loop
+    async def before_update_loop(self):
+        await self.bot.wait_until_ready()
 
     
     @commands.command(aliases=["my_points"])
