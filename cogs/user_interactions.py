@@ -22,9 +22,9 @@ Congratulations! 🎉 You have taken the first step to join & introduce yourself
         self.converseBadge = discord.Embed(title="Converse Badge", description=converseDesc)
         self.rockstarBadge = discord.Embed(title="Rockstar Badge", description=rockstarDesc)
         
-        self.apprenticeBadge.set_image(url="")
-        self.converseBadge.set_image(url='')
-        self.rockstarBadge.set_image(url='')
+        self.apprenticeBadge.set_image(url="https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Apprentice.png")
+        self.converseBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Converser.png')
+        self.rockstarBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Rockstar.png')
 
 
 

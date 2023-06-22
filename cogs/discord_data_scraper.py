@@ -1,7 +1,7 @@
 from discord.ext import commands, tasks
 from discord.channel import TextChannel
 from discord import Member
-import os, dateutil, json
+import os, dateutil, json, sys
 from datetime import datetime
 
 from utils.db import SupabaseInterface
@@ -12,6 +12,7 @@ import csv
 RUNTIME_DATA_DIRECTORY = 'scraping-runtime-data'
 RUNTIME_DATA_FILE = 'discordScraperRuntimeData.json'
 CONTRIBUTOR_ROLE_ID = 973852365188907048
+INTRODUCTIONS_CHANNEL_ID =1107343423167541328
 
 #check id directory exists for scraping runtime data and create one if it doesn't
 def createRuntimeDataDirectory():
@@ -43,6 +44,42 @@ class DiscordDataScaper(commands.Cog):
                     count+=1
                     data.append(row)
             writer.writerows(data)
+    
+    @commands.command()
+    async def add_engagement(self, ctx):
+        def addEngagmentData(data):
+            client = SupabaseInterface("discord_engagement")
+            client.insert(data)
+            return
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID")) #SERVER_ID Should be C4GT Server ID
+        channels = await guild.fetch_channels()
+        engagmentData = {}
+
+        async for member in guild.fetch_members(limit=None):
+            memberData = {
+                "contributor": member.id,
+                "has_introduced": False,
+                "total_message_count": 0,
+                "total_reaction_count": 0,
+
+            }
+            engagmentData[member.id]= memberData
+
+        for channel in channels:
+            print(channel.name, file=sys.stderr)
+            if isinstance(channel, TextChannel): #See Channel Types for info on text channels https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild#discord.ChannelType
+                async for message in channel.history(limit=None):
+                    if message.content=='':
+                        continue
+                    if len(message.content)>20:
+                        engagmentData[message.author.id]["total_message_count"]+=1
+                        if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
+                            engagmentData[message.author.id]["has_introduced"] =True
+                    if message.reactions:
+                        engagmentData[message.author.id]["total_reaction_count"]+=len(message.reactions)
+        addEngagmentData(list(engagmentData.values()))
+        print("Complete!", file=sys.stderr)
+        return
     
 
     
