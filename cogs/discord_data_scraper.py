@@ -47,6 +47,7 @@ class DiscordDataScaper(commands.Cog):
     
     @commands.command()
     async def add_engagement(self, ctx):
+        await ctx.channel.send("started")
         def addEngagmentData(data):
             client = SupabaseInterface("discord_engagement")
             client.insert(data)
@@ -79,6 +80,7 @@ class DiscordDataScaper(commands.Cog):
                         engagmentData[message.author.id]["total_reaction_count"]+=len(message.reactions)
         addEngagmentData(list(engagmentData.values()))
         print("Complete!", file=sys.stderr)
+        await ctx.channel.send("ended")
         return
     
 
