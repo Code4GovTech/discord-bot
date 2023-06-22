@@ -74,14 +74,19 @@ class DiscordDataScaper(commands.Cog):
         for channel in channels:
             await ctx.channel.send(channel.name)
             if isinstance(channel, TextChannel): #See Channel Types for info on text channels https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild#discord.ChannelType
+                await ctx.send("text")
                 async for message in channel.history(limit=None):
+                    await ctx.send("msg")
                     if message.content=='':
+                        await ctx.send("10")
                         continue
                     if len(message.content)>20:
+                        await ctx.send("20")
                         engagmentData[message.author.id]["total_message_count"]+=1
                         if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
                             engagmentData[message.author.id]["has_introduced"] =True
                     if message.reactions:
+                        await ctx.send("30")
                         engagmentData[message.author.id]["total_reaction_count"]+=len(message.reactions)
         await ctx.channel.send('3')
         addEngagmentData(list(engagmentData.values()))
