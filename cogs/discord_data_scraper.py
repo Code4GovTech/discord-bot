@@ -46,7 +46,8 @@ class DiscordDataScaper(commands.Cog):
     #         writer.writerows(data)
     @commands.Cog.listener()
     async def on_message(self, message):
-        contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)[0]
+        contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)
+        print("message", len(message.content))
         if not contributor:
             SupabaseInterface("discord_engagement").insert({
                 "contributor": message.author.id,
@@ -54,22 +55,25 @@ class DiscordDataScaper(commands.Cog):
                 "total_message_count": 1,
                 "total_reaction_count": 0})
             return
-        SupabaseInterface("discord_engagement").update({"total_message_count":contributor["total_message_count"]+1}, "contributor", message.author.id)
+        if len(message.content)>20:
+            if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
+                print("intro")
+                SupabaseInterface("discord_engagement").update({"has_introduced":True}, "contributor", message.author.id)
+            SupabaseInterface("discord_engagement").update({"total_message_count":contributor[0]["total_message_count"]+1}, "contributor", message.author.id)
     
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        if reaction.event_type == "REACTION_ADD":
-            message = reaction.message 
-            contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)[0]
-            if not contributor:
-                SupabaseInterface("discord_engagement").insert({
-                    "contributor": message.author.id,
-                    "has_introduced": False,
-                    "total_message_count": 1,
-                    "total_reaction_count": 0})
-                return
-            SupabaseInterface("discord_engagement").update({"total_message_count":contributor["total_message_count"]+1}, "contributor", message.author.id)
+        message = reaction.message 
+        contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)[0]
+        if not contributor:
+            SupabaseInterface("discord_engagement").insert({
+                "contributor": message.author.id,
+                "has_introduced": False,
+                "total_message_count": 0,
+                "total_reaction_count": 1})
+            return
+        print("reaction")
+        SupabaseInterface("discord_engagement").update({"total_reaction_count":contributor["total_reaction_count"]+1}, "contributor", message.author.id)
 
 
             
@@ -84,8 +88,6 @@ class DiscordDataScaper(commands.Cog):
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID")) #SERVER_ID Should be C4GT Server ID
         channels = await guild.fetch_channels()
         engagmentData = {}
-
-        await ctx.channel.send('1')
 
 
 
