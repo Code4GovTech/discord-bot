@@ -31,19 +31,48 @@ class DiscordDataScaper(commands.Cog):
         self.bot = bot
         self.runtimeDataDirectory = createRuntimeDataDirectory()
     
-    @commands.command()
-    async def introductions(self, ctx):
-        guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        intro_channel = await guild.fetch_channel(os.getenv("INTRODUCTIONS_CHANNEL"))
-        with open('introduced.csv', 'w') as file:
-            writer = csv.writer(file)
-            data = []
-            async for message in intro_channel.history(limit=None):
-                row = [message.author.id]
-                if row not in data:
-                    count+=1
-                    data.append(row)
-            writer.writerows(data)
+    # @commands.command()
+    # async def introductions(self, ctx):
+    #     guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+    #     intro_channel = await guild.fetch_channel(os.getenv("INTRODUCTIONS_CHANNEL"))
+    #     with open('introduced.csv', 'w') as file:
+    #         writer = csv.writer(file)
+    #         data = []
+    #         async for message in intro_channel.history(limit=None):
+    #             row = [message.author.id]
+    #             if row not in data:
+    #                 count+=1
+    #                 data.append(row)
+    #         writer.writerows(data)
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)[0]
+        if not contributor:
+            SupabaseInterface("discord_engagement").insert({
+                "contributor": message.author.id,
+                "has_introduced": False,
+                "total_message_count": 1,
+                "total_reaction_count": 0})
+            return
+        SupabaseInterface("discord_engagement").update({"total_message_count":contributor["total_message_count"]+1}, "contributor", message.author.id)
+    
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self, reaction):
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+        if reaction.event_type == "REACTION_ADD":
+            message = await guild.fetch_message(reaction.message_id)        
+            contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)[0]
+            if not contributor:
+                SupabaseInterface("discord_engagement").insert({
+                    "contributor": message.author.id,
+                    "has_introduced": False,
+                    "total_message_count": 1,
+                    "total_reaction_count": 0})
+                return
+            SupabaseInterface("discord_engagement").update({"total_message_count":contributor["total_message_count"]+1}, "contributor", message.author.id)
+
+
+            
     
     @commands.command()
     async def add_engagement(self, ctx):
@@ -65,52 +94,59 @@ class DiscordDataScaper(commands.Cog):
                 "contributor": member.id,
                 "has_introduced": False,
                 "total_message_count": 0,
-                "total_reaction_count": 0,
+                "total_reaction_count": 0
 
             }
             engagmentData[member.id]= memberData
-        await ctx.channel.send('2')
+        # await ctx.channel.send('2')
 
         for channel in channels:
-            await ctx.channel.send(channel.name)
+            # await ctx.channel.send(channel.name)
+            print(channel.name)
             if isinstance(channel, TextChannel): #See Channel Types for info on text channels https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild#discord.ChannelType
-                await ctx.send("text")
+                # await ctx.send("text")
                 async for message in channel.history(limit=None):
-                    await ctx.send("msg")
+                    if message.author.id not in engagmentData.keys():
+                        engagmentData[message.author.id]= {
+                "contributor": message.author.id,
+                "has_introduced": False,
+                "total_message_count": 0,
+                "total_reaction_count": 0}
+                    # await ctx.send("msg")
                     if message.content=='':
-                        await ctx.send("10")
+                        # await ctx.send("10")
                         continue
                     if len(message.content)>20:
-                        await ctx.send("20")
+                        # await ctx.send("20")
                         engagmentData[message.author.id]["total_message_count"]+=1
                         if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
                             engagmentData[message.author.id]["has_introduced"] =True
                     if message.reactions:
-                        await ctx.send("30")
+                        # await ctx.send("30")
                         engagmentData[message.author.id]["total_reaction_count"]+=len(message.reactions)
-        await ctx.channel.send('3')
+        # await ctx.channel.send('3')
         addEngagmentData(list(engagmentData.values()))
         print("Complete!", file=sys.stderr)
-        await ctx.channel.send("ended")
+        # await ctx.channel.send("ended")
         return
     
 
     
     
-    @commands.command()
-    async def not_contributors(self, ctx):
-        guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        orgAndMentors = [role for role in os.getenv("NON_CONTRIBUTOR_ROLES").split(',')]
-        with open("not_contributors.csv", "w") as file:
-            writer = csv.writer(file)
-            data = []
-            async for member in guild.fetch_members(limit=None):
-                for role in member.roles:
-                    if role.id in orgAndMentors:
-                        user = [member.name, member.id, member.roles]
-                        if user not in data:
-                            data.append(user)
-            writer.writerows(data)
+    # @commands.command()
+    # async def not_contributors(self, ctx):
+    #     guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+    #     orgAndMentors = [role for role in os.getenv("NON_CONTRIBUTOR_ROLES").split(',')]
+    #     with open("not_contributors.csv", "w") as file:
+    #         writer = csv.writer(file)
+    #         data = []
+    #         async for member in guild.fetch_members(limit=None):
+    #             for role in member.roles:
+    #                 if role.id in orgAndMentors:
+    #                     user = [member.name, member.id, member.roles]
+    #                     if user not in data:
+    #                         data.append(user)
+    #         writer.writerows(data)
     
     #Store all messages on Text Channels in the Discord Server to SupaBase
     @commands.command()

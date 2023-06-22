@@ -21,7 +21,7 @@ Congratulations! 🎉 You have taken the first step to join & introduce yourself
         
         
         self.apprenticeBadge = discord.Embed(title="Apprentice Badge", description=apprentinceDesc)
-        self.converseBadge = discord.Embed(title="Converse Badge", description=converseDesc)
+        self.converseBadge = discord.Embed(title="Converser Badge", description=converseDesc)
         self.rockstarBadge = discord.Embed(title="Rockstar Badge", description=rockstarDesc)
         
         self.apprenticeBadge.set_image(url="https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Apprentice.png")
@@ -44,7 +44,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        # self.update_contributors.start()
+        self.update_contributors.start()
 
     #Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command 
     @commands.command(aliases=['join'])
@@ -86,23 +86,61 @@ class UserHandler(commands.Cog):
             member = await guild.fetch_member(contributor["discord_id"])
             if contributor_role not in member.roles:
                 #Give Contributor Role
-                await member.add_roles([contributor_role])
+                await member.add_roles(contributor_role)
             #add to discord engagement
-            SupabaseInterface("discord_engagement").insert({"contributor": member.id})
+            # SupabaseInterface("discord_engagement").insert({"contributor": member.id})
         
         #update engagement
         for contributor in contributors:
-            contributorData = SupabaseInterface("discord_engagement").read("contributor", contributor["discord_id"])
-            member = await guild.fetch_member(contributorData["contributor"])
-            dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-            dmchannel
+            contributorData = SupabaseInterface("discord_engagement").read("contributor", contributor["discord_id"])[0]
+            if contributorData:
+                member = await guild.fetch_member(contributorData["contributor"])
+                print(f"-----Contributor-----{member.name}-------")
+                dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
+                badges = Badges(member.name)
+                if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
+                    SupabaseInterface("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
+                    await dmchannel.send(embed=badges.converseBadge)
+                if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
+                    SupabaseInterface("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
+                    await dmchannel.send(embed=badges.rockstarBadge)
+                if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
+                    SupabaseInterface("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
+                    await dmchannel.send(embed=badges.apprenticeBadge)
             
 
         return
     
     @update_contributors.before_loop
     async def before_update_loop(self):
+        print("starting auto-badge")
         await self.bot.wait_until_ready()
+
+    @commands.command(aliases=["point_system_breakdown", "point_system"])
+    async def point_breakdown(self, ctx):
+        message =f'''Hey **{ctx.author.name}**
+
+Points are allocated on the following basis:bar_chart: :
+
+:arrow_forward: **Number of PRs accepted** 
+
+:rocket:  **10 points per ticket are given** 
+:rocket: **Get more points for complex tickets**
+
+- 1x for Low Complexity 
+- 2x for Medium Complexity
+- 3x for High Complexity
+
+:arrow_forward: **Number of PRs reviewed** 
+
+:rocket: **10 points per ticket for those who have been made a maintainer to review PRs** 
+:rocket:  **Get more points for complex tickets**
+
+- 1x for Low Complexity 
+- 2x for Medium Complexity
+- 3x for High Complexity
+''' 
+        await ctx.message.send(message)
 
     
     @commands.command(aliases=["my_points"])
