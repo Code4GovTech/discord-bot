@@ -5,6 +5,29 @@ import time, csv
 from utils.db import SupabaseInterface
 from utils.api import GithubAPI
 
+class Badges():
+    def __init__(self, name) -> None:
+        apprentinceDesc = f'''Welcome *{name}*!!
+ 
+Congratulations! 🎉 You have taken the first step to join & introduce yourself to this awesome community and earned the **Apprentice Badge**! 🎓 This badge shows that you are eager to learn and grow with our community! 😎 We are so happy to have you here and we can’t wait to see what you will create and solve! 🚀'''
+        converseDesc = f'''Well done *{name}*! 👏
+    You have engaged on the C4GT  discord community  with 10  or more messages and earned the **Converser Badge!** 💬 This badge shows that you are a friendly and helpful member of our community! 😊 '''
+        rockstarDesc = f'''Amazing *{name}*! 🙌
+    You have received 5 upvotes on your message and earned the **Rockstar Badge!** 🌟 You add so much value to our community and we are grateful for your contribution! 💖 
+    Please keep up the good work and share your expertise with us! 🙌
+    '''
+        
+        
+        self.apprenticeBadge = discord.Embed(title="Apprentice Badge", description=apprentinceDesc)
+        self.converseBadge = discord.Embed(title="Converse Badge", description=converseDesc)
+        self.rockstarBadge = discord.Embed(title="Rockstar Badge", description=rockstarDesc)
+        
+        self.apprenticeBadge.set_image(url="")
+        self.converseBadge.set_image(url='')
+        self.rockstarBadge.set_image(url='')
+
+
+
 
 
 #This is a Discord View that is a set of UI elements that can be sent together in a message in discord.
@@ -32,16 +55,16 @@ class UserHandler(commands.Cog):
     @commands.command(aliases=["badges"])
     async def list_badges(self, ctx):
 
-        description = f'''Well done *{ctx.author.name}*! 👏
+        converseDesc = f'''Well done *{ctx.author.name}*! 👏
     You have engaged on the C4GT  discord community  with 10  or more messages and earned the **Converser Badge!** 💬 This badge shows that you are a friendly and helpful member of our community! 😊 '''
-        converseEmbed = discord.Embed(title="Converse Badge", description=description)
+        converseEmbed = discord.Embed(title="Converse Badge", description=converseDesc)
         converseEmbed.set_image(url="https://raw.githubusercontent.com/KDwevedi/testing_for_github_app/main/WhatsApp%20Image%202023-06-20%20at%202.57.12%20PM.jpeg")
 
-        description2 = f'''Amazing *{ctx.author.name}*! 🙌
+        rockstarDesc = f'''Amazing *{ctx.author.name}*! 🙌
     You have received 5 upvotes on your message and earned the **Rockstar Badge!** 🌟 You add so much value to our community and we are grateful for your contribution! 💖 
     Please keep up the good work and share your expertise with us! 🙌
     '''
-        reactionsEmbed = discord.Embed(title="Rockstar Badge", description=description2)
+        reactionsEmbed = discord.Embed(title="Rockstar Badge", description=rockstarDesc)
         reactionsEmbed.set_image(url="https://raw.githubusercontent.com/KDwevedi/testing_for_github_app/main/WhatsApp%20Image%202023-06-20%20at%202.57.12%20PM.jpeg")
 
 
