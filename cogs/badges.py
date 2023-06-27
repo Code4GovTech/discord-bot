@@ -65,19 +65,31 @@ But there’s more to come! There are more badges and rewards for you to unlock!
 
         discordMemberData = SupabaseInterface("discord_engagement").read("contributor", discord_id)
         if discordMemberData:
-            if discordMemberData[0]["converserBadge"]:
+            if discordMemberData[0]["total_message_count"]>10:
                 userBadges["achievements"].append(self.converserBadge)
-            if discordMemberData[0]["rockstarBadge"]:
+            if discordMemberData[0]["total_reaction_count"]>5:
                 userBadges["achievements"].append(self.rockstarBadge)
-            if discordMemberData[0]["apprenticeBadge"]:
+            if discordMemberData[0]["has_introduced"]:
                 userBadges["achievements"].append(self.apprenticeBadge)
-            if discordMemberData[0]["enthusiastBadge"]:
+        contributorData = SupabaseInterface("contributors").read(query_key="discord_id", query_value=discord_id)
+        if contributorData:
+            github_id = contributorData[0]["github_id"]
+            prData = {
+                "raised": SupabaseInterface(table="pull_requests").read(query_key="raised_by", query_value=github_id),
+                "merged":SupabaseInterface(table="pull_requests").read(query_key="merged_by", query_value=github_id)
+            }
+            points = 0
+            for action in prData.keys():
+                prs = prData[action]
+                for pr in prs:
+                    points+=pr["points"]
+            if len(prData["raised"])+len(prData["merged"])>0:
                 userBadges["points"].append(self.enthusiastBadge)
-            if discordMemberData[0]["risingStarBadge"]:
+            if points>=30:
                 userBadges["points"].append(self.risingStarBadge)
-            return userBadges
-        else:
+        if not discordMemberData and not contributorData:
             return None
+        return userBadges
 
 
 
