@@ -9,51 +9,6 @@ CONTRIBUTOR_ROLE_ID = 973852365188907048
 NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]
 NON_CONTRIBUTOR_MEMBERS = [704738663883472967, 703157062825410590, 697080616046559352, 694445371816149062, 677090546694619168, 662243718354698240, 637512076084117524, 636277951540887553, 599878601143222282, 476285280811483140, 459239263192612874, 365127154847186945, 314379504157982721, 291548601228722177, 280019116755124226, 262810519184998400, 222905396610859010, 761623930531741788, 760775460178755614, 759107287322329128, 753909213859938385, 749287051035148328, 730733764891770950, 727567753246146633, 722313444325457921, 720297291105304627, 712557512926298153, 788670744120786976, 805863967284920352, 804299931543535626, 902553914916896808, 882206400074358835, 1016564507394457663, 1010140041789571072, 1008331310806335618, 989823092283035678, 987081239892750376, 986500267858083860, 986245349129740338, 973537784537186304, 971297678401089556, 969115972059406376, 967973710617247796, 965956645895147610, 963733651529531444, 961904402459947018, 961529037610713098, 961283715382775818, 960435521786617856, 948478097508954122, 937569989689487420, 936118598102028319, 935911019828641812, 933651897502535690, 1087744252408246373, 1086529617013252167, 1083352549660307466, 1079268207917027348, 1077912548571095092, 1075013295221768213, 1070737923483389972, 1059343450312544266, 1052565902748553236, 1050037458286420099, 1049311176716206164, 1045238281740230656, 1044876122191581194, 1044532981857001502, 1043440759061352588, 1042682119035568178, 1039880103934570517, 1037956974039535636, 1036590822201757696, 1024552723280052294, 1018398460598308915, 1108763601231171594, 1108657717100429312, 1108649642633199636, 1108649434251792514, 1108649344242040883, 1108649032978538497, 1108618174477369426, 1108613175697481749, 1108269782668681276, 1107943353632432208, 1107933295930511431, 1107927044962144286, 1107910689370165248, 1107899551974686831, 1107656943809593395, 1107618486232039454, 1107555866422562926, 1107504062175391815, 1101892125328679024, 1100365706362626098, 1099938102555975690, 1098923182439796818, 1093415042860466268, 1091224095770816552, 1120262010752471112, 1115908663207530577, 1115622606440239184, 1115538129672224880, 1115537984972931173, 1115171977934688296, 1114795277518389391]
 
-class Badges:
-    def __init__(self, name, points=0) -> None:
-        apprentinceDesc = f'''Welcome *{name}*!!
- 
-        
-Congratulations! 🎉 You have taken the first step to join & introduce yourself to this awesome community and earned the **Apprentice Badge**! 🎓 This badge shows that you are eager to learn and grow with our community! 😎 We are so happy to have you here and we can’t wait to see what you will create and solve! 🚀'''
-        converseDesc = f'''Well done *{name}*! 👏
-    You have engaged on the C4GT  discord community  with 10  or more messages and earned the **Converser Badge!** 💬 This badge shows that you are a friendly and helpful member of our community! 😊 '''
-        rockstarDesc = f'''Amazing *{name}*! 🙌
-    
-    You have received 5 upvotes on your message and earned the **Rockstar Badge!** 🌟 You add so much value to our community and we are grateful for your contribution! 💖 
-    
-    Please keep up the good work and share your expertise with us! 🙌
-    '''
-        enthusiastDesc = f'''Wohoo *{name}*!!!
-
-You have solved your first C4GT ticket !
-
-You have earned {points} points and earned a** C4GT Enthusiast Badge**!🥳 
-
-This badge shows that you are a valuable member of our community and that you are ready to take on more challenges! 😎
-
-But don’t stop here! There are more badges and rewards waiting for you! 🎁 The next badge is **Rising Star**, and you can get it by solving more issues and winning 30 points! 💯
-'''
-        risingStarDesc = f'''Hey *{name}*!!!
-
-You are on fire! 🔥 You have earned 30 points and reached a new level of excellence! 🙌 You have earned the **C4GT Rising Star badge!** 🌟
- 
-This badge shows that you are a brilliant problem-solver and a leader in our community! 😎 You have impressed us all with your skills and passion! 🥰
-
-But there’s more to come! There are more badges and rewards for you to unlock! 🎁 The next badge is **Wizard**, and you can get it by earning 60 points! 💯
-        '''
-        
-        
-        self.apprenticeBadge = discord.Embed(title="Apprentice Badge", description=apprentinceDesc)
-        self.converseBadge = discord.Embed(title="Converser Badge", description=converseDesc)
-        self.rockstarBadge = discord.Embed(title="Rockstar Badge", description=rockstarDesc)
-        self.enthusiastBadge = discord.Embed(title="Enthusiast Badge", description=enthusiastDesc)
-        self.risingStarBadge = discord.Embed(title="Rising Star Badge", description=risingStarDesc)
-        
-        self.apprenticeBadge.set_image(url="https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Apprentice.png")
-        self.converseBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Converser.png')
-        self.rockstarBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Rockstar.png')
-        self.enthusiastBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Enthusiast.png')
-        self.risingStarBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/RisingStar.png')
 
 class Announcement:
     def __init__(self, member):
@@ -155,25 +110,6 @@ class UserHandler(commands.Cog):
     # async def give_badges(self, ctx):
     #     self.give_discord_badges.start()
 
-    @tasks.loop(minutes=15)
-    async def give_discord_badges(self):
-        contributors = SupabaseInterface("discord_engagement").read_all()
-        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        for contributorData in contributors:
-            member = await guild.fetch_member(contributorData["contributor"])
-            print(member.name)
-            badges = Badges(member.name)
-            dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-            if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
-                SupabaseInterface("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
-                await dmchannel.send(embed=badges.converseBadge)
-            if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
-                SupabaseInterface("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
-                await dmchannel.send(embed=badges.rockstarBadge)
-            if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
-                SupabaseInterface("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
-                await dmchannel.send(embed=badges.apprenticeBadge)
-        print("DONE")
 
     
     @tasks.loop(minutes=10)
@@ -190,40 +126,40 @@ class UserHandler(commands.Cog):
             # SupabaseInterface("discord_engagement").insert({"contributor": member.id})
         
         #update engagement
-        for contributor in contributors:
-            contributorData = SupabaseInterface("discord_engagement").read("contributor", contributor["discord_id"])[0]
-            member = await guild.fetch_member(contributorData["contributor"])
-            print(f"-----Contributor-----{member.name}-------")
-            badges = Badges(member.name)
-            if contributorData:
-                if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
-                    SupabaseInterface("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
-                    dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-                    await dmchannel.send(embed=badges.converseBadge)
-                if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
-                    SupabaseInterface("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
-                    dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-                    await dmchannel.send(embed=badges.rockstarBadge)
-                if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
-                    SupabaseInterface("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
-                    dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-                    await dmchannel.send(embed=badges.apprenticeBadge)
-            github_id = contributor["github_id"]
-            prData = {
-                "raised": SupabaseInterface(table="pull_requests").read(query_key="raised_by", query_value=github_id),
-                "merged":SupabaseInterface(table="pull_requests").read(query_key="merged_by", query_value=github_id)
-            }
-            points = 0
-            for action in prData.keys():
-                prs = prData[action]
-                for pr in prs:
-                    points+=pr["points"]
-            if len(prData["raised"])+len(prData["merged"])>0and not contributorData["enthusiastBadge"]:
-                SupabaseInterface("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
-                await dmchannel.send(embed=Badges(member.name, points=points).enthusiastBadge)
-            if points>=30 and not contributorData["risingStarBadge"]:
-                SupabaseInterface("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
-                await dmchannel.send(embed=badges.risingStarBadge)
+        # for contributor in contributors:
+        #     contributorData = SupabaseInterface("discord_engagement").read("contributor", contributor["discord_id"])[0]
+        #     member = await guild.fetch_member(contributorData["contributor"])
+        #     print(f"-----Contributor-----{member.name}-------")
+        #     badges = Badges(member.name)
+        #     if contributorData:
+        #         if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
+        #             SupabaseInterface("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
+        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
+        #             await dmchannel.send(embed=badges.converseBadge)
+        #         if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
+        #             SupabaseInterface("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
+        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
+        #             await dmchannel.send(embed=badges.rockstarBadge)
+        #         if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
+        #             SupabaseInterface("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
+        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
+        #             await dmchannel.send(embed=badges.apprenticeBadge)
+        #     github_id = contributor["github_id"]
+        #     prData = {
+        #         "raised": SupabaseInterface(table="pull_requests").read(query_key="raised_by", query_value=github_id),
+        #         "merged":SupabaseInterface(table="pull_requests").read(query_key="merged_by", query_value=github_id)
+        #     }
+        #     points = 0
+        #     for action in prData.keys():
+        #         prs = prData[action]
+        #         for pr in prs:
+        #             points+=pr["points"]
+        #     if len(prData["raised"])+len(prData["merged"])>0and not contributorData["enthusiastBadge"]:
+        #         SupabaseInterface("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
+        #         await dmchannel.send(embed=Badges(member.name, points=points).enthusiastBadge)
+        #     if points>=30 and not contributorData["risingStarBadge"]:
+        #         SupabaseInterface("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
+        #         await dmchannel.send(embed=badges.risingStarBadge)
 
             
 
