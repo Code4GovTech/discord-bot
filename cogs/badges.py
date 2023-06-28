@@ -103,7 +103,7 @@ class Badges(commands.Cog):
         #Check if this happens in DM
         if isinstance(ctx.channel, discord.DMChannel):
             infoEmbed = discord.Embed(title="Point System", description='If you want to understand more about the points & badge system, check out this [link](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors).')
-            ctx.send(embed = infoEmbed)
+            await ctx.send(embed = infoEmbed)
             #Get available badges
             user_badges = BadgeContents(ctx.author.name).get_user_badges(ctx.author.id)
             if not user_badges:
