@@ -102,6 +102,8 @@ class Badges(commands.Cog):
     async def my_badges(self, ctx):
         #Check if this happens in DM
         if isinstance(ctx.channel, discord.DMChannel):
+            infoEmbed = discord.Embed(title="Point System", description='If you want to understand more about the points & badge system, check out this [link](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors).')
+            ctx.send(embed = infoEmbed)
             #Get available badges
             user_badges = BadgeContents(ctx.author.name).get_user_badges(ctx.author.id)
             if not user_badges:
@@ -134,7 +136,9 @@ class Badges(commands.Cog):
                         for badge in user_badges["achievements"]:
                                 await ctx.send(embed=badge)
                     else:
-                        await ctx.send("Oops, you have no badges yet.")
+                        await ctx.send("Hey, you have not collected any badges yet. Keep coding & engaging with the community to earn badges!")
+        else:
+            ctx.send("This command is only usable by DMing the bot")
                         
 
 
