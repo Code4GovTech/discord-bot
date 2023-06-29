@@ -301,26 +301,25 @@ Points are allocated on the following basis:bar_chart: :
                 if pr["points"] == 30:
                     mergeTicketComplexity["high"]+=1
 
-            text = f'''
-            Hey {ctx.author.name}
+            text = f'''Hey {ctx.author.name}
 
-    **You have a total of {raise_points+merge_points} points**🌟 
+**You have a total of {raise_points+merge_points} points**🌟 
 
-    ▶️ **Points Basis PRs accepted - {raise_points} points**🔥 
+▶️ **Points Basis PRs accepted - {raise_points} points**🔥 
 
-    Number of tickets solved - {len(prs_raised)}
-    Points on tickets with low complexity - {raiseTicketComplexity["low"]*10} points
-    Points on tickets with medium complexity - {raiseTicketComplexity["medium"]*20} points
-    Points of tickets with high complexity - {raiseTicketComplexity["high"]*30} points
+Number of tickets solved - {len(prs_raised)}
+Points on tickets with low complexity - {raiseTicketComplexity["low"]*10} points
+Points on tickets with medium complexity - {raiseTicketComplexity["medium"]*20} points
+Points of tickets with high complexity - {raiseTicketComplexity["high"]*30} points
 
-    ▶️ **Points as per PRs reviewed - {merge_points} points**🙌 
+▶️ **Points as per PRs reviewed - {merge_points} points**🙌 
 
-    Number of tickets reviewed - {len(prs_merged)}
-    Points on tickets with low complexity - {mergeTicketComplexity["low"]*10} points
-    Points on tickets with medium complexity - {mergeTicketComplexity["medium"]*20} points
-    Points of tickets with high complexity - {mergeTicketComplexity["high"]*30} points
+Number of tickets reviewed - {len(prs_merged)}
+Points on tickets with low complexity - {mergeTicketComplexity["low"]*10} points
+Points on tickets with medium complexity - {mergeTicketComplexity["medium"]*20} points
+Points of tickets with high complexity - {mergeTicketComplexity["high"]*30} points
 
-    Get coding and earn more points to get a spot on the leaderboard📈'''
+Get coding and earn more points to get a spot on the leaderboard📈'''
             await ctx.channel.send(text)
     
      
