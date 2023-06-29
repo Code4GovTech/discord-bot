@@ -21,7 +21,6 @@ TIME_DURATION = config_data['TIME_DURATION']
 class DiscordDataScaper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.collect_all_messages.start()
     
     # @commands.command()
     # async def introductions(self, ctx):
@@ -65,10 +64,7 @@ class DiscordDataScaper(commands.Cog):
                 "total_reaction_count": 1})
             return
         print("reaction")
-        SupabaseInterface("discord_engagement").update({"total_reaction_count":contributor["total_reaction_count"]+1}, "contributor", message.author.id)
-
-
-            
+        SupabaseInterface("discord_engagement").update({"total_reaction_count":contributor["total_reaction_count"]+1}, "contributor", message.author.id)      
     
     @commands.command()
     async def add_engagement(self, ctx):
@@ -144,7 +140,28 @@ class DiscordDataScaper(commands.Cog):
     
     #Store all messages on Text Channels in the Discord Server to SupaBase
    
-    @tasks.loop(hours=TIME_DURATION)
+   # command to run the message collector
+    @commands.command()
+    async def start_collecting_messages(self, ctx):
+        if not self.collect_all_messages.is_running():
+            self.collect_all_messages.start()
+            print("Initiating message collection")
+            await ctx.send("Message collection started.")
+        else:
+            await ctx.send("Message collection already in progress.")
+    
+    # command to stop the message collector 
+    @commands.command()
+    async def stop_collecting_messages(self, ctx):
+        if self.collect_all_messages.is_running():
+            self.collect_all_messages.cancel()
+            print("Stopping message collection")
+            await ctx.send("Message collection stopped.")
+        else:
+            await ctx.send("Message collection is not running.")
+
+    # recurring job to collect all the messages
+    @tasks.loop(seconds=TIME_DURATION)
     async def collect_all_messages(self):
         print(f"Collecting all messages as of {datetime.now()}")
         await self.add_messages()
