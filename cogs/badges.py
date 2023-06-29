@@ -69,6 +69,8 @@ Explore the C4GT Community Projects and get coding to earn more badges & pointsð
             "points": [],
             "achievements": []
         }
+        if len(SupabaseInterface("contributors").read(query_key="discord_id", query_value=discord_id))>0:
+            userBadges["achievements"].append(self.discordXGithubBadge)
 
         discordMemberData = SupabaseInterface("discord_engagement").read("contributor", discord_id)
         if discordMemberData:
