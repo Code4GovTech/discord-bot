@@ -43,6 +43,11 @@ This badge shows that you are a brilliant problem-solver and a leader in our com
 
 But there’s more to come! There are more badges and rewards for you to unlock! 🎁 The next badge is **Wizard**, and you can get it by earning 60 points! 💯
         '''
+
+        dicordXGithubDesc = f'''Hey *{name}*
+You have taken the first step towards becoming an active contributor by linking your Discord & Github handles!!🙌
+Explore the C4GT Community Projects and get coding to earn more badges & points🚀🚀
+'''
         
         
         self.apprenticeBadge = discord.Embed(title="Apprentice Badge", description=apprentinceDesc)
@@ -50,12 +55,14 @@ But there’s more to come! There are more badges and rewards for you to unlock!
         self.rockstarBadge = discord.Embed(title="Rockstar Badge", description=rockstarDesc)
         self.enthusiastBadge = discord.Embed(title="Enthusiast Badge", description=enthusiastDesc)
         self.risingStarBadge = discord.Embed(title="Rising Star Badge", description=risingStarDesc)
+        self.discordXGithubBadge = discord.Embed(title="Discord X Github Badge", description=dicordXGithubDesc)
         
         self.apprenticeBadge.set_image(url="https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Apprentice.png")
         self.converserBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Converser.png')
         self.rockstarBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Rockstar.png')
         self.enthusiastBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Enthusiast.png')
         self.risingStarBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/RisingStar.png')
+        self.discordXGithubBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Discord+Github.png')
     
     def get_user_badges(self, discord_id):
         userBadges = {
