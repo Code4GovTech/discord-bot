@@ -107,9 +107,9 @@ class DiscordDataScaper(commands.Cog):
         try:
             guild = await self.bot.fetch_guild(973851473131761674)
             applicants_channel = await guild.fetch_channel(1125359312370405396)
-            await ctx.send("Channel Identified:", applicants_channel.name)
+            await ctx.send("Channel Identified:"+applicants_channel.name)
             members = applicants_channel.members
-            await ctx.send("Member List Count", len(members))
+            await ctx.send("Member List Count"+len(members))
             for member in members:
                 try:   
                     SupabaseInterface("applicant").insert({'sheet_username':member.name, 'discord_id':member.id})
