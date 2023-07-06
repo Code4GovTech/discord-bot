@@ -14,6 +14,10 @@ class SupabaseInterface:
         data = self.client.table(self.table).select(columns).eq(query_key, query_value).execute()
         #data.data returns a list of dictionaries with keys being column names and values being row values
         return data.data
+
+    def read_by_order_limit(self, query_key, query_value, order_column, order_by=False, limit=1, columns="*"):
+        data = self.client.table(self.table).select(columns).eq(query_key, query_value).order(order_column).limit(limit).execute()
+        return data.data
     
     def read_all(self):
         data = self.client.table(self.table).select("*").execute()
