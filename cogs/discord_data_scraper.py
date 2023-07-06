@@ -111,7 +111,7 @@ class DiscordDataScaper(commands.Cog):
                 print('The channel is visible to the bot.')
             await ctx.send("Channel Identified:"+applicants_channel.name)
             members = applicants_channel.members
-            await ctx.send("Member List Count"+len(members))
+            await ctx.send("Member List Count"+str(len(members)))
             for member in members:
                 try:   
                     SupabaseInterface("applicant").insert({'sheet_username':member.name, 'discord_id':member.id})
