@@ -22,19 +22,6 @@ class DiscordDataScaper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
     
-    # @commands.command()
-    # async def introductions(self, ctx):
-    #     guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-    #     intro_channel = await guild.fetch_channel(os.getenv("INTRODUCTIONS_CHANNEL"))
-    #     with open('introduced.csv', 'w') as file:
-    #         writer = csv.writer(file)
-    #         data = []
-    #         async for message in intro_channel.history(limit=None):
-    #             row = [message.author.id]
-    #             if row not in data:
-    #                 count+=1
-    #                 data.append(row)
-    #         writer.writerows(data)
     @commands.Cog.listener()
     async def on_message(self, message):
         contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)
@@ -88,13 +75,10 @@ class DiscordDataScaper(commands.Cog):
 
             }
             engagmentData[member.id]= memberData
-        # await ctx.channel.send('2')
 
         for channel in channels:
-            # await ctx.channel.send(channel.name)
             print(channel.name)
             if isinstance(channel, TextChannel): #See Channel Types for info on text channels https://discordpy.readthedocs.io/en/stable/api.html?highlight=guild#discord.ChannelType
-                # await ctx.send("text")
                 async for message in channel.history(limit=None):
                     if message.author.id not in engagmentData.keys():
                         engagmentData[message.author.id]= {
@@ -102,44 +86,33 @@ class DiscordDataScaper(commands.Cog):
                 "has_introduced": False,
                 "total_message_count": 0,
                 "total_reaction_count": 0}
-                    # await ctx.send("msg")
                     if message.content=='':
-                        # await ctx.send("10")
                         continue
                     if len(message.content)>20:
-                        # await ctx.send("20")
                         engagmentData[message.author.id]["total_message_count"]+=1
                         if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
                             engagmentData[message.author.id]["has_introduced"] =True
                     if message.reactions:
-                        # await ctx.send("30")
                         engagmentData[message.author.id]["total_reaction_count"]+=len(message.reactions)
-        # await ctx.channel.send('3')
         addEngagmentData(list(engagmentData.values()))
         print("Complete!", file=sys.stderr)
-        # await ctx.channel.send("ended")
         return
     
 
     
     
-    # @commands.command()
-    # async def not_contributors(self, ctx):
-    #     guild = ctx.guild if ctx.guild else await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-    #     orgAndMentors = [role for role in os.getenv("NON_CONTRIBUTOR_ROLES").split(',')]
-    #     with open("not_contributors.csv", "w") as file:
-    #         writer = csv.writer(file)
-    #         data = []
-    #         async for member in guild.fetch_members(limit=None):
-    #             for role in member.roles:
-    #                 if role.id in orgAndMentors:
-    #                     user = [member.name, member.id, member.roles]
-    #                     if user not in data:
-    #                         data.append(user)
-    #         writer.writerows(data)
-    
-    #Store all messages on Text Channels in the Discord Server to SupaBase
-   
+    @commands.command()
+    async def update_applicants(self,ctx):
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+        applicants_channel = await guild.fetch_channel(1125359312370405396)
+        members = applicants_channel.members
+        for member in members:
+            try:
+                SupabaseInterface("applicant").insert({'sheet_username':member.name, 'discord_id':member.id})
+            except Exception as e:
+                continue
+        
+
    # command to run the message collector
     @commands.command()
     async def start_collecting_messages(self, ctx):
