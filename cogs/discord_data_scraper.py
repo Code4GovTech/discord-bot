@@ -103,17 +103,17 @@ class DiscordDataScaper(commands.Cog):
     
     @commands.command()
     async def update_applicants(self,ctx):
-        await ctx.send("Started")
+        
         try:
-            guild = await self.bot.fetch_guild(973851473131761674)
-            applicants_channel = await guild.fetch_channel(1125359312370405396)
+            applicants_channel = self.bot.get_channel(1125359312370405396)
             await ctx.send("Channel Identified:"+applicants_channel.name)
             members = applicants_channel.members
-            await ctx.send("Member List Count"+str(len(members)))
+            await ctx.send("Member List Count: " + str(len(members)))
             for member in members:
                 try:   
                     SupabaseInterface("applicant").insert({'sheet_username':member.name, 'discord_id':member.id})
                 except Exception as e:
+                    print
                     continue
         except Exception as e:
             await ctx.send(e)
