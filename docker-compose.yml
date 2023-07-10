@@ -18,5 +18,5 @@ services:
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_KEY: ${SUPABASE_KEY}
 
-network:
+networks:
   common:
