@@ -7,7 +7,7 @@ services:
     logging:
       driver: syslog
       options:
-        syslog-address: "udp://127.0.0.1:12201"
+        syslog-address: "udp://logstash:12201"
         tag: discord-bot
     environment:
       TOKEN: ${TOKEN}
