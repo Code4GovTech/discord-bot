@@ -17,3 +17,6 @@ services:
       FLASK_HOST: ${FLASK_HOST}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_KEY: ${SUPABASE_KEY}
+
+network:
+  common:
