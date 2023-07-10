@@ -4,11 +4,6 @@ services:
     container_name: discord-bot
     image: ghcr.io/code4govtech/discord-bot:main
     restart: always
-    logging:
-      driver: syslog
-      options:
-        syslog-address: "udp://logstash:12201"
-        tag: discord-bot
     environment:
       TOKEN: ${TOKEN}
       SERVER_ID: ${SERVER_ID}
@@ -17,6 +12,3 @@ services:
       FLASK_HOST: ${FLASK_HOST}
       SUPABASE_URL: ${SUPABASE_URL}
       SUPABASE_KEY: ${SUPABASE_KEY}
-
-networks:
-  common:
