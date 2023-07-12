@@ -18,6 +18,8 @@ INTRODUCTIONS_CHANNEL_ID =config_data['INTRODUCTIONS_CHANNEL_ID']
 ERROR_CHANNEL_ID = config_data['ERROR_CHANNEL_ID']
 TIME_DURATION = config_data['TIME_DURATION']
 
+
+
 class DiscordDataScaper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
@@ -97,6 +99,31 @@ class DiscordDataScaper(commands.Cog):
         addEngagmentData(list(engagmentData.values()))
         print("Complete!", file=sys.stderr)
         return
+    
+    def valid_user(ctx):
+        return ctx.author.id == 476285280811483140
+    
+
+    @commands.command()
+    @commands.check(valid_user)
+    async def enable_webhooks(self, ctx):
+        try:
+            guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+            channels = await guild.fetch_channels()
+            for channel in channels:
+                feedback = f'''Channel: {channel.name}\nCategory: {channel.category} '''
+                await ctx.send(feedback)
+                if channel.category.name == "C4GT 2023 PRODUCTS":
+                    webhook = await channel.create_webhook()
+                    feedback = f'''URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}'''
+                    ctx.send(feedback)
+                    SupabaseInterface("discord_channels").insert({
+                        "channel_id": channel.id,
+                        "channel_name": channel.name,
+                        "webhook": webhook.url,
+                    })
+        except Exception as e:
+            await ctx.send(e)
     
 
     
