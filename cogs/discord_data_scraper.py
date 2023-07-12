@@ -113,7 +113,7 @@ class DiscordDataScaper(commands.Cog):
             for channel in channels:
                 feedback = f'''Channel: {channel.name}\nCategory: {channel.category} '''
                 await ctx.send(feedback)
-                webhook = await channel.create_webhook()
+                webhook = await channel.create_webhook('New Ticket Alert')
                 feedback = f'''URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}'''
                 ctx.send(feedback)
                 SupabaseInterface("discord_channels").insert({
