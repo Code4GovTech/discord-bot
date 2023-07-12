@@ -113,7 +113,7 @@ class DiscordDataScaper(commands.Cog):
             for channel in channels:
                 feedback = f'''Channel: {channel.name}\nCategory: {channel.category} '''
                 await ctx.send(feedback)
-                if channel.category.name == "C4GT 2023 PRODUCTS":
+                if channel.category and channel.category.name == "C4GT 2023 PRODUCTS":
                     webhook = await channel.create_webhook()
                     feedback = f'''URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}'''
                     ctx.send(feedback)
