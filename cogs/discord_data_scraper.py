@@ -4,7 +4,7 @@ from discord import Member
 import discord
 import os, dateutil, json, sys
 from datetime import datetime
-
+from asyncio import sleep
 from utils.db import SupabaseInterface
 from utils.api import GithubAPI
 import csv
@@ -106,23 +106,27 @@ class DiscordDataScaper(commands.Cog):
 
     @commands.command()
     @commands.check(valid_user)
-    async def enable_webhooks(self, ctx):
-        try:
-            guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-            channels = await guild.fetch_channels()
-            for channel in channels:
-                feedback = f'''Channel: {channel.name}\nCategory: {channel.category} '''
-                await ctx.send(feedback)
-                webhook = await channel.create_webhook('New Ticket Alert')
-                feedback = f'''URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}'''
-                ctx.send(feedback)
-                SupabaseInterface("discord_channels").insert({
-                    "channel_id": channel.id,
-                    "channel_name": channel.name,
-                    "webhook": webhook.url
-                })
-        except Exception as e:
-            await ctx.send(e)
+    async def enable_webhook(self, ctx):
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+        channels = await guild.fetch_channels()
+        enabled = [channel["channel_id"] for channel in SupabaseInterface("discord_channels").read_all()]
+        for channel in channels:
+            try:
+                    feedback = f'''Channel: {channel.name}\nCategory: {channel.category} '''
+                    await ctx.send(feedback)
+                    if isinstance(channel, TextChannel) and channel.id not in enabled:
+                        sleep(120)
+                        webhook = await channel.create_webhook(name = 'New Ticket Alert')
+                        feedback = f'''URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}'''
+                        await ctx.send(feedback)
+                        SupabaseInterface("discord_channels").insert({
+                            "channel_id": channel.id,
+                            "channel_name": channel.name,
+                            "webhook": webhook.url
+                        })
+            except Exception as e:
+                await ctx.send(e)
+                continue
     
 
     

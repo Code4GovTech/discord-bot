@@ -285,21 +285,23 @@ Points are allocated on the following basis:bar_chart: :
                 "high": 0
             }
             for pr in prs_raised:
-                raise_points+=pr["points"]
-                if pr["points"] == 10:
-                    raiseTicketComplexity["low"]+=1
-                if pr["points"] == 20:
-                    raiseTicketComplexity["medium"]+=1
-                if pr["points"] == 30:
-                    raiseTicketComplexity["high"]+=1
+                if pr["is_merged"]:
+                    raise_points+=pr["points"]
+                    if pr["points"] == 10:
+                        raiseTicketComplexity["low"]+=1
+                    if pr["points"] == 20:
+                        raiseTicketComplexity["medium"]+=1
+                    if pr["points"] == 30:
+                        raiseTicketComplexity["high"]+=1
             for pr in prs_merged:
-                merge_points+=pr["points"]
-                if pr["points"] == 10:
-                    mergeTicketComplexity["low"]+=1
-                if pr["points"] == 20:
-                    mergeTicketComplexity["medium"]+=1
-                if pr["points"] == 30:
-                    mergeTicketComplexity["high"]+=1
+                if pr["is_merged"]:
+                    merge_points+=pr["points"]
+                    if pr["points"] == 10:
+                        mergeTicketComplexity["low"]+=1
+                    if pr["points"] == 20:
+                        mergeTicketComplexity["medium"]+=1
+                    if pr["points"] == 30:
+                        mergeTicketComplexity["high"]+=1
 
             text = f'''Hey {ctx.author.name}
 
