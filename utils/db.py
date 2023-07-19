@@ -1,12 +1,14 @@
 import os
 from supabase import create_client, Client
 
+SUPABASE_URL="https://kcavhjwafgtoqkqbbqrd.supabase.co"
+SUPABASE_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtjYXZoandhZmd0b3FrcWJicXJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE2ODQ5NTQxMzIsImV4cCI6MjAwMDUzMDEzMn0.8PKGvntMY7kw5-wmvG2FBOCxf-OrA2yV5fnudeA6SVQ"
 
 class SupabaseInterface:
     def __init__(self, table, url=None, key=None) -> None:
 
-        self.supabase_url = url if url else os.getenv("SUPABASE_URL")
-        self.supabase_key = key if key else os.getenv("SUPABASE_KEY")
+        self.supabase_url = SUPABASE_URL
+        self.supabase_key = SUPABASE_KEY
         self.table = table
         self.client: Client = create_client(self.supabase_url, self.supabase_key)
     

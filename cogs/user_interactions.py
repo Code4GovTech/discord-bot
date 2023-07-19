@@ -57,7 +57,7 @@ So what are you waiting for? Let's get started!!''',
 class AuthenticationView(discord.ui.View):
     def __init__(self, discord_userdata):
         super().__init__()
-        button = discord.ui.Button(label='Authenticate Github', style=discord.ButtonStyle.url, url=f'{os.getenv("FLASK_HOST")}/authenticate/{discord_userdata}')
+        button = discord.ui.Button(label='Authenticate Github', style=discord.ButtonStyle.url, url=f'https://github-app.c4gt.samagra.io/authenticate/{discord_userdata}')
         self.add_item(button)
         self.message = None
 
@@ -169,6 +169,12 @@ class UserHandler(commands.Cog):
             
 
         return
+    
+    @commands.command()
+    async def github_profile(self, ctx):
+        if isinstance(ctx.channel, discord.DMChannel):
+            await ctx.send('''Paste the following in your README.md on github to showcase your badges:''')
+            await ctx.send('[![Profile Picture](https://kcavhjwafgtoqkqbbqrd.supabase.co/storage/v1/object/public/c4gt-github-profile/476285280811483140.jpg?t=2023-07-17T02%3A05%3A44.511Z)](https://github.com/Code4GovTech/C4GT/wiki)')
     
     @update_contributors.before_loop
     async def before_update_loop(self):
