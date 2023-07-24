@@ -277,6 +277,7 @@ def getPR(PRurl):
             'Accept': 'application/vnd.github+json',
             'Authorization': f'Bearer {os.getenv("GITHUB_PAT")}'
         }
+    
     try:
         response = requests.get(url, headers=headers)
         # Check if the request was successful (status code 200)
@@ -293,7 +294,7 @@ def getPR(PRurl):
 def send_get_request(url):
     headers = {
             'Accept': 'application/vnd.github+json',
-            'Authorization': f'Bearer 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'
+            'Authorization': f'Bearer {os.getenv("GITHUB_PAT")}'
         }
     try:
         response = requests.get(url, headers=headers)
