@@ -1,7 +1,6 @@
 import os
 from supabase import create_client, Client
 
-
 class SupabaseInterface:
     def __init__(self, table, url=None, key=None) -> None:
 
