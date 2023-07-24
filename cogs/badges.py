@@ -37,7 +37,7 @@ But don’t stop here! There are more badges and rewards waiting for you! 🎁 T
 '''
         risingStarDesc = f'''Hey *{name}*!!!
 
-You are on fire! 🔥 You have earned 30 points and reached a new level of excellence! 🙌 You have earned the **C4GT Rising Star badge!** 🌟
+You are on fire! 🔥 You have earned 50 DPG points and reached a new level of excellence! 🙌 You have earned the **C4GT Rising Star badge!** 🌟
  
 This badge shows that you are a brilliant problem-solver and a leader in our community! 😎 You have impressed us all with your skills and passion! 🥰
 
@@ -48,6 +48,28 @@ But there’s more to come! There are more badges and rewards for you to unlock!
 You have taken the first step towards becoming an active contributor by linking your Discord & Github handles!!🙌
 Explore the C4GT Community Projects and get coding to earn more badges & points🚀🚀
 '''
+        wizardBadgeDesc = f'''Hey  *{name}*!!!
+Woah, you have acquired a total of 100 DPG points and reached great heights! You have earned the the **C4GT Wizard Badge**🧙‍♀️
+
+Awesome job 🎉 Earning 100 points is no small feat. Your skills and dedication are impressive. Keep up the fantastic work! ✨🚀
+
+You need 75 more points to reach the next level and unlock more benefits! The next badge is the **Ninja** badge, and we can’t wait to see you earn it soon 🙂
+'''
+        ninjaBadgeDesc = f'''Congratulations, *{name}*! 🎉 
+You have acquired a 175 DPG points with your active contribution to the C4GT community tickets. You're now a **C4GT Ninja Badge**🥷 
+
+Keep soaring high and setting benchmarks for open-source contributions. Your skills and determination to learn is amazing!🌟
+
+Want to get on to the next level?🏃 Earn 100 more points to get awarded the **Warrior** Badge. Don’t wait up and get coding
+'''
+        warriorBadgeDesc = f'''Woahh,  *{name}*! 🎉
+
+You are killing it! You have earned yourself 275 DPG Points with your stellar contribution and earned yourself the **C4GT Warrior Badge** ⚔️
+
+This really showcases your exceptional skills and abilities.🛠️ You have reached the highest level yet in the C4GT Community. 🔥
+
+ Keep creating impact through meaningful contribution to open-source contribution to DPGs 📈
+'''
         
         
         self.apprenticeBadge = discord.Embed(title="Apprentice Badge", description=apprentinceDesc)
@@ -56,6 +78,9 @@ Explore the C4GT Community Projects and get coding to earn more badges & points�
         self.enthusiastBadge = discord.Embed(title="Enthusiast Badge", description=enthusiastDesc)
         self.risingStarBadge = discord.Embed(title="Rising Star Badge", description=risingStarDesc)
         self.discordXGithubBadge = discord.Embed(title="Discord X Github Badge", description=dicordXGithubDesc)
+        self.wizardBadge = discord.Embed(title="Wizard Badge",description=wizardBadgeDesc)
+        self.ninjaBadge = discord.Embed(title="Ninja Badge", description=ninjaBadgeDesc)
+        self.warriorBadge = discord.Embed(title="Warrior Badge", description=warriorBadgeDesc)
         
         self.apprenticeBadge.set_image(url="https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Apprentice.png")
         self.converserBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Converser.png')
@@ -63,6 +88,9 @@ Explore the C4GT Community Projects and get coding to earn more badges & points�
         self.enthusiastBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Enthusiast.png')
         self.risingStarBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/RisingStar.png')
         self.discordXGithubBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Discord+Github.png')
+        self.wizardBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Wizard.jpeg')
+        self.ninjaBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Ninja.jpg')
+        self.warriorBadge.set_image(url='https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Warrior.jpeg')
     
     def get_user_badges(self, discord_id):
         userBadges = {
@@ -94,8 +122,14 @@ Explore the C4GT Community Projects and get coding to earn more badges & points�
                     points+=pr["points"]
             if len(prData["raised"])+len(prData["merged"])>0:
                 userBadges["points"].append(self.enthusiastBadge)
-            if points>=30:
+            if points>=50:
                 userBadges["points"].append(self.risingStarBadge)
+            if points>=100:
+                userBadges["points"].append(self.wizardBadge)
+            if points>=175:
+                userBadges["points"].append(self.ninjaBadge)
+            if points>=275:
+                userBadges["points"].append(self.warriorBadge)
         if not discordMemberData and not contributorData:
             return None
         return userBadges

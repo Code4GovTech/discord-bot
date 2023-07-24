@@ -1,5 +1,5 @@
 from discord.ext import commands
-import re, sys
+import re, sys,json, os
 sys.path.append('/home/kanavdwevedi/Desktop/bot-deployment/discord-bot')
 import requests
 from fuzzywuzzy import fuzz
@@ -7,6 +7,8 @@ from utils.db import SupabaseInterface
 import mistune
 import flatdict
 from pprint import pprint
+
+
 
 def parse_markdown_for_urls(markdown):
   """Parses a Markdown file for all URLs.
@@ -47,6 +49,24 @@ def find_urls(obj, urls):
     for value in obj:
       find_urls(value, urls)
 
+md = '''---
+title: Week 1
+author: Manas Sivakumar  
+---
+
+## Milestones
+- Fix Bash Script to Generate Docker File
+- GitHub Action to Build and Push Images to ghcr.io
+
+## Screenshots / Videos 
+
+## Contributions
+- [Bash Script](https://github.com/Samagra-Development/ai-tools/issues/118)
+- [Github Worflow](https://github.com/Samagra-Development/ai-tools/issues/132)
+- [GitHub Workflow](https://github.com/Samagra-Development/ai-tools/issues/120)
+
+## Learnings
+Exposure to Github Actions and Access Permissions in Github Repository. '''
 
 files = [
     "2023-07-07.md",
@@ -60,179 +80,174 @@ files = [
     "2023-09-01.md"
 ]
 
-directories = {
-    # "ABDM":{
-    #     "CONSENT_MANAGEMENT": [],
-    #     "Loinc-India": []
-    # },
-    # "AI Tools": {
-    #     "Deployment Optimization": [],
-    #     "Document Uploader": [],
-    #     "Neural Coref": [],
-    # },
-    # "Avni": {
-    #     "Canned Analytics": []
-    # },
-    # "Bahmni":{
-    #     "Ability to book an appointment via WhatsApp": [],
-    #     "Patient Portal": []
-    # },
-    # "BeckN": {
-    #     "BAP Backend SDK & Boilerplate UI": [],
-    #     "BPP Backend SDK & Boilerplate UI": [],
-    #     "Beckn Certification Suite": [],
-    #     "Beckn DSEP - Scaling and Resilience Implementation": [],
-    #     "Beckn Energy Interface": [],
-    #     "Beckn Mobility Interface": [],
-    #     "Beckn in a box": [],
-    #     "Beckn-enabled-Reputation-Infrasructure": [],
-    #     "Decentralized Health Protocol": [],
-    #     "QR Code Generation and Interpretation": [],
-    #     "Synapse": [],
-    # },
-    "CARE": {
-        "Adding typesafety to teleicu middleware": [],
-        # "Cypress Test for All Major Functionalities of CARE": [],
-        # "List and Detail Serializer": [],
-        # "Live Camera Feed Enhancement": [],
-        "RedesignDoctorNotes": []
-    },
-    "CORD Network":{
+# directories = {
+#     "ABDM":{
+#         "CONSENT_MANAGEMENT": [],
+#         "Loinc-India": [],
+#         "Subscription-management": [],
+#     },
+#     "AI Tools": {
+#         "Deployment Optimization": [],
+#         "Document Uploader": [],
+#         "Neural Coref": [],
+#         "Dictionary Augmented Transformers":[]
+#     },
+#     "Avni": {
+#         "Canned Analytics": []
+#     },
+#     "Bahmni":{
+#         "Ability to book an appointment via WhatsApp": [],
+#         "Patient Portal": [],
+#         "Standalone Document Upload Module": [],
+#     },
+#     "BeckN": {
+#         "BAP Backend SDK & Boilerplate UI": [],
+#         "BPP Backend SDK & Boilerplate UI": [],
+#         "Backn Smart Policy Infrastructure": [],
+#         "Beckn Certification Suite": [],
+#         "Beckn DSEP - Scaling and Resilience Implementation": [],
+#         "Beckn Energy Interface": [],
+#         "Beckn Mobility Interface": [],
+#         "Beckn in a box": [],
+#         "Beckn-enabled-Reputation-Infrasructure": [],
+#         "Decentralized Health Protocol": [],
+#         "QR Code Generation and Interpretation": [],
+#         "Synapse": [],
+#     },
+#     "CARE": {
+#         "Adding typesafety to teleicu middleware": [],
+#         "Cypress Test for All Major Functionalities of CARE": [],
+#         "List and Detail Serializer": [],
+#         "Live Camera Feed Enhancement": [],
+#         "RedesignDoctorNotes": []
+#     },
+#     "CORD Network":{
+#        "IntegrationWithSunbirdRC": []
 
-    },
-    "DDP": {
-        "Airbyte connector for Avni": [],
-        "Set up a monitoring system": []  
-    },
-    "DIGIT": {
-        "JWT based Authentication and Authorization": [],
-        "Jurisdiction Based Workflow": [],
-        "Redesign and rewrite of MDMS": [],
-        "Vehicle Tracker": [],
-    },
-    "DIKSHA": {
-        "Discovering Tutors and Mentor using DSEP protocol": [],
-        "Learner Passbook integration with Sunbird ED Apps":[],
-        "Story":[],
-    },
-    "DevOps Pipeline": {
-        "Build v2 of devops pipeline": []
-    },
-    "Doc Generator": {
-        "Creating an UI": [],
-        "Upgrade Doc-Gen to use Templater": []
-    },
-    "Farmstack": {
-        "API Builder": []
-    },
-    "Glific": {
-        "Glific Mobile": [],
-        "Integrate with a subscription based billing system": []
-    },
-    "Health Claims Exchange": {
-        "Build Javascript SDK for HCX Participant System to help in integrating with HCX": [],
-        "Python SDK": []
-    },
-    "Karmayogi": {
-        "Competency Passbook for Officials": [],
-        "Integrate the Content translation UI into iGOT Karamayogi": [],
-        "LLMs for Question Answering 1": [],
-        "LLMs for Question Answering 2": []
-    },
-    "ODK Extension Collection": {
-        "Get form response as JSON and Send response to Custom Server": [],
-        "Publish extensions as a library on maven central": []
-    },
-    "QuML": {
-        "Enhanced QuML player": []
-    },
-    "Quiz Creator": {
-    },
-    "Solve Ninja Chatbot": {
-        "Voice-to-text Integration": []
-    },
-    "Sunbird DevOps": {
+#     },
+#     "DDP": {
+#         "Airbyte connector for Avni": [],
+#         "Set up a monitoring system": []  
+#     },
+#     "DIGIT": {
+#         "JWT based Authentication and Authorization": [],
+#         "Jurisdiction Based Workflow": [],
+#         "Redesign and rewrite of MDMS": [],
+#         "Vehicle Tracker": [],
+#     },
+#     "DIKSHA": {
+#         "Discovering Tutors and Mentor using DSEP protocol": [],
+#         "Learner Passbook integration with Sunbird ED Apps":[],
+#         "Story":[],
+#     },
+#     "DevOps Pipeline": {
+#         "Build v2 of devops pipeline": []
+#     },
+#     "Doc Generator": {
+#         "Creating an UI": [],
+#         "Upgrade Doc-Gen to use Templater": []
+#     },
+#     "Farmstack": {
+#         "API Builder": []
+#     },
+#     "Glific": {
+#         "Glific Mobile": [],
+#         "Integrate with a subscription based billing system": []
+#     },
+#     "Health Claims Exchange": {
+#         "Build Javascript SDK for HCX Participant System to help in integrating with HCX": [],
+#         "Python SDK": []
+#     },
+#     "Karmayogi": {
+#         "Competency Passbook for Officials": [],
+#         "Integrate the Content translation UI into iGOT Karamayogi": [],
+#         "Discovering Mentors and Training Institutes": [],
+#         "Integrate the Content translation UI into iGOT Karamayogi": [],
+#         "LLMs for Question Answering 1": [],
+#         "LLMs for Question Answering 2": []
+#     },
+#     "ODK Extension Collection": {
+#         "Get form response as JSON and Send response to Custom Server": [],
+#         "Publish extensions as a library on maven central": []
+#     },
+#     "QuML": {
+#         "Enhanced QuML player": []
+#     },
+#     "Quiz Creator": {
+#        "Quiz Creator": []
+#     },
+#     "Solve Ninja Chatbot": {
+#         "Voice-to-text Integration": []
+#     },
+#     "Sunbird DevOps": {
+#        "Code and Container Security": []
 
-    },
-    "Sunbird ED": {
-        "Review Enhancement": [],
-        "Search Widget or Discovery": [],
-        "Support for Optional Material in Course": []
-    },
-    "Sunbird Knowlg": {
+#     },
+#     "Sunbird ED": {
+#         "Review Enhancement": [],
+#         "Search Widget or Discovery": [],
+#         "Support for Optional Material in Course": [],
+#         "content detail page as widget": []
+#     },
+#     "Sunbird Knowlg": {
+#        "One click installation in aws": []
     
-    },
-    "Sunbird Lern": {
-        "Integrate with non-Keycloak authentication system": [],
-        "Mocking Integration Points": []
-    },
-    "Sunbird Obsrv": {
-        "Enhance Sunbird Ed Data Pipeline to Operate on Sunbird Obsrv": [],
-        "revampTheObsrvSink": []
-    },
-    "Sunbird RC": {
-        "Admin Portal to Build Registry and Credentialing Platform": [],
-        "Credential Sharing Consent and Share Credentials": [],
-        "Starter pack location master": []
-    },
-    "Sunbird Saral": {
-        "Saral-Layout and ROI generation": []
-    },
-    "Sunbird UCI": {
-        "Telemetry Dashboard": [],
-        "Refactoring Components": []
-    },
-    "Sunbird inQuiry": {
-        "Auto generates questions in QuML": [],
-        "Embedding QuML player": [],
-        "Match The Following Type Questions Implementation": [],
-        "audio-upload-feature": []
-    },
-    "Template creation portal": {
-        "Template creation portal": []
-    },
-    "Text2SQL": {
+#     },
+#     "Sunbird Lern": {
+#         "Integrate with non-Keycloak authentication system": [],
+#         "Mocking Integration Points": []
+#     },
+#     "Sunbird Obsrv": {
+#         "Enhance Sunbird Ed Data Pipeline to Operate on Sunbird Obsrv": [],
+#         "revampTheObsrvSink": []
+#     },
+#     "Sunbird RC": {
+#         "Admin Portal to Build Registry and Credentialing Platform": [],
+#         "Credential Sharing Consent and Share Credentials": [],
+#         "Starter pack location master": []
+#     },
+#     "Sunbird Saral": {
+#         "Saral-Layout and ROI generation": []
+#     },
+#     "Sunbird UCI": {
+#         "Telemetry Dashboard": [],
+#         "Refactoring Components": []
+#     },
+#     "Sunbird inQuiry": {
+#         "Auto generates questions in QuML": [],
+#         "Embedding QuML player": [],
+#         "Match The Following Type Questions Implementation": [],
+#         "audio-upload-feature": []
+#     },
+#     "Template creation portal": {
+#         "Template creation portal": []
+#     },
+#     "Text2SQL": {
 
-    },
-    "TrustBot and POSHpal": {
+#     },
+#     "TrustBot and POSHpal": {
 
-    },
-    "TrustIn":{
+#     },
+#     "TrustIn":{
 
-    },
-    "Unnati":{
+#     },
+#     "Unnati":{
 
-    },
-    "WarpSQL":{
-        "Plugins, Disaster Recovery, Benchmarking": []
-    },
-    "Workflow":{
-        "Workflow":[]
-    },
-    "Yaus": {
-        "Frontend And Deep Linking": []
-    },
-    "cQube": {
-        "Input File Validator": [],
-        "cQubeChat": []
-    }
-}
-defaultText = '''---
-title: Week 1
-author: Yashi Gupta  
----
-
-## Milestones
-- [ ] Give the description about Milestone 1
-- [ ] Give the description about Milestone 2
-- [ ] Give the description about Milestone 3
-- [ ] Give the description about Milestone 4
-
-## Screenshots / Videos 
-
-## Contributions
-
-## Learnings'''
+#     },
+#     "WarpSQL":{
+#         "Plugins, Disaster Recovery, Benchmarking": []
+#     },
+#     "Workflow":{
+#         "Workflow":[]
+#     },
+#     "Yaus": {
+#         "Frontend And Deep Linking": []
+#     },
+#     "cQube": {
+#         "Input File Validator": [],
+#         "cQubeChat": []
+#     }
+# }
 
 testText = '''
 ---
@@ -260,7 +275,7 @@ def getPR(PRurl):
 
     headers = {
             'Accept': 'application/vnd.github+json',
-            # 'Authorization': f'Bearer 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'
+            'Authorization': f'Bearer {os.getenv("GITHUB_PAT")}'
         }
     try:
         response = requests.get(url, headers=headers)
@@ -276,8 +291,12 @@ def getPR(PRurl):
         return None
    
 def send_get_request(url):
+    headers = {
+            'Accept': 'application/vnd.github+json',
+            'Authorization': f'Bearer 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'
+        }
     try:
-        response = requests.get(url)
+        response = requests.get(url, headers=headers)
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
             return response.text
@@ -288,8 +307,39 @@ def send_get_request(url):
         # Handle any exceptions that occurred during the request (e.g., connection error, timeout).
         print(f"An error occurred: {e}")
         return None
+    
+def generate_file_tree():
+    result = send_get_request("https://api.github.com/repos/Code4GovTech/c4gt-milestones/contents/docs/2023?ref=main")
+    # print(result)
+    productFolders = json.loads(result)
+    folderStruct = dict()
+    for pFolder in productFolders:
+        folderStruct[pFolder["name"]] = dict()
+        projectFolders = json.loads(send_get_request(pFolder["url"]))
+        for project in projectFolders:
+            # print(project, type(project))
+            if isinstance(project, dict) and project["type"] == "dir":
+                folderStruct[pFolder["name"]][project["name"]] = list()
+    return folderStruct
 
 def is_default_text(markdown):
+    defaultText = '''---
+title: Week 1
+author: Yashi Gupta  
+---
+
+## Milestones
+- [ ] Give the description about Milestone 1
+- [ ] Give the description about Milestone 2
+- [ ] Give the description about Milestone 3
+- [ ] Give the description about Milestone 4
+
+## Screenshots / Videos 
+
+## Contributions
+
+## Learnings'''
+
     if fuzz.ratio(markdown, defaultText)>90 :
         return True
     return False
@@ -337,68 +387,114 @@ def addPullRequest(pull, project):
                             "project_folder_label": project
 
                     }
-    SupabaseInterface("mentorship_program_website_pull_request").insert(p)
+    try:
+        SupabaseInterface("mentorship_program_website_pull_request").insert(p)
+    except Exception:
+        try:
+          SupabaseInterface("mentorship_program_website_pull_request").update(p, "pr_id", p["pr_id"])
+        except Exception as e:
+           print(e)
+
+def insertMilestones(data):
+    try:
+        SupabaseInterface("mentorship_program_website_has_updated").insert(data)
+    except Exception as e:
+        try:
+          SupabaseInterface("mentorship_program_website_has_updated").update(data, "project_folder", data["project_folder"])
+        except Exception as e:
+          print(e)
+          return
+
 
 
 class MentorshipMetrics(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+    
+    @commands.command()
+    async def update_mentorship_data(self, ctx):
+       await ctx.send("scanning latest file structure in repository...")
+       directories = generate_file_tree()
 
-
-def insertMilestones(data):
-    SupabaseInterface("mentorship_program_website_has_updated").insert(data)
+       productNumber = 1
+       for product, projects in directories.items():
+        await ctx.send(f'{product}: {productNumber}/{len(directories.keys())}')
+        productNumber+=1
+        for project in projects.keys():
+            count = 1
+            data = {
+                    "project_folder": project,
+                    "product": product,
+                    "all_links": []
+                }
+            for filename in files:
+                url = f'https://raw.githubusercontent.com/Code4GovTech/c4gt-milestones/main/docs/2023/{product}/{project}/updates/{filename}'
+                url = requests.utils.quote(url, safe='/:')
+                # await ctx.send(project)
+                print(project)
+                markdown = send_get_request(url)
+                if is_default_text(markdown=markdown):
+                    data[f"week{count}_is_default_text"] =True
+                else:
+                    data[f"week{count}_is_default_text"]=False
+                urls = []
+                find_urls(return_ast(markdown), urls)
+                data["all_links"]+=urls
+                for url in urls:
+                    print(url, isPrUrl(url))
+                    if isPrUrl(url):
+                        pull = getPR(url)
+                        print(pull)
+                        try:
+                            addPullRequest(pull, project)
+                        except Exception as e:
+                            print(e)
+                            continue
+                count+=1
+                
+                    
+            insertMilestones(data)
 
 async def setup(bot):
     await bot.add_cog(MentorshipMetrics(bot))
 
-for product, projects in directories.items():
-    for project in projects.keys():
-        count = 1
-        data = {
-                "project_folder": project,
-                "product": product
-            }
-        for filename in files:
-            url = f'https://raw.githubusercontent.com/Code4GovTech/c4gt-milestones/main/docs/2023/{product}/{project}/updates/{filename}'
-            url = requests.utils.quote(url, safe='/:')
-            print(project)
-            markdown = send_get_request(url)
-            if is_default_text(markdown=markdown):
-                data[f"week{count}_is_default_text"] =True
-            else:
-               urls = []
-               find_urls(return_ast(markdown), urls)
-               for url in urls:
-                  print(url, isPrUrl(url))
-                  if isPrUrl(url):
-                    pull = getPR(url)
-                    print(pull)
-                    try:
-                        addPullRequest(pull, project)
-                    except Exception as e:
-                       continue
+# directories = generate_file_tree()
+
+# productNumber = 1
+# for product, projects in directories.items():
+# # await ctx.send(f'{product}: {productNumber}/{len(directories.keys())}')
+#     productNumber+=1
+#     for project in projects.keys():
+#         count = 1
+#         data = {
+#                 "project_folder": project,
+#                 "product": product,
+#                 "all_links": []
+#             }
+#         for filename in files:
+#             url = f'https://raw.githubusercontent.com/Code4GovTech/c4gt-milestones/main/docs/2023/{product}/{project}/updates/{filename}'
+#             url = requests.utils.quote(url, safe='/:')
+#             # await ctx.send(project)
+#             print(project)
+#             markdown = send_get_request(url)
+#             if is_default_text(markdown=markdown):
+#                 data[f"week{count}_is_default_text"] =True
+#             else:
+#                 data[f"week{count}_is_default_text"]=False
+#             urls = []
+#             find_urls(return_ast(markdown), urls)
+#             data["all_links"]+=urls
+#             for url in urls:
+#                 print(url, isPrUrl(url))
+#                 if isPrUrl(url):
+#                     pull = getPR(url)
+#                     print(pull)
+#                     try:
+#                         addPullRequest(pull, project)
+#                     except Exception as e:
+#                         print(e)
+#                         continue
+#             count+=1
             
                 
-        # insertMilestones(data)
-md = '''---
-title: Week 1
-author: Manas Sivakumar  
----
-
-## Milestones
-- Fix Bash Script to Generate Docker File
-- GitHub Action to Build and Push Images to ghcr.io
-
-## Screenshots / Videos 
-
-## Contributions
-- [Bash Script](https://github.com/Samagra-Development/ai-tools/issues/118)
-- [Github Worflow](https://github.com/Samagra-Development/ai-tools/issues/132)
-- [GitHub Workflow](https://github.com/Samagra-Development/ai-tools/issues/120)
-
-## Learnings
-Exposure to Github Actions and Access Permissions in Github Repository. '''
-urls = []
-
-print(urls)
-
+#         insertMilestones(data)
