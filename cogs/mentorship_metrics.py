@@ -1,12 +1,9 @@
 from discord.ext import commands
 import re, sys,json, os
-sys.path.append('/home/kanavdwevedi/Desktop/bot-deployment/discord-bot')
 import requests
 from fuzzywuzzy import fuzz
 from utils.db import SupabaseInterface
 import mistune
-import flatdict
-from pprint import pprint
 
 
 
