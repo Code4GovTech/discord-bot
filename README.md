@@ -7,6 +7,10 @@
 4. Add the requisite `.env` file in the repository root.
 5. Run the bot using `python3 main.py` or `python main.py` command in the terminal.
 
+### Reference
+[how to build a simple discord bot](https://realpython.com/how-to-make-a-discord-bot-python/)
+[discord.py](https://discordpy.readthedocs.io/en/stable/)
+
 
 ### Features
 - [ ] Allow tagging a `discordId` to a `githubId` so that contributions can be managed. Everyone coming to the server will be required to register themselves on the bot. Ask every contributor to connect their Github to Discord. The bot will take this publicly available info and add it to the database.
