@@ -8,7 +8,7 @@
 5. Run the bot using `python3 main.py` or `python main.py` command in the terminal.
 
 ### Reference
-[how to build a simple discord bot](https://realpython.com/how-to-make-a-discord-bot-python/)
+[how to build a simple discord bot](https://realpython.com/how-to-make-a-discord-bot-python/)   
 [discord.py](https://discordpy.readthedocs.io/en/stable/)
 
 
