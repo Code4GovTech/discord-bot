@@ -179,7 +179,7 @@ class Badges(commands.Cog):
                         for badge in user_badges["achievements"]:
                                 await ctx.send(embed=badge)
                     else:
-                        await ctx.send("Hey, you have not collected any badges yet. Keep coding & engaging with the community to earn badges!")
+                        await ctx.send(f"Hey {ctx.author.name}\n\nYou have not earned any badges yet. Keep contributing and engaging on our community to earn more badges!!")
         else:
             ctx.send("This command is only usable by DMing the bot")
                         

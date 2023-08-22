@@ -1,4 +1,4 @@
-import discord
+import discord, asyncio
 import os
 from discord.ext import commands, tasks
 import time, csv
@@ -170,11 +170,56 @@ class UserHandler(commands.Cog):
 
         return
     
+    
     @commands.command()
-    async def github_profile(self, ctx):
+    async def github_profile_beta(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
-            await ctx.send('''Paste the following in your README.md on github to showcase your badges:''')
-            await ctx.send('[![Profile Picture](https://kcavhjwafgtoqkqbbqrd.supabase.co/storage/v1/object/public/c4gt-github-profile/476285280811483140.jpg?t=2023-07-17T02%3A05%3A44.511Z)](https://github.com/Code4GovTech/C4GT/wiki)')
+            githubProfileInfoEmbed = discord.Embed(title=f"Show off your contributions on your github profile!",
+                                                   description='''Hey Contributor🔥
+
+*Great work on contributing to Digital Public Goods*
+
+You can showcase your achievements from the C4GT Community on your GitHub profile & distinguish yourself!🚀
+
+*Follow the following steps to showcase your skills:*
+
+
+1️⃣ It's essential to have a profile README on GitHub to showcase your achievements. If you don't have a profile README, create one by following the steps [here](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-github-profile/customizing-your-profile/managing-your-profile-readme#adding-a-profile-readme)
+
+2️⃣ A link will be shared with you here. Don't forget to copy it📋
+
+3️⃣ Then, open your profile README file on Github and edit it by adding the copied section from the bot response, wherever you want.💻
+
+4️⃣ Commit the changes to your README on github. 
+
+*Congratulations on your hard work & achievement!!*🥳
+
+Your profile page will now show your achievements from the C4GT community.🏆''')
+            user = SupabaseInterface("github_profile_data").read("discord_id", ctx.author.id)
+            if len(user) == 0:
+                await ctx.send("Oops! It seems you aren't currently registered")
+            elif len(user) == 1:
+                data = user[0]
+                if data["points"] == 0:
+                    await ctx.send("Oops! It seems you currently don't have any points")
+                else:
+                    await ctx.send(embed=githubProfileInfoEmbed)
+                    await ctx.send(f'''Snippet for your Github Profile README: 
+```[![C4GTGithubDisplay](https://kcavhjwafgtoqkqbbqrd.supabase.co/storage/v1/object/public/c4gt-github-profile/{ctx.author.id}githubdisplay.jpg)](https://github.com/Code4GovTech)
+Know more about: Code For GovTech ([Website](https://www.codeforgovtech.in) | [GitHub](https://github.com/Code4GovTech/C4GT/wiki)) | [Digital Public Goods (DPGs)](https://digitalpublicgoods.net/digital-public-goods/) | [India & DPGs](https://government.economictimes.indiatimes.com/blog/digital-public-goods-digital-public-infrastructure-an-evolving-india-story/99532036)```''')
+            # githubProfileInfoEmbed.set_footer(text="Respond with 🏆 to get the link")
+            # message = await ctx.send(embed=githubProfileInfoEmbed)
+            # await message.add_reaction("🏆")
+            # def check(reaction, user):
+            #     return user == ctx.message.author and str(reaction.emoji) in ['🏆']
+            # try:
+            #     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+            # except asyncio.TimeoutError:
+            #     await ctx.send("You took too long to respond.")
+            # else:
+            #     if str(reaction.emoji) == '🏆':
+            #         await ctx.send(f'[![C4GTGithubDisplay](https://kcavhjwafgtoqkqbbqrd.supabase.co/storage/v1/object/public/c4gt-github-profile/{ctx.author.id}githubdisplay.jpg?maxAge=10)](https://github.com/Code4GovTech)')
+            
     
     @update_contributors.before_loop
     async def before_update_loop(self):
