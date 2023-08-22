@@ -172,7 +172,7 @@ class UserHandler(commands.Cog):
     
     
     @commands.command()
-    async def github_profile_beta(self, ctx):
+    async def github_profile(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             githubProfileInfoEmbed = discord.Embed(title=f"Show off your contributions on your github profile!",
                                                    description='''Hey Contributor🔥
