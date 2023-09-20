@@ -1,6 +1,9 @@
 # #Track metrics on github and discord and update the database accordingly
 # #Implement using: https://discordpy.readthedocs.io/en/stable/ext/tasks/index.html?highlight=tasks#
 from discord.ext import commands, tasks
+from discord import Embed
+import aiohttp, json
+from utils.db import SupabaseInterface
 # from discord import Member
 # from discord.channel import TextChannel
 # from datetime import time, datetime
@@ -12,11 +15,102 @@ from discord.ext import commands, tasks
 # import os, dateutil.parser
 
 
-
-
+# async def getCetificate(name, badge):
+#     url = 'http://139.59.20.91:5000/rcw/credential'
+#     headers = {
+#         'Content-Type': 'application/json'
+#     }
+#     data = {
+#         "type": ["Test Credential"],
+#         "subject": {
+#             "id": "did:C4GT:test",
+#             "username": f"{name}",
+#             "badge": f"{badge}"
+#         },
+#         "schema": "cllbzgfor000ytj151nu7km4t",
+#         "tags": ["Tag 1"],
+#         "templateId": "cllbzglwa0010tj15104dtgc8"
+#     }
+    
+#     async with aiohttp.ClientSession() as session:
+#         async with session.post(url, headers=headers, json=data) as response:
+#             if response.status == 201:
+#                 resp_data = await response.json()
+#                 return json.loads(resp_data)
+#             else:
+#                 print(f"Failed to fetch credential. Status code: {response.status}")
 class MetricsTracker(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
+
+#     @commands.command()
+#     async def my_certificates(self, ctx):
+        
+#         noCertsEmbed = Embed(title='', description=f'''Hey {ctx.author.name}
+
+# You have currently not earned any C4GT certificates yet!
+# But don’t worry, all you need to do is collect 50 DPG points and get a Rising Star :stars: badge by solving issue tickets to become eligible for your first certificate. **Get coding now!!**:computer: 
+
+# **Discover issue tickets [here](https://www.codeforgovtech.in/community-program-projects).**
+# ''')
+#         oneCertEmbed = Embed(
+#         title="Congratulations!", 
+#         description=f"Hey {ctx.author.mention}\n\n"
+#                     "You have earned a C4GT certificate for being an **active DPG contributor and earning 50 DPG points!** :partying_face:\n\n"
+#                     "Click [here](http://139.59.20.91:9000/c4gt/Kanav%20Dwevedi_Enthusiast%20Badge.pdf) to access your certificate :page_with_curl:",
+#         color=0x00ff00  # You can choose any color
+#     )
+
+#         contributor_data = SupabaseInterface("contributors").read("discord_id", ctx.author.id)
+#         if len(contributor_data)==0:
+#             ctx.send("Use the !join command to register to obtain certificates")
+#             return
+        
+#         [contributor] = contributor_data
+#         name = contributor["github_url"].split('/')[-1]
+
+#         user = SupabaseInterface("github_profile_data").read("discord_id", ctx.author.id)
+#         data = user[0]
+#         data["points"] = 70
+#         if data["points"] <50 :
+#             await ctx.send(embed=noCertsEmbed)
+#         elif data["points"]>=50 and data["points"]<100:
+
+#             # resp = await getCetificate(name, "Enthusiast Badge")
+#             oneCertEmbed = Embed(
+#         title="Congratulations!", 
+#         description=f"Hey {ctx.author.mention}\n\n"
+#                     "You have earned a C4GT certificate for being an **active DPG contributor and earning 50 DPG points!** :partying_face:\n\n"
+#                     "Click [here](http://139.59.20.91:9000/c4gt/Kanav%20Dwevedi_Enthusiast%20Badge.pdf) to access your certificate :page_with_curl:",
+#         color=0x00ff00  # You can choose any color
+#     )
+#             await ctx.send(embed=oneCertEmbed)
+
+        
+
+    
+    @commands.command()
+    async def points(self, ctx):
+        await ctx.send(f'''Hey {ctx.author}
+
+**You have a total of 140 points**🌟 
+
+▶️ **Points Basis PRs accepted - 60 points**🔥 
+
+Number of tickets solved - 3
+Points on tickets with low complexity - 10 points
+Points on tickets with medium complexity - 20 points
+Points of tickets with high complexity - 30 points
+
+▶️ **Points as per PRs reviewed - 80 points**🙌 
+
+Number of tickets reviewed - 4
+Points on tickets with low complexity - 10 points
+Points on tickets with medium complexity - 40 points
+Points of tickets with high complexity - 30 points
+
+Get coding and earn more points to get a spot on the leaderboard📈''')
+
 
     
     
