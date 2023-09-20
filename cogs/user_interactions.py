@@ -208,7 +208,6 @@ But don’t worry, all you need to do is collect 50 DPG points and get a Rising 
                 await ctx.send("Oops! It seems you aren't currently registered")
             elif len(user) == 1:
                 data = user[0]
-                data["points"]=0
                 if data["points"] == 0:
                     await ctx.send(embed=noPointsGithubProfileEmbed)
                 else:
