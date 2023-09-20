@@ -140,6 +140,42 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
 class Badges(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+
+    @commands.command()
+    async def show_badges(self, ctx):
+        # only works in DM channels
+        if isinstance(ctx.channel, discord.DMChannel):
+            #Information abt the point system
+            infoEmbed = discord.Embed(title="Point System", description='If you want to understand more about the points & badge system, check out this [link](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors).')
+            await ctx.send(embed = infoEmbed)
+
+            name = ctx.author.name
+
+            user_badges = {
+                "points": [BadgeContents(name).enthusiastBadge, BadgeContents(name).rockstarBadge, BadgeContents(name).wizardBadge],
+                "achievements": [BadgeContents(name).apprenticeBadge, BadgeContents(name).converserBadge]
+            }
+            embed = discord.Embed(title="Badge Type", description="What badge type do you want to view?", color=discord.Color.blue())
+            embed.set_footer(text="Please react with 📈 for Points Based Badges or 🥳 Achievements Based Badges .")
+            message = await ctx.send(embed=embed)
+            await message.add_reaction('📈')
+            await message.add_reaction('🥳') 
+            def check(reaction, user):
+                return user == ctx.message.author and str(reaction.emoji) in ['📈', '🥳']
+            try:
+                reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
+            except asyncio.TimeoutError:
+                await ctx.send("You took too long to respond.")
+            else:
+                if str(reaction.emoji) == '📈':
+                    for badge in user_badges["points"]:
+                        await ctx.send(embed=badge)
+                elif str(reaction.emoji) == '🥳':
+                    for badge in user_badges["achievements"]:
+                        await ctx.send(embed=badge)
+
+
+
     
     @commands.command()
     async def my_badges(self, ctx):
