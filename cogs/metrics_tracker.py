@@ -4,6 +4,7 @@ from discord.ext import commands, tasks
 from discord import Embed
 import aiohttp, json
 from utils.db import SupabaseInterface
+import urllib.parse
 # from discord import Member
 # from discord.channel import TextChannel
 # from datetime import time, datetime
@@ -14,77 +15,113 @@ from utils.db import SupabaseInterface
 # import requests, json
 # import os, dateutil.parser
 
+def badgeReference(points):
+    badges = []
+    risingStar = {
+        "name": "C4GT Rising Star Badge",
+        "image": "https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/RisingStar.png",
+        "msg": """1. Earned a certificate for becoming a **Rising Star :stars: 50 points)**\nClick [here]({link}) to access your certificate """
+    }
+    wizardBadge = {
+        "name": "C4GT Wizard Badge",
+        "image": "https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Wizard.jpeg",
+        "msg": "2. Earned a certificate for becoming a **Wizard :magic_wand: (100 points)**\nClick [here]({link}) to access your certificate "
+    }
+    ninjaBadge = {
+        "name": "C4GT Ninja Badge",
+        "image": "https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/Ninja.jpg",
+        "msg": "3. Earned a certificate for becoming a **Ninja :ninja::skin-tone-1: (175 points)**\nClick [here]({link}) to access your certificate "
+    }
 
-# async def getCetificate(name, badge):
-#     url = 'http://139.59.20.91:5000/rcw/credential'
-#     headers = {
-#         'Content-Type': 'application/json'
-#     }
-#     data = {
-#         "type": ["Test Credential"],
-#         "subject": {
-#             "id": "did:C4GT:test",
-#             "username": f"{name}",
-#             "badge": f"{badge}"
-#         },
-#         "schema": "cllbzgfor000ytj151nu7km4t",
-#         "tags": ["Tag 1"],
-#         "templateId": "cllbzglwa0010tj15104dtgc8"
-#     }
+    if points>=50:
+        badges.append(risingStar)
+    if points>=100:
+        badges.append(wizardBadge)
+    if points>=175:
+        badges.append(ninjaBadge)
     
-#     async with aiohttp.ClientSession() as session:
-#         async with session.post(url, headers=headers, json=data) as response:
-#             if response.status == 201:
-#                 resp_data = await response.json()
-#                 return json.loads(resp_data)
-#             else:
-#                 print(f"Failed to fetch credential. Status code: {response.status}")
+    return badges
+
+
+
+async def getCertificate(name, badge, image):
+    url = 'http://139.59.20.91:5000/rcw/credential'
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    data = {
+        "type": ["Test Credential"],
+        "subject": {
+            "id": "did:C4GT:test",
+            "username": f"{name}",
+            "badge": f"{badge}",
+            "image": f"{image}"
+        },
+        "schema": "clmsu44xn000gtj15ur89njdf",
+        "tags": ["Certificate"],
+        "templateId": "clmsu4cq2000itj15ca8bhvlz"
+    }
+
+    async with aiohttp.ClientSession() as session:
+        async with session.post(url, headers=headers, json=data) as response:
+            resp_data = await response.json()
+            return resp_data
+        
 class MetricsTracker(commands.Cog):
     def __init__(self, bot: commands.Bot) -> None:
         self.bot = bot
 
-#     @commands.command()
-#     async def my_certificates(self, ctx):
+    @commands.command()
+    async def my_certificates(self, ctx):
         
-#         noCertsEmbed = Embed(title='', description=f'''Hey {ctx.author.name}
+        noCertsEmbed = Embed(title='', description=f'''Hey {ctx.author.name}
 
-# You have currently not earned any C4GT certificates yet!
-# But don’t worry, all you need to do is collect 50 DPG points and get a Rising Star :stars: badge by solving issue tickets to become eligible for your first certificate. **Get coding now!!**:computer: 
+You have currently not earned any C4GT certificates yet!
+But don’t worry, all you need to do is collect 50 DPG points and get a Rising Star :stars: badge by solving issue tickets to become eligible for your first certificate. **Get coding now!!**:computer: 
 
-# **Discover issue tickets [here](https://www.codeforgovtech.in/community-program-projects).**
-# ''')
-#         oneCertEmbed = Embed(
-#         title="Congratulations!", 
-#         description=f"Hey {ctx.author.mention}\n\n"
-#                     "You have earned a C4GT certificate for being an **active DPG contributor and earning 50 DPG points!** :partying_face:\n\n"
-#                     "Click [here](http://139.59.20.91:9000/c4gt/Kanav%20Dwevedi_Enthusiast%20Badge.pdf) to access your certificate :page_with_curl:",
-#         color=0x00ff00  # You can choose any color
-#     )
+**Discover issue tickets [here](https://www.codeforgovtech.in/community-program-projects)**
+''')
 
-#         contributor_data = SupabaseInterface("contributors").read("discord_id", ctx.author.id)
-#         if len(contributor_data)==0:
-#             ctx.send("Use the !join command to register to obtain certificates")
-#             return
+        contributor_data = SupabaseInterface("contributors").read("discord_id", ctx.author.id)
+        if len(contributor_data)==0:
+            ctx.send("Use the !join command to register to obtain certificates")
+            return
         
-#         [contributor] = contributor_data
-#         name = contributor["github_url"].split('/')[-1]
+        [contributor] = contributor_data
+        name = contributor["github_url"].split('/')[-1]
 
-#         user = SupabaseInterface("github_profile_data").read("discord_id", ctx.author.id)
-#         data = user[0]
-#         data["points"] = 70
-#         if data["points"] <50 :
-#             await ctx.send(embed=noCertsEmbed)
-#         elif data["points"]>=50 and data["points"]<100:
+        user = SupabaseInterface("github_profile_data").read("discord_id", ctx.author.id)
+        data = user[0]
+        data["points"] = 150
+        badges = badgeReference(data["points"])
+        if data["points"] <50 :
+            await ctx.send(embed=noCertsEmbed)
+        elif data["points"]>=50 and data["points"]<100:
 
-#             # resp = await getCetificate(name, "Enthusiast Badge")
-#             oneCertEmbed = Embed(
-#         title="Congratulations!", 
-#         description=f"Hey {ctx.author.mention}\n\n"
-#                     "You have earned a C4GT certificate for being an **active DPG contributor and earning 50 DPG points!** :partying_face:\n\n"
-#                     "Click [here](http://139.59.20.91:9000/c4gt/Kanav%20Dwevedi_Enthusiast%20Badge.pdf) to access your certificate :page_with_curl:",
-#         color=0x00ff00  # You can choose any color
-#     )
-#             await ctx.send(embed=oneCertEmbed)
+            resp = await getCertificate(name, "C4GT Rising Star Badge", "https://raw.githubusercontent.com/Code4GovTech/discord-bot/main/assets/RisingStar.png")
+            oneCertEmbed = Embed(
+        title="Congratulations!", 
+        description=f"Hey {ctx.author.mention}\n\n"
+                    "You have earned a C4GT certificate for being an **active DPG contributor and earning 50 DPG points!** :partying_face:\n\n"
+                    f"Click [here]({resp['minioURL'].replace(' ', '%20')}) to access your certificate :page_with_curl:",
+        color=0x00ff00  # You can choose any color
+    )
+            await ctx.send(f"{resp}",embed=oneCertEmbed)
+        
+        else:
+            desc = f'''Hey {ctx.author.name}
+
+Congratulations! :fire: You have earned {len(badges)} C4GT certificates for being an active DPG contributor:people_with_bunny_ears_partying: 
+'''
+            for badge in badges:
+                resp = await getCertificate(name, badge["name"], badge["image"])
+                desc = desc+f'''\n{badge["msg"].format(link=resp["minioURL"].replace(" ", "%20"))}\n'''
+            multiCertEmbed = Embed(title='', description=desc,color=0x00ff00)
+            await ctx.send(embed=multiCertEmbed)
+                
+
+                
+
 
         
 
