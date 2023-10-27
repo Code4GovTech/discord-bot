@@ -3,7 +3,6 @@ import os
 from discord.ext import commands, tasks
 import time, csv
 from utils.db import SupabaseInterface
-from utils.api import GithubAPI
 
 VERIFIED_CONTRIBUTOR_ROLE_ID = 1123967402175119482
 NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]
@@ -54,9 +53,12 @@ So what are you waiting for? Let's get started!!''',
 
 #This is a Discord View that is a set of UI elements that can be sent together in a message in discord.
 #This view send a link to Github Auth through c4gt flask app in the form of a button.
+class RegistrationModal(discord.ui.Modal, title="Contributor Registration"):
+    name = discord.ui.TextInput(label='Name')
 class AuthenticationView(discord.ui.View):
     def __init__(self, discord_userdata):
         super().__init__()
+        self.timeout = None
         button = discord.ui.Button(label='Authenticate Github', style=discord.ButtonStyle.url, url=f'https://github-app.c4gt.samagra.io/authenticate/{discord_userdata}')
         self.add_item(button)
         self.message = None
@@ -64,24 +66,26 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.update_contributors.start()
+        # self.update_contributors.start()
+
+
 
     #Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command 
-    @commands.command(aliases=['join'])
-    async def join_as_contributor(self, ctx):
-        #create a direct messaging channel with the one who executed the command
-        if isinstance(ctx.channel, discord.DMChannel):
-            userdata = str(ctx.author.id)
-            view = AuthenticationView(userdata)
-            await ctx.send("Please authenticate your github account to register in the C4GT Community", view=view)
-        # Command logic for DMs
-        else:
-        # Command logic for other channels (e.g., servers, groups)
-            await ctx.send("Please use this command in Bot DMs.")
-        # Command logic for DMs
-        userdata = str(ctx.author.id)
-        view = AuthenticationView(userdata)
-        # await dmchannel.send("Please authenticate your github account to register for Code for GovTech 2023", view=view)
+    # @commands.command(aliases=['join'])
+    # async def join_as_contributor(self, ctx):
+    #     #create a direct messaging channel with the one who executed the command
+    #     if isinstance(ctx.channel, discord.DMChannel):
+    #         userdata = str(ctx.author.id)
+    #         view = AuthenticationView(userdata)
+    #         await ctx.send("Please authenticate your github account to register in the C4GT Community", view=view)
+    #     # Command logic for DMs
+    #     else:
+    #     # Command logic for other channels (e.g., servers, groups)
+    #         await ctx.send("Please use this command in Bot DMs.")
+    #     # Command logic for DMs
+    #     userdata = str(ctx.author.id)
+    #     view = AuthenticationView(userdata)
+    #     # await dmchannel.send("Please authenticate your github account to register for Code for GovTech 2023", view=view)
 
     @commands.command(aliases=["badges"])
     async def list_badges(self, ctx):
