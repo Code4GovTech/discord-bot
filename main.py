@@ -28,10 +28,10 @@ class AuthenticationView(discord.ui.View):
 class RegistrationModal(discord.ui.Modal):
     def __init__(self, *, title: str = None, timeout: float | None = None, custom_id: str = None) -> None:
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
-    name = discord.ui.TextInput(label='Please Enter Your Name')
+    name = discord.ui.TextInput(label='Please Enter Your Name', placeholder='To give you the recognition you deserve, could you please share your full name for the certificates!')
     
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Thanks! Now register your Github",view=AuthenticationView(interaction.user.id), ephemeral=True)
+        await interaction.response.send_message("Thanks! Now please register using your Github so that we can award you points for solving tickets!",view=AuthenticationView(interaction.user.id), ephemeral=True)
 
 class RegistrationView(discord.ui.View):
     def __init__(self):
