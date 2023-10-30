@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Union
 import discord
 from discord.ext import commands
 import os, sys
@@ -26,7 +26,7 @@ class AuthenticationView(discord.ui.View):
         self.message = None
 
 class RegistrationModal(discord.ui.Modal):
-    def __init__(self, *, title: str = None, timeout: float | None = None, custom_id: str = None) -> None:
+    def __init__(self, *, title: str = None, timeout: Union[float, None] = None, custom_id: str = None) -> None:
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
     name = discord.ui.TextInput(label='Please Enter Your Name', placeholder='To give you the recognition you deserve, could you please share your full name for the certificates!')
     
