@@ -68,10 +68,16 @@ class AffiliationSelect(discord.ui.Select):
         ]]
         super().__init__(placeholder="Please select applicable affliliation",max_values=1,min_values=1,options=options)
     async def callback(self, interaction:discord.Interaction):
-        if self.values[0] == "College Chapter" or self.values[0] == "Corporate Chapter":
+        if self.values[0] == "College Chapter":
             chapterView = discord.ui.View()
             chapterView.add_item(ChapterSelect(self.values[0]))
             await interaction.response.send_message("Please select your institute!", view=chapterView, ephemeral=True)
+        elif self.values[0] == "Corporate Chapter":
+            await interaction.response.send_message("We currently don't have any active Corporate Chapters!", ephemeral=True)
+        elif self.values[0] == "Individual Contributor":
+            await interaction.response.send_message("Now please Authenticate using Github so we can start awarding your points!",view=AuthenticationView(interaction.user.id), ephemeral=True)
+
+
             
 
 
