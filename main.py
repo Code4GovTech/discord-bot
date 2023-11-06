@@ -4,7 +4,7 @@ from discord.ext import commands
 import os, sys
 import asyncio
 from discord.utils import MISSING
-import dotenv
+import dotenv, aiohttp, json
 
 #Since there are user defined packages, adding current directory to python path
 current_directory = os.getcwd()
@@ -22,84 +22,103 @@ class AuthenticationView(discord.ui.View):
         button = discord.ui.Button(label='Authenticate Github', style=discord.ButtonStyle.url, url=f'https://github-app.c4gt.samagra.io/authenticate/{discord_userdata}')
         self.add_item(button)
         self.message = None
-class ChapterSelect(discord.ui.Select):
-    def __init__(self, affiliation):
-        collegeOptions = [discord.SelectOption(label=option["label"], emoji=option["emoji"] ) for option in [
-            {
-                "label": "NIT Kurukshetra",
-                "emoji": "\N{GRADUATION CAP}"
-            },
-            {
-                "label": "ITER, Siksha 'O' Anusandhan",
-                "emoji": "\N{GRADUATION CAP}"
-            },
-            {
-                "label": "IIITDM Jabalpur",
-                "emoji": "\N{GRADUATION CAP}"
-            },
-            {
-                "label": "KIIT, Bhubaneswar",
-                "emoji": "\N{GRADUATION CAP}"
-            }
 
-        ]]
-        corporateOptions = []
-        super().__init__(placeholder="Please select your institute",max_values=1,min_values=1,options=collegeOptions if affiliation=="College Chapter" else corporateOptions)
-    async def callback(self, interaction:discord.Interaction):
-        await interaction.response.send_message("Now please Authenticate using Github so we can start awarding your points!",view=AuthenticationView(interaction.user.id), ephemeral=True)
+# class ChapterSelect(discord.ui.Select):
+#     def __init__(self, affiliation, data):
+#         collegeOptions = [discord.SelectOption(label=option["label"], emoji=option["emoji"] ) for option in [
+#             {
+#                 "label": "NIT Kurukshetra",
+#                 "emoji": "\N{GRADUATION CAP}"
+#             },
+#             {
+#                 "label": "ITER, Siksha 'O' Anusandhan",
+#                 "emoji": "\N{GRADUATION CAP}"
+#             },
+#             {
+#                 "label": "IIITDM Jabalpur",
+#                 "emoji": "\N{GRADUATION CAP}"
+#             },
+#             {
+#                 "label": "KIIT, Bhubaneswar",
+#                 "emoji": "\N{GRADUATION CAP}"
+#             }
 
-
-
-class AffiliationSelect(discord.ui.Select):
-    def __init__(self):
-        options = [discord.SelectOption(label=option["label"], emoji=option["emoji"] ) for option in [
-            {
-                "label": "College Chapter",
-                "emoji": "\N{OPEN BOOK}"
-            },
-            {
-                "label": "Corporate Chapter",
-                "emoji": "\N{OFFICE BUILDING}"
-            },
-            {
-                "label": "Individual Contributor",
-                "emoji": "\N{BRIEFCASE}"
-            }
-        ]]
-        super().__init__(placeholder="Please select applicable affliliation",max_values=1,min_values=1,options=options)
-    async def callback(self, interaction:discord.Interaction):
-        if self.values[0] == "College Chapter":
-            chapterView = discord.ui.View()
-            chapterView.add_item(ChapterSelect(self.values[0]))
-            await interaction.response.send_message("Please select your institute!", view=chapterView, ephemeral=True)
-        elif self.values[0] == "Corporate Chapter":
-            await interaction.response.send_message("We currently don't have any active Corporate Chapters!", ephemeral=True)
-        elif self.values[0] == "Individual Contributor":
-            await interaction.response.send_message("Now please Authenticate using Github so we can start awarding your points!",view=AuthenticationView(interaction.user.id), ephemeral=True)
-
-
-            
-
-
+#         ]]
+#         corporateOptions = []
+#         self.data = data
+#         super().__init__(placeholder="Please select your institute",max_values=1,min_values=1,options=collegeOptions if affiliation=="College Chapter" else corporateOptions)
+#     async def callback(self, interaction:discord.Interaction):
+#         self.data["chapter"] = self.values[0]
+#         self.data["discord_id"]= interaction.user.id
         
+#         await interaction.response.send_message("Now please Authenticate using Github so we can start awarding your points!",view=AuthenticationView(interaction.user.id), ephemeral=True)
 
+# class AffiliationSelect(discord.ui.Select):
+#     def __init__(self, data):
+#         options = [discord.SelectOption(label=option["label"], emoji=option["emoji"] ) for option in [
+#             {
+#                 "label": "College Chapter",
+#                 "emoji": "\N{OPEN BOOK}"
+#             },
+#             {
+#                 "label": "Corporate Chapter",
+#                 "emoji": "\N{OFFICE BUILDING}"
+#             },
+#             {
+#                 "label": "Individual Contributor",
+#                 "emoji": "\N{BRIEFCASE}"
+#             }
+#         ]]
+#         super().__init__(placeholder="Please select applicable affliliation",max_values=1,min_values=1,options=options)
+#         self.data = data
+#     async def callback(self, interaction:discord.Interaction):
+#         self.data["affiliation"] = self.values[0]
+#         if self.values[0] == "College Chapter":
+#             chapterView = discord.ui.View()
+#             chapterView.add_item(ChapterSelect(self.values[0], self.data))
+#             await interaction.response.send_message("Please select your institute!", view=chapterView, ephemeral=True)
+#         elif self.values[0] == "Corporate Chapter":
+#             await interaction.response.send_message("We currently don't have any active Corporate Chapters!", ephemeral=True)
+#         elif self.values[0] == "Individual Contributor":
+#             await interaction.response.send_message("Now please Authenticate using Github so we can start awarding your points!",view=AuthenticationView(interaction.user.id), ephemeral=True)
 
-class AffiliationView(discord.ui.View):
-    def __init__(self):
-        super().__init__()
-        self.timeout = None
-        self.add_item(AffiliationSelect())
-
-
+# class AffiliationView(discord.ui.View):
+    # def __init__(self, data):
+    #     super().__init__()
+    #     self.timeout = None
+    #     self.add_item(AffiliationSelect(data))
 
 class RegistrationModal(discord.ui.Modal):
     def __init__(self, *, title: str = None, timeout: Union[float, None] = None, custom_id: str = None) -> None:
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
+    
+    async def post_data(self, data):
+        url = 'https://kcavhjwafgtoqkqbbqrd.supabase.co/rest/v1/contributor_names'
+        headers = {
+            "apikey": f"{os.getenv('SUPABASE_KEY')}",
+            "Authorization": f"Bearer {os.getenv('SUPABASE_KEY')}",
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+        }
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, data=json.dumps(data)) as response:
+                if response.status == 200:
+                    print("Data posted successfully")
+                else:
+                    print("Failed to post data")
+                    print("Status Code:", response.status)
 
     
     name = discord.ui.TextInput(label='Please Enter Your Name', placeholder='To give you the recognition you deserve, could you please share your full name for the certificates!')    
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Thanks! Now please select your affiliation!",view=AffiliationView(), ephemeral=True)
+        await interaction.response.send_message("Thanks! Now please select your affiliation!",view=AuthenticationView(interaction.user.id), ephemeral=True)
+        await self.post_data(
+            {
+                "name": self.name.value,
+                "discord_id": interaction.user.id
+            }
+        )
 
 class RegistrationView(discord.ui.View):
     def __init__(self):
