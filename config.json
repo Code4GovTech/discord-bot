@@ -1,4 +1,12 @@
 {
+    "channels": {
+        "introduction": {
+            "id": "",
+            "name": ""
+        }
+    },
+    "roles": [],
+
     "CONTRIBUTOR_ROLE_ID": 973852365188907048,
     "INTRODUCTIONS_CHANNEL_ID": 1107343423167541328,
     "ERROR_CHANNEL_ID": 0,

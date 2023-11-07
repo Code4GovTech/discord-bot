@@ -5,6 +5,7 @@ import os, sys
 import asyncio
 from discord.utils import MISSING
 import dotenv, aiohttp, json
+from utils.db import SupabaseInterface
 
 #Since there are user defined packages, adding current directory to python path
 current_directory = os.getcwd()
@@ -112,13 +113,37 @@ class RegistrationModal(discord.ui.Modal):
     
     name = discord.ui.TextInput(label='Please Enter Your Name', placeholder='To give you the recognition you deserve, could you please share your full name for the certificates!')    
     async def on_submit(self, interaction: discord.Interaction):
-        await interaction.response.send_message("Thanks! Now please select your affiliation!",view=AuthenticationView(interaction.user.id), ephemeral=True)
+        user = interaction.user
+        await interaction.response.send_message("Thanks! Now please sign in via Github!",view=AuthenticationView(user.id), ephemeral=True)
         await self.post_data(
             {
                 "name": self.name.value,
-                "discord_id": interaction.user.id
+                "discord_id": user.id
             }
         )
+
+        verifiedContributorRoleID = 1123967402175119482
+        print("User:", type(user))
+        if verifiedContributorRoleID in [role.id for role in user.roles]:
+            return
+        else:
+            async def hasAuthenticated():
+                print("Checking...")
+                discordEngagement = SupabaseInterface("contributors").read("discord_id", user.id)
+                while not discordEngagement:
+                    await asyncio.sleep(30)
+                print("Found!")
+                return True
+            try:
+                await asyncio.wait_for(hasAuthenticated(), timeout=1000)
+                verifiedContributorRole = user.guild.get_role(verifiedContributorRoleID)
+                if verifiedContributorRole:
+                    if verifiedContributorRole not in user.roles:
+                        await user.add_roles(verifiedContributorRole, reason="Completed Auth and Introduction")
+            except asyncio.TimeoutError:
+                print("Timed out waiting for authentication")
+
+
 
 class RegistrationView(discord.ui.View):
     def __init__(self):
