@@ -133,7 +133,7 @@ class RegistrationModal(discord.ui.Modal):
                 while not authentication:
                     await asyncio.sleep(30)
                 print("Found!")
-                discordEngagement = SupabaseInterface("discord_engagement").read("contributor", user.id)
+                discordEngagement = SupabaseInterface("discord_engagement").read("contributor", user.id)[0]
                 return discordEngagement["has_introduced"]
             try:
                 await asyncio.wait_for(hasIntroduced(), timeout=1000)
