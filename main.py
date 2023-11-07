@@ -127,15 +127,16 @@ class RegistrationModal(discord.ui.Modal):
         if verifiedContributorRoleID in [role.id for role in user.roles]:
             return
         else:
-            async def hasAuthenticated():
+            async def hasIntroduced():
                 print("Checking...")
-                discordEngagement = SupabaseInterface("contributors").read("discord_id", user.id)
-                while not discordEngagement:
+                authentication = SupabaseInterface("contributors").read("discord_id", user.id)
+                while not authentication:
                     await asyncio.sleep(30)
                 print("Found!")
-                return True
+                discordEngagement = SupabaseInterface("discord_engagement").read("contributor", user.id)
+                return discordEngagement["has_introduced"]
             try:
-                await asyncio.wait_for(hasAuthenticated(), timeout=1000)
+                await asyncio.wait_for(hasIntroduced(), timeout=1000)
                 verifiedContributorRole = user.guild.get_role(verifiedContributorRoleID)
                 if verifiedContributorRole:
                     if verifiedContributorRole not in user.roles:
