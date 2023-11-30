@@ -1,5 +1,7 @@
 import os
 from supabase import create_client, Client
+from discord import Member, User
+from helpers import lookForCollegeRoles, lookForGenderRoles
 
 class SupabaseInterface:
     def __init__(self, table, url=None, key=None) -> None:
@@ -29,19 +31,39 @@ class SupabaseInterface:
     def insert(self, data):
         data = self.client.table(self.table).insert(data).execute()
         return data.data
-    def delete(self):
-        pass
     
-        
-    
-    def add_user(self, userdata):
-        data = self.client.table("users").insert(userdata).execute()
-        print(data.data)
-        return data.data
-    
-    def user_exists(self, discord_id):
-        data = self.client.table("users").select("*").eq("discord_id", discord_id).execute()
-        if len(data.data)>0:
+    def memberIsAuthenticated(self, member: Member | User):
+        data = self.client.table("contributors").select("*").eq("discord_id", member.id).execute().data
+        if data:
             return True
         else:
             return False
+    
+    def addChapter(self, orgName:str, type:str):
+        data = self.client.table("chapters").insert(
+            {
+                "type": type,
+                "org_name": orgName
+            }
+        ).execute()
+    
+    def updateContributor(self, contributor: Member):
+        table = "__contributors"
+
+        chapters = lookForCollegeRoles(contributor.roles)
+
+        self.client.table(table).upsert({
+            "discord_id":contributor.id,
+            "discord_username": contributor.name,
+            "chapter": chapters[0] if chapters else None,
+            "gender": lookForGenderRoles(contributor.roles)
+        }).execute()
+
+
+
+    ''' 
+    def saveMemberAsContributor(self, member: Member|User):
+        self.client.table("contributors").insert({
+            "discord_id": member.id,
+            "discord_username": member.name
+        })'''

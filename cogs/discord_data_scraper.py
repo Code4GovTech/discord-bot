@@ -2,12 +2,10 @@ from discord.ext import commands, tasks
 from discord.channel import TextChannel
 from discord import Member
 import discord
-import os, dateutil, json, sys
+import os, json, sys
 from datetime import datetime
 from asyncio import sleep
-from utils.db import SupabaseInterface
-from utils.api import GithubAPI
-import csv
+from interfaces.supabase import SupabaseInterface
 
 with open('config.json') as config_file:
     config_data = json.load(config_file)

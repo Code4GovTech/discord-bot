@@ -1,7 +1,7 @@
 from typing import Optional
 from discord.ext import commands
 import discord
-from utils.db import SupabaseInterface
+from interfaces.supabase import SupabaseInterface
 import asyncio
 
 class BadgeModal(discord.ui.Modal, title = "Your Badges"):
@@ -218,14 +218,6 @@ class Badges(commands.Cog):
                         await ctx.send(f"Hey {ctx.author.name}\n\nYou have not earned any badges yet. Keep contributing and engaging on our community to earn more badges!!")
         else:
             ctx.send("This command is only usable by DMing the bot")
-                        
-
-
-            
-
-
-
-
 
 async def setup(bot):
     await bot.add_cog(Badges(bot))

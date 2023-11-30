@@ -5,7 +5,7 @@ import os, sys
 import asyncio
 from discord.utils import MISSING
 import dotenv, aiohttp, json
-from utils.db import SupabaseInterface
+from interfaces.supabase import SupabaseInterface
 
 #Since there are user defined packages, adding current directory to python path
 current_directory = os.getcwd()
@@ -191,6 +191,12 @@ async def load():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
             await client.load_extension(f"cogs.{filename[:-3]}")
+    
+    # ### All listener cogs
+    for filename in os.listdir("./cogs/listeners"):
+        if filename.endswith("cog.py"):
+            await client.load_extension(f"cogs.listeners.{filename[:-3]}")
+
 
 async def main():
     async with client:

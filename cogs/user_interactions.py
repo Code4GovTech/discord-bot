@@ -2,7 +2,7 @@ import discord, asyncio
 import os
 from discord.ext import commands, tasks
 import time, csv
-from utils.db import SupabaseInterface
+from interfaces.supabase import SupabaseInterface
 
 VERIFIED_CONTRIBUTOR_ROLE_ID = 1123967402175119482
 NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]

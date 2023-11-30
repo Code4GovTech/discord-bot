@@ -3,14 +3,11 @@
 from discord.ext import commands, tasks
 from discord import Embed
 import aiohttp, json
-from utils.db import SupabaseInterface
 # from discord import Member
 # from discord.channel import TextChannel
 # from datetime import time, datetime
 # from models.product import Product
 # from models.project import Project
-# from utils.api import GithubAPI
-# from utils.db import SupabaseInterface
 # import requests, json
 # import os, dateutil.parser
 
