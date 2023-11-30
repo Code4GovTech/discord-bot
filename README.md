@@ -1,6 +1,18 @@
-### C4GT Discord Bot
+## C4GT Discord Bot
 
-Features
+### Running the Bot locally
+1. Clone the repository onto your local system
+2. [Optional+Recommended] Set up a python [virtual environment](https://docs.python.org/3/library/venv.html#:~:text=Creating%20virtual-,environments,-%C2%B6) and [activate](https://python.land/virtual-environments/virtualenv#Python_venv_activation) it before installing dependencies. A Python venv is an independent collection of python packages and is used for creating replicable dev environments and preventing versioning conflicts.
+3. Use the [`pip install -r requirements.txt`](https://learnpython.com/blog/python-requirements-file/#:~:text=document%20and%20exit!-,Installing,-Python%20Packages%20From) command to install all dependencies.
+4. Add the requisite `.env` file in the repository root.
+5. Run the bot using `python3 main.py` or `python main.py` command in the terminal.
+
+### Reference
+[how to build a simple discord bot](https://realpython.com/how-to-make-a-discord-bot-python/)   
+[discord.py](https://discordpy.readthedocs.io/en/stable/)
+
+
+### Features
 - [ ] Allow tagging a `discordId` to a `githubId` so that contributions can be managed. Everyone coming to the server will be required to register themselves on the bot. Ask every contributor to connect their Github to Discord. The bot will take this publicly available info and add it to the database.
 - [ ] Seeing the list of projects and their quick links. Should allow for navigation to projects.
     - [ ] Documentation links
