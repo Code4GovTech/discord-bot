@@ -200,13 +200,15 @@ You can showcase your achievements from the C4GT Community on your GitHub profil
 
 Your profile page will now show your achievements from the C4GT community.🏆''')
 
-            noPointsGithubProfileEmbed = discord.Embed(title="", description=f'''Hey {ctx.author.name} 
+            desc= f'''Hey {ctx.author.name}
 
-You have currently not earned any C4GT points yet!
-But don’t worry, all you need to do is collect 50 DPG points and get a Rising Star :stars: badge by solving issue tickets to become eligible for your first certificate. **Get coding now!!**:computer: 
+You have currently not earned any C4GT points or badges yet!
+But worry not, you can do so by solving issue tickets & earning more points✨
 
-**Discover issue tickets [here](https://www.codeforgovtech.in/community-program-projects).**
-''')
+**Discover issue tickets [here](https://www.codeforgovtech.in/community-program-projects).**🎟️🌟
+**Know more about [badges & points](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors)**🧗'''
+
+            noPointsGithubProfileEmbed = discord.Embed(title="", description=desc)
             user = SupabaseInterface("github_profile_data").read("discord_id", ctx.author.id)
             if len(user) == 0:
                 await ctx.send("Oops! It seems you aren't currently registered")
