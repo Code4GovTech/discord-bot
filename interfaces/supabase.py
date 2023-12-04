@@ -1,10 +1,10 @@
 import os
 from supabase import create_client, Client
 from discord import Member, User
-from helpers import lookForCollegeRoles, lookForGenderRoles
+from helpers import lookForChapterRoles, lookForGenderRoles
 
 class SupabaseInterface:
-    def __init__(self, table, url=None, key=None) -> None:
+    def __init__(self, table='', url=None, key=None) -> None:
 
         self.supabase_url = url if url else os.getenv("SUPABASE_URL")
         self.supabase_key = key if key else os.getenv("SUPABASE_KEY")
@@ -40,30 +40,24 @@ class SupabaseInterface:
             return False
     
     def addChapter(self, orgName:str, type:str):
-        data = self.client.table("chapters").insert(
+        data = self.client.table("chapters").upsert(
             {
                 "type": type,
                 "org_name": orgName
-            }
+            },
+            on_conflict='org_name'
         ).execute()
     
     def updateContributor(self, contributor: Member):
-        table = "__contributors"
+        table = "contributors_discord"
 
-        chapters = lookForCollegeRoles(contributor.roles)
+        chapters = lookForChapterRoles(contributor.roles)
+        gender = lookForGenderRoles(contributor.roles)
 
         self.client.table(table).upsert({
             "discord_id":contributor.id,
             "discord_username": contributor.name,
             "chapter": chapters[0] if chapters else None,
-            "gender": lookForGenderRoles(contributor.roles)
-        }).execute()
-
-
-
-    ''' 
-    def saveMemberAsContributor(self, member: Member|User):
-        self.client.table("contributors").insert({
-            "discord_id": member.id,
-            "discord_username": member.name
-        })'''
+            "gender": gender,
+            "joined_at": contributor.joined_at.isoformat()
+        }, on_conflict='discord_id').execute()

@@ -5,7 +5,7 @@ from config.server import ServerConfig
 from interfaces.supabase import SupabaseInterface
 
 serverConfig = ServerConfig()
-supabaseClient = SupabaseInterface('')
+supabaseClient = SupabaseInterface()
 
 # On join
 # On Message
