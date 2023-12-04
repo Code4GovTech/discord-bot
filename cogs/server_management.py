@@ -21,14 +21,14 @@ class ServerManagement(commands.Cog):
         for role in guild.roles:
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: "):]
-                SupabaseInterface('').addChapter(orgName=orgName, type='COLLEGE')
+                SupabaseInterface().addChapter(orgName=orgName, type='COLLEGE')
             elif role.name.startswith("Corporate:"):
                 orgName = role.name[len("Corporate: "):]
-                SupabaseInterface('').addChapter(orgName=orgName, type='CORPORATE')
+                SupabaseInterface().addChapter(orgName=orgName, type='CORPORATE')
 
         
         async for member in guild.fetch_members(limit=None):
-            SupabaseInterface('').updateContributor(member)
+            SupabaseInterface().updateContributor(member)
 
 
 
