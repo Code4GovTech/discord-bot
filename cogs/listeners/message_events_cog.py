@@ -7,10 +7,6 @@ from interfaces.supabase import SupabaseInterface
 serverConfig = ServerConfig()
 supabaseClient = SupabaseInterface()
 
-# On join
-# On Message
-# on role
-
 async def grantVerifiedRole(member: discord.Member):
         try:
             verifiedContributorRole = member.guild.get_role(serverConfig.Roles.CONTRIBUTOR_ROLE)
@@ -35,30 +31,5 @@ class MessageEventsListener(commands.Cog):
         else:
             return
     
-
-
-
 async def setup(bot: commands.Bot):
     await bot.add_cog(MessageEventsListener(bot))
-
-
-
-
-'''
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        contributor = SupabaseInterface("discord_engagement").read("contributor", message.author.id)
-        print("message", len(message.content))
-        if not contributor:
-            SupabaseInterface("discord_engagement").insert({
-                "contributor": message.author.id,
-                "has_introduced": False,
-                "total_message_count": 1,
-                "total_reaction_count": 0})
-            return
-        if len(message.content)>20:
-            if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
-                print("intro")
-                SupabaseInterface("discord_engagement").update({"has_introduced":True}, "contributor", message.author.id)
-            SupabaseInterface("discord_engagement").update({"total_message_count":contributor[0]["total_message_count"]+1}, "contributor", message.author.id)
-'''

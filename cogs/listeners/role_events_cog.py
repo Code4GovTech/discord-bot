@@ -3,7 +3,6 @@ import discord
 
 from interfaces.supabase import SupabaseInterface
 
-
 class RoleEventsListener(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
