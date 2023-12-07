@@ -66,7 +66,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        # self.update_contributors.start()
+        self.update_contributors.start()
 
 
 
@@ -118,11 +118,14 @@ class UserHandler(commands.Cog):
     
     @tasks.loop(minutes=10)
     async def update_contributors(self):
-        contributors = SupabaseInterface("contributors").read_all()
-        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
+        contributors = SupabaseInterface("contributors_registration").read_all()
+        guild = await self.bot.fetch_guild(973851473131761674)
+        contributor_role:discord.Role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         for contributor in contributors:
-            member = await guild.fetch_member(contributor["discord_id"])
+            try:
+                member = await guild.fetch_member(contributor["discord_id"])
+            except Exception:
+                continue
             if contributor_role not in member.roles:
                 #Give Contributor Role
                 await member.add_roles(contributor_role)
@@ -330,7 +333,7 @@ Points are allocated on the following basis:bar_chart: :
     async def get_points(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             discord_id = ctx.author.id
-            contributor = SupabaseInterface(table="contributors").read(query_key="discord_id", query_value=discord_id)
+            contributor = SupabaseInterface(table="contributors_registration").read(query_key="discord_id", query_value=discord_id)
             print(contributor)
             github_id = contributor[0]["github_id"]
             prs_raised = SupabaseInterface(table="pull_requests").read(query_key="raised_by", query_value=github_id)

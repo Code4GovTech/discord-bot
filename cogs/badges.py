@@ -97,7 +97,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
             "points": [],
             "achievements": []
         }
-        if len(SupabaseInterface("contributors").read(query_key="discord_id", query_value=discord_id))>0:
+        if len(SupabaseInterface("contributors_registration").read(query_key="discord_id", query_value=discord_id))>0:
             userBadges["achievements"].append(self.discordXGithubBadge)
 
         discordMemberData = SupabaseInterface("discord_engagement").read("contributor", discord_id)
@@ -108,7 +108,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
                 userBadges["achievements"].append(self.rockstarBadge)
             if discordMemberData[0]["has_introduced"]:
                 userBadges["achievements"].append(self.apprenticeBadge)
-        contributorData = SupabaseInterface("contributors").read(query_key="discord_id", query_value=discord_id)
+        contributorData = SupabaseInterface("contributors_registration").read(query_key="discord_id", query_value=discord_id)
         if contributorData:
             github_id = contributorData[0]["github_id"]
             prData = {
