@@ -1,6 +1,6 @@
-import discord
+from discord import Role
 
-def lookForChapterRoles(roles: [discord.Role]):
+def lookForChapterRoles(roles: [Role]):
     chapter_roles = []
     for role in roles:
         if role.name.startswith('College:'):
@@ -9,7 +9,7 @@ def lookForChapterRoles(roles: [discord.Role]):
             chapter_roles.append(role).name[len('Corporate: '):]
     return chapter_roles
 
-def lookForGenderRoles(roles: [discord.Role]):
+def lookForGenderRoles(roles: [Role]):
     gender_roles = []
     for role in roles:
         if role.name in ['M', 'F', 'NB']:
