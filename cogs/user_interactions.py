@@ -258,49 +258,6 @@ Know more about: Code For GovTech ([Website](https://www.codeforgovtech.in) | [G
             if rows:
                 yield rows
     
-    # @commands.command()
-    # async def announce(self, ctx):
-    #     guild = await self.bot.fetch_guild(os.getenv("SERVER_ID")) #SERVER_ID Should be C4GT Server ID
-    #     file_path = "members.csv"
-    #     async for batch in self.read_members_csv(file_path):
-    #         for row in batch:
-    #             member = await guild.fetch_member(row[0])
-    #             print(member.name)
-    #             dmchannel = await member.create_dm()
-    #             time.sleep(10)
-    #         print("---")
-        
-        # count = 0
-        # non_con_members = []
-        # async for member in guild.fetch_members(limit=None):
-        #     # dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #     announcement = await Announcement(member).create_embed()
-        #     # await dmchannel.send(embed=announcement)
-        #     count +=1
-        #     print(member.name)
-        #     if any(role.id in NON_CONTRIBUTOR_ROLES for role in member.roles):
-        #         non_con_members.append(member.id)
-        # print(non_con_members)
-        # print(count)
-
-
-    # @commands.command()
-    # async def announce(self, ctx):
-    #     guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-    #     members = []
-    #     async for member in guild.fetch_members(limit=None):
-    #         members.append(member.id)
-
-    #     # Save members to a CSV file
-    #     file_path = "members.csv"
-    #     with open(file_path, mode="w", newline="\n", encoding="utf-8") as file:
-    #         writer = csv.writer(file)
-    #         writer.writerow(["Member id"])  # Write header row
-    #         writer.writerows(zip(members))  # Write member names
-
-    #     print(f"Members saved to {file_path}")
-        
-
     @commands.command(aliases=["point_system_breakdown", "point_system"])
     async def point_breakdown(self, ctx):
         message =f'''Hey **{ctx.author.name}**
