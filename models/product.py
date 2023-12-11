@@ -1,11 +1,11 @@
-from utils.db import SupabaseInterface
+from utils.db import SupabaseClient
 
 
 class Product:
     def __init__(self, data=None, name=None):
         if name is not None:
-            data = SupabaseInterface(table="products").read(
-                query_key="name", query_value=name
+            data = SupabaseClient().read(
+                table="products", query_key="name", query_value=name
             )
             if not data:
                 raise Exception("There is no product with name = ", name)
@@ -31,8 +31,10 @@ class Product:
 
     @classmethod
     def is_product(cls, product_name):
-        db_client = SupabaseInterface(table="products")
-        data = db_client.read(query_key="name", query_value=product_name)
+        db_client = SupabaseClient()
+        data = db_client.read(
+            table="products", query_key="name", query_value=product_name
+        )
         if len(data) == 1:
             return True
         if len(data) > 1:
@@ -43,12 +45,15 @@ class Product:
 
     @classmethod
     def get_all_products(cls):
-        db_client = SupabaseInterface(table="products")
-        data = db_client.read_all()
+        db_client = SupabaseClient()
+        data = db_client.read_all(table="products")
         return data
 
     def assign_channel(self, discord_id):
-        SupabaseInterface(table="products").update(
-            update={"channel": discord_id}, query_key="name", query_value=self.name
+        SupabaseClient().update(
+            table="products",
+            update={"channel": discord_id},
+            query_key="name",
+            query_value=self.name,
         )
         return

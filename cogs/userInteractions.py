@@ -6,7 +6,7 @@ import time
 import discord
 from discord.ext import commands, tasks
 
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 VERIFIED_CONTRIBUTOR_ROLE_ID = 1123967402175119482
 NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]
@@ -228,7 +228,7 @@ class UserHandler(commands.Cog):
 
     @tasks.loop(minutes=10)
     async def update_contributors(self):
-        contributors = SupabaseInterface("contributors").read_all()
+        contributors = SupabaseClient().read_all("contributors")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         for contributor in contributors:
@@ -237,31 +237,31 @@ class UserHandler(commands.Cog):
                 # Give Contributor Role
                 await member.add_roles(contributor_role)
             # add to discord engagement
-            # SupabaseInterface("discord_engagement").insert({"contributor": member.id})
+            # SupabaseClient("discord_engagement").insert({"contributor": member.id})
 
         # update engagement
         # for contributor in contributors:
-        #     contributorData = SupabaseInterface("discord_engagement").read("contributor", contributor["discord_id"])[0]
+        #     contributorData = SupabaseClient("discord_engagement").read("contributor", contributor["discord_id"])[0]
         #     member = await guild.fetch_member(contributorData["contributor"])
         #     print(f"-----Contributor-----{member.name}-------")
         #     badges = Badges(member.name)
         #     if contributorData:
         #         if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
-        #             SupabaseInterface("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
+        #             SupabaseClient("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
         #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
         #             await dmchannel.send(embed=badges.converseBadge)
         #         if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
-        #             SupabaseInterface("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
+        #             SupabaseClient("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
         #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
         #             await dmchannel.send(embed=badges.rockstarBadge)
         #         if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
-        #             SupabaseInterface("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
+        #             SupabaseClient("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
         #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
         #             await dmchannel.send(embed=badges.apprenticeBadge)
         #     github_id = contributor["github_id"]
         #     prData = {
-        #         "raised": SupabaseInterface(table="pull_requests").read(query_key="raised_by", query_value=github_id),
-        #         "merged":SupabaseInterface(table="pull_requests").read(query_key="merged_by", query_value=github_id)
+        #         "raised": SupabaseClient(table="pull_requests").read(query_key="raised_by", query_value=github_id),
+        #         "merged":SupabaseClient(table="pull_requests").read(query_key="merged_by", query_value=github_id)
         #     }
         #     points = 0
         #     for action in prData.keys():
@@ -269,10 +269,10 @@ class UserHandler(commands.Cog):
         #         for pr in prs:
         #             points+=pr["points"]
         #     if len(prData["raised"])+len(prData["merged"])>0and not contributorData["enthusiastBadge"]:
-        #         SupabaseInterface("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
+        #         SupabaseClient("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
         #         await dmchannel.send(embed=Badges(member.name, points=points).enthusiastBadge)
         #     if points>=30 and not contributorData["risingStarBadge"]:
-        #         SupabaseInterface("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
+        #         SupabaseClient("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
         #         await dmchannel.send(embed=badges.risingStarBadge)
 
         return
@@ -313,8 +313,8 @@ But worry not, you can do so by solving issue tickets & earning more points✨
 **Know more about [badges & points](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors)**🧗"""
 
             noPointsGithubProfileEmbed = discord.Embed(title="", description=desc)
-            user = SupabaseInterface("github_profile_data").read(
-                "discord_id", ctx.author.id
+            user = SupabaseClient().read(
+                "github_profile_data", "discord_id", ctx.author.id
             )
             if len(user) == 0:
                 await ctx.send("Oops! It seems you aren't currently registered")
@@ -395,16 +395,16 @@ Points are allocated on the following basis:bar_chart: :
     async def get_points(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             discord_id = ctx.author.id
-            contributor = SupabaseInterface(table="contributors").read(
-                query_key="discord_id", query_value=discord_id
+            contributor = SupabaseClient().read(
+                table="contributors", query_key="discord_id", query_value=discord_id
             )
             print(contributor)
             github_id = contributor[0]["github_id"]
-            prs_raised = SupabaseInterface(table="pull_requests").read(
-                query_key="raised_by", query_value=github_id
+            prs_raised = SupabaseClient().read(
+                table="pull_requests", query_key="raised_by", query_value=github_id
             )
-            prs_merged = SupabaseInterface(table="pull_requests").read(
-                query_key="merged_by", query_value=github_id
+            prs_merged = SupabaseClient().read(
+                table="pull_requests", query_key="merged_by", query_value=github_id
             )
             raise_points = 0
             merge_points = 0

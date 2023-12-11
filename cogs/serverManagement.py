@@ -4,7 +4,7 @@ import discord
 from discord.ext import commands
 
 from config.server import ServerConfig
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 serverConfig = ServerConfig()
 
@@ -31,17 +31,17 @@ class ServerManagement(commands.Cog):
         for role in guild.roles:
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: ") :]
-                SupabaseInterface().addChapter(orgName=orgName, type="COLLEGE")
+                SupabaseClient().addChapter(orgName=orgName, type="COLLEGE")
             elif role.name.startswith("Corporate:"):
                 orgName = role.name[len("Corporate: ") :]
-                SupabaseInterface().addChapter(orgName=orgName, type="CORPORATE")
+                SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
 
         async for member in guild.fetch_members(limit=None):
-            SupabaseInterface().updateContributor(member)
+            SupabaseClient().updateContributor(member)
 
     # async def notifs_on(self,ctx,channel: discord.TextChannel):
     #     try:
-    #         SupabaseInterface("discord_channels").update({"should_notify": True}, "channel_id", channel.id)
+    #         SupabaseClient("discord_channels").update({"should_notify": True}, "channel_id", channel.id)
     #         await ctx.send(f"Notifications have been turned on for {channel.name}")
     #     except Exception as e:
     #         print(e)
@@ -49,7 +49,7 @@ class ServerManagement(commands.Cog):
 
     # async def notifs_off(self, ctx, channel: discord.TextChannel):
     #     try:
-    #         SupabaseInterface("discord_channels").update({"should_notify": False}, "channel_id", channel.id)
+    #         SupabaseClient("discord_channels").update({"should_notify": False}, "channel_id", channel.id)
     #         await ctx.send(f"Notifications have been turned on for {channel.name}")
     #     except Exception as e:
     #         print(e)

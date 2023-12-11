@@ -10,7 +10,7 @@ import dotenv
 from discord.ext import commands
 from discord.utils import MISSING
 
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 # Since there are user defined packages, adding current directory to python path
 current_directory = os.getcwd()
@@ -152,14 +152,14 @@ class RegistrationModal(discord.ui.Modal):
 
             async def hasIntroduced():
                 print("Checking...")
-                authentication = SupabaseInterface("contributors").read(
-                    "discord_id", user.id
+                authentication = SupabaseClient().read(
+                    "contributors", "discord_id", user.id
                 )
                 while not authentication:
                     await asyncio.sleep(30)
                 print("Found!")
-                discordEngagement = SupabaseInterface("discord_engagement").read(
-                    "contributor", user.id
+                discordEngagement = SupabaseClient().read(
+                    "discord_engagement", "contributor", user.id
                 )[0]
                 return discordEngagement["has_introduced"]
 

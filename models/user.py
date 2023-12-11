@@ -1,4 +1,4 @@
-from utils.db import SupabaseInterface
+from utils.db import SupabaseClient
 
 
 class User:
@@ -9,8 +9,8 @@ class User:
         self.githubId = userData["githubId"]
 
     def exists(self, table):
-        data = SupabaseInterface(table).read(
-            query_key="discord_id", query_value=self.discordID
+        data = SupabaseClient().read(
+            table, query_key="discord_id", query_value=self.discordID
         )
         if len(data.data) > 0:
             return True

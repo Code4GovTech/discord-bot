@@ -9,7 +9,7 @@ from discord import Member
 from discord.channel import TextChannel
 from discord.ext import commands, tasks
 
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 with open("config.json") as config_file:
     config_data = json.load(config_file)
@@ -27,27 +27,32 @@ class DiscordDataScaper(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        contributor = SupabaseInterface("discord_engagement").read(
-            "contributor", message.author.id
+        contributor = SupabaseClient().read(
+            "discord_engagement", "contributor", message.author.id
         )
         print("message", len(message.content))
         if not contributor:
-            SupabaseInterface("discord_engagement").insert(
+            SupabaseClient().insert(
+                "discord_engagement",
                 {
                     "contributor": message.author.id,
                     "has_introduced": False,
                     "total_message_count": 1,
                     "total_reaction_count": 0,
-                }
+                },
             )
             return
         if len(message.content) > 20:
             if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
                 print("intro")
-                SupabaseInterface("discord_engagement").update(
-                    {"has_introduced": True}, "contributor", message.author.id
+                SupabaseClient().update(
+                    "discord_engagement",
+                    {"has_introduced": True},
+                    "contributor",
+                    message.author.id,
                 )
-            SupabaseInterface("discord_engagement").update(
+            SupabaseClient("discord_engagement").update(
+                "discord_engagement",
                 {"total_message_count": contributor[0]["total_message_count"] + 1},
                 "contributor",
                 message.author.id,
@@ -56,21 +61,23 @@ class DiscordDataScaper(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         message = reaction.message
-        contributor = SupabaseInterface("discord_engagement").read(
-            "contributor", message.author.id
+        contributor = SupabaseClient().read(
+            "discord_engagement", "contributor", message.author.id
         )[0]
         if not contributor:
-            SupabaseInterface("discord_engagement").insert(
+            SupabaseClient().insert(
+                "discord_engagement",
                 {
                     "contributor": message.author.id,
                     "has_introduced": False,
                     "total_message_count": 0,
                     "total_reaction_count": 1,
-                }
+                },
             )
             return
         print("reaction")
-        SupabaseInterface("discord_engagement").update(
+        SupabaseClient().update(
+            "discord_engagement",
             {"total_reaction_count": contributor["total_reaction_count"] + 1},
             "contributor",
             message.author.id,
@@ -81,8 +88,8 @@ class DiscordDataScaper(commands.Cog):
         await ctx.channel.send("started")
 
         def addEngagmentData(data):
-            client = SupabaseInterface("discord_engagement")
-            client.insert(data)
+            client = SupabaseClient()
+            client.insert("discord_engagement", data)
             return
 
         guild = await self.bot.fetch_guild(
@@ -137,7 +144,7 @@ class DiscordDataScaper(commands.Cog):
         channels = await guild.fetch_channels()
         enabled = [
             channel["channel_id"]
-            for channel in SupabaseInterface("discord_channels").read_all()
+            for channel in SupabaseClient().read_all("discord_channels")
         ]
         for channel in channels:
             try:
@@ -148,12 +155,13 @@ class DiscordDataScaper(commands.Cog):
                     webhook = await channel.create_webhook(name="New Ticket Alert")
                     feedback = f"""URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}"""
                     await ctx.send(feedback)
-                    SupabaseInterface("discord_channels").insert(
+                    SupabaseClient().insert(
+                        "discord_channels",
                         {
                             "channel_id": channel.id,
                             "channel_name": channel.name,
                             "webhook": webhook.url,
-                        }
+                        },
                     )
             except Exception as e:
                 await ctx.send(e)
@@ -168,8 +176,9 @@ class DiscordDataScaper(commands.Cog):
             await ctx.send("Member List Count: " + str(len(members)))
             for member in members:
                 try:
-                    SupabaseInterface("applicant").insert(
-                        {"sheet_username": member.name, "discord_id": member.id}
+                    SupabaseClient().insert(
+                        "applicant",
+                        {"sheet_username": member.name, "discord_id": member.id},
                     )
                 except Exception as e:
                     print
@@ -206,15 +215,16 @@ class DiscordDataScaper(commands.Cog):
 
     async def add_messages(self):
         def addMessageData(data):
-            client = SupabaseInterface("unstructured discord data")
-            client.insert(data)
+            client = SupabaseClient()
+            client.insert("unstructured discord data", data)
             return
 
         def getLastMessageObject(channelId):
-            last_message = SupabaseInterface(
-                "unstructured discord data"
-            ).read_by_order_limit(
-                query_key="channel", query_value=channelId, order_column="id.desc"
+            last_message = SupabaseClient().read_by_order_limit(
+                table="unstructured discord data",
+                query_key="channel",
+                query_value=channelId,
+                order_column="id.desc",
             )  # fetching the record for the lastest message downloaded from a particular channel, the most recent message has the largest message_id
             if len(last_message) > 0:
                 print(f"Last message details for {channelId} is {last_message[0]}")

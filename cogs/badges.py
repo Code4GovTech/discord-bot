@@ -4,7 +4,7 @@ from typing import Optional
 import discord
 from discord.ext import commands
 
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 
 class BadgeModal(discord.ui.Modal, title="Your Badges"):
@@ -134,16 +134,16 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
         userBadges = {"points": [], "achievements": []}
         if (
             len(
-                SupabaseInterface("contributors").read(
-                    query_key="discord_id", query_value=discord_id
+                SupabaseClient().read(
+                    "contributors", query_key="discord_id", query_value=discord_id
                 )
             )
             > 0
         ):
             userBadges["achievements"].append(self.discordXGithubBadge)
 
-        discordMemberData = SupabaseInterface("discord_engagement").read(
-            "contributor", discord_id
+        discordMemberData = SupabaseClient().read(
+            "discord_engagement", "contributor", discord_id
         )
         if discordMemberData:
             if discordMemberData[0]["total_message_count"] > 10:
@@ -152,17 +152,17 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
                 userBadges["achievements"].append(self.rockstarBadge)
             if discordMemberData[0]["has_introduced"]:
                 userBadges["achievements"].append(self.apprenticeBadge)
-        contributorData = SupabaseInterface("contributors").read(
-            query_key="discord_id", query_value=discord_id
+        contributorData = SupabaseClient().read(
+            "contributors", query_key="discord_id", query_value=discord_id
         )
         if contributorData:
             github_id = contributorData[0]["github_id"]
             prData = {
-                "raised": SupabaseInterface(table="pull_requests").read(
-                    query_key="raised_by", query_value=github_id
+                "raised": SupabaseClient().read(
+                    table="pull_requests", query_key="raised_by", query_value=github_id
                 ),
-                "merged": SupabaseInterface(table="pull_requests").read(
-                    query_key="merged_by", query_value=github_id
+                "merged": SupabaseClient(table="pull_requests").read(
+                    table="pull_requests", query_key="merged_by", query_value=github_id
                 ),
             }
             points = 0

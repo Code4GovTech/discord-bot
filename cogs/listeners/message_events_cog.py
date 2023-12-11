@@ -2,10 +2,10 @@ import discord
 from discord.ext import commands
 
 from config.server import ServerConfig
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 serverConfig = ServerConfig()
-supabaseClient = SupabaseInterface()
+supabaseClient = SupabaseClient()
 
 
 async def grantVerifiedRole(member: discord.Member):

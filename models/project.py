@@ -1,14 +1,14 @@
 import os
 import sys
 
-from utils.db import SupabaseInterface
+from utils.db import SupabaseClient
 
 
 class Project:
     def __init__(self, data=None, name=None) -> None:
         if name is not None:
-            data = SupabaseInterface(table="projects").read(
-                query_key="name", query_value=name
+            data = SupabaseClient().read(
+                table="projects", query_key="name", query_value=name
             )[0]
         self.name = data["name"]
         self.desc = data["description"]
@@ -20,8 +20,10 @@ class Project:
 
     @classmethod
     def is_project(project_name):
-        db_client = SupabaseInterface(table="projects")
-        data = db_client.read(query_key="name", query_value=project_name)
+        db_client = SupabaseClient()
+        data = db_client.read(
+            table="projects", query_key="name", query_value=project_name
+        )
         if len(data) == 1:
             return True
         if len(data) > 1:
@@ -32,8 +34,8 @@ class Project:
 
     @classmethod
     def get_all_projects(cls):
-        db_client = SupabaseInterface(table="projects")
-        data = db_client.read_all()
+        db_client = SupabaseClient()
+        data = db_client.read_all(table="projects")
         return data
 
 

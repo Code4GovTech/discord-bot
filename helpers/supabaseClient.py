@@ -3,19 +3,18 @@ import os
 from discord import Member, User
 from supabase import Client, create_client
 
-from helpers import lookForChapterRoles, lookForGenderRoles
+from helpers.roleHelpers import lookForChapterRoles, lookForGenderRoles
 
 
-class SupabaseInterface:
-    def __init__(self, table="", url=None, key=None) -> None:
+class SupabaseClient:
+    def __init__(self, url=None, key=None) -> None:
         self.supabase_url = url if url else os.getenv("SUPABASE_URL")
         self.supabase_key = key if key else os.getenv("SUPABASE_KEY")
-        self.table = table
         self.client: Client = create_client(self.supabase_url, self.supabase_key)
 
-    def read(self, query_key, query_value, columns="*"):
+    def read(self, table, query_key, query_value, columns="*"):
         data = (
-            self.client.table(self.table)
+            self.client.table(table)
             .select(columns)
             .eq(query_key, query_value)
             .execute()
@@ -24,10 +23,17 @@ class SupabaseInterface:
         return data.data
 
     def read_by_order_limit(
-        self, query_key, query_value, order_column, order_by=False, limit=1, columns="*"
+        self,
+        table,
+        query_key,
+        query_value,
+        order_column,
+        order_by=False,
+        limit=1,
+        columns="*",
     ):
         data = (
-            self.client.table(self.table)
+            self.client.table(table)
             .select(columns)
             .eq(query_key, query_value)
             .order(order_column)
@@ -36,21 +42,18 @@ class SupabaseInterface:
         )
         return data.data
 
-    def read_all(self):
-        data = self.client.table(self.table).select("*").execute()
+    def read_all(self, table):
+        data = self.client.table(table).select("*").execute()
         return data.data
 
-    def update(self, update, query_key, query_value):
+    def update(self, table, update, query_key, query_value):
         data = (
-            self.client.table(self.table)
-            .update(update)
-            .eq(query_key, query_value)
-            .execute()
+            self.client.table(table).update(update).eq(query_key, query_value).execute()
         )
         return data.data
 
-    def insert(self, data):
-        data = self.client.table(self.table).insert(data).execute()
+    def insert(self, table, data):
+        data = self.client.table(table).insert(data).execute()
         return data.data
 
     def memberIsAuthenticated(self, member: Member | User):

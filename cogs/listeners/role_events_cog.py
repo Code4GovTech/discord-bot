@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from interfaces.supabase import SupabaseInterface
+from helpers.supabaseClient import SupabaseClient
 
 
 class RoleEventsListener(commands.Cog):
@@ -13,10 +13,10 @@ class RoleEventsListener(commands.Cog):
     async def on_guild_role_create(self, role: discord.Role):
         if role.name.startswith("College:"):
             orgName = role.name[len("College: ") :]
-            SupabaseInterface().addChapter(orgName=orgName, type="COLLEGE")
+            SupabaseClient().addChapter(orgName=orgName, type="COLLEGE")
         elif role.name.startswith("Corporate:"):
             orgName = role.name[len("Corporate: ") :]
-            SupabaseInterface().addChapter(orgName=orgName, type="CORPORATE")
+            SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role: discord.Role):
@@ -27,10 +27,10 @@ class RoleEventsListener(commands.Cog):
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
         if after.name.startswith("College:"):
             orgName = after.name[len("College:") :]
-            SupabaseInterface().addChapter(orgName=orgName, type="COLLEGE")
+            SupabaseClient().addChapter(orgName=orgName, type="COLLEGE")
         elif after.name.startswith("Corporate:"):
             orgName = after.name[len("Corporate: ") :]
-            SupabaseInterface().addChapter(orgName=orgName, type="CORPORATE")
+            SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
 
 
 async def setup(bot: commands.Bot):
