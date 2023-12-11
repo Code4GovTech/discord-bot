@@ -181,7 +181,7 @@ class DiscordDataScaper(commands.Cog):
                         {"sheet_username": member.name, "discord_id": member.id},
                     )
                 except Exception as e:
-                    print
+                    print(e)
                     continue
         except Exception as e:
             await ctx.send(e)

@@ -2,13 +2,12 @@ import asyncio
 import json
 import os
 import sys
-from typing import Optional, Union
+from typing import Union
 
 import aiohttp
 import discord
 import dotenv
 from discord.ext import commands
-from discord.utils import MISSING
 
 from helpers.supabaseClient import SupabaseClient
 

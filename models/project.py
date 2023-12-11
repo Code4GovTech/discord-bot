@@ -1,7 +1,4 @@
-import os
-import sys
-
-from utils.db import SupabaseClient
+from helpers.supabaseClient import SupabaseClient
 
 
 class Project:

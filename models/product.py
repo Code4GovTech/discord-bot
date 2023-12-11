@@ -1,4 +1,4 @@
-from utils.db import SupabaseClient
+from helpers.supabaseClient import SupabaseClient
 
 
 class Product:

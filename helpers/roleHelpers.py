@@ -12,7 +12,6 @@ def lookForChapterRoles(roles: [Role]):
 
 
 def lookForGenderRoles(roles: [Role]):
-    gender_roles = []
     for role in roles:
         if role.name in ["M", "F", "NB"]:
             return role.name

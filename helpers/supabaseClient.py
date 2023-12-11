@@ -75,6 +75,7 @@ class SupabaseClient:
             .upsert({"type": type, "org_name": orgName}, on_conflict="org_name")
             .execute()
         )
+        return data.data
 
     def updateContributor(self, contributor: Member):
         table = "contributors_discord"

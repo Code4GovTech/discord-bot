@@ -1,6 +1,3 @@
-import datetime
-
-import discord
 from discord.ext import commands
 
 from config.server import ServerConfig
@@ -25,7 +22,6 @@ class ServerManagement(commands.Cog):
 
     @commands.command(aliaes=["initiate"])
     async def initiateServerData(self, ctx):
-        countingDate = datetime.datetime(2023, 10, 1, 0, 0, 0, 0)
         # add all chapters
         guild = self.bot.get_guild(serverConfig.SERVER)
         for role in guild.roles:

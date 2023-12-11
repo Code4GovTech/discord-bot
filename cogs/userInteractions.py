@@ -1,7 +1,5 @@
-import asyncio
 import csv
 import os
-import time
 
 import discord
 from discord.ext import commands, tasks
@@ -281,7 +279,7 @@ class UserHandler(commands.Cog):
     async def github_profile(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             githubProfileInfoEmbed = discord.Embed(
-                title=f"Show off your contributions on your github profile!",
+                title="Show off your contributions on your github profile!",
                 description="""Hey Contributor🔥
 
 *Great work on contributing to Digital Public Goods*
@@ -350,7 +348,7 @@ Know more about: Code For GovTech ([Website](https://www.codeforgovtech.in) | [G
     async def read_members_csv(self, file_path):
         with open(file_path, mode="r", encoding="utf-8") as file:
             reader = csv.reader(file)
-            header = next(reader)  # Skip the header row
+            next(reader)  # Skip the header row
 
             rows = []
             count = 0
