@@ -8,7 +8,7 @@
 5. Run the bot using `python3 main.py` or `python main.py` command in the terminal.
 
 ### Reference
-[how to build a simple discord bot](https://realpython.com/how-to-make-a-discord-bot-python/)   
+[how to build a simple discord bot](https://realpython.com/how-to-make-a-discord-bot-python/)
 [discord.py](https://discordpy.readthedocs.io/en/stable/)
 
 
@@ -40,7 +40,7 @@
 ### Registration Steps (WIP)
 
 #### Step 1
-Connect your Github with Discord. 
+Connect your Github with Discord.
 
 #### Step 2
 Got to [this URL](https://discord.com/api/oauth2/authorize?client_id=982859834355499088&redirect_uri=https%3A%2F%2Fbot.c4gt.samagra.io&response_type=code&scope=identify%20connections%20email) to register yourself. This URL allows the discord bot to get
@@ -48,4 +48,3 @@ Got to [this URL](https://discord.com/api/oauth2/authorize?client_id=98285983435
 - identity
 - connections (githubId)
 This registeres a token with us that we can use to check your GithubId that was connected in step 1.
-

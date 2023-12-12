@@ -2,6 +2,6 @@
 /.venv
 #environment variables and cache
 *.env
-*/__pycache__/*
+__pycache__/
 *.csv
 /local_only
