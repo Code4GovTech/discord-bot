@@ -58,7 +58,7 @@ class SupabaseClient:
 
     def memberIsAuthenticated(self, member: Member | User):
         data = (
-            self.client.table("contributors")
+            self.client.table("contributors_registration")
             .select("*")
             .eq("discord_id", member.id)
             .execute()

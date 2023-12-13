@@ -152,7 +152,7 @@ class RegistrationModal(discord.ui.Modal):
             async def hasIntroduced():
                 print("Checking...")
                 authentication = SupabaseClient().read(
-                    "contributors", "discord_id", user.id
+                    "contributors_registration", "discord_id", user.id
                 )
                 while not authentication:
                     await asyncio.sleep(30)

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from discord.ext import commands
 
 from config.server import ServerConfig
@@ -32,8 +34,12 @@ class ServerManagement(commands.Cog):
                 orgName = role.name[len("Corporate: ") :]
                 SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
 
-        async for member in guild.fetch_members(limit=None):
+        async for member in guild.fetch_members(
+            after=datetime(2023, 12, 1, 0, 0, 0), limit=None
+        ):
+            print(member.name)
             SupabaseClient().updateContributor(member)
+        print("Done")
 
     # async def notifs_on(self,ctx,channel: discord.TextChannel):
     #     try:
