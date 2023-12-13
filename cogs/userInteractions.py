@@ -226,7 +226,7 @@ class UserHandler(commands.Cog):
 
     @tasks.loop(minutes=10)
     async def update_contributors(self):
-        contributors = SupabaseClient().read_all("contributors")
+        contributors = SupabaseClient().read_all("contributors_registration")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         for contributor in contributors:
@@ -397,7 +397,9 @@ Points are allocated on the following basis:bar_chart: :
         if isinstance(ctx.channel, discord.DMChannel):
             discord_id = ctx.author.id
             contributor = SupabaseClient().read(
-                table="contributors", query_key="discord_id", query_value=discord_id
+                table="contributors_registration",
+                query_key="discord_id",
+                query_value=discord_id,
             )
             print(contributor)
             github_id = contributor[0]["github_id"]

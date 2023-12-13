@@ -134,7 +134,9 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
         if (
             len(
                 SupabaseClient().read(
-                    "contributors", query_key="discord_id", query_value=discord_id
+                    "contributors_registration",
+                    query_key="discord_id",
+                    query_value=discord_id,
                 )
             )
             > 0
@@ -152,7 +154,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
             if discordMemberData[0]["has_introduced"]:
                 userBadges["achievements"].append(self.apprenticeBadge)
         contributorData = SupabaseClient().read(
-            "contributors", query_key="discord_id", query_value=discord_id
+            "contributors_registration", query_key="discord_id", query_value=discord_id
         )
         if contributorData:
             github_id = contributorData[0]["github_id"]
