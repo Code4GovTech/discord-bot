@@ -2,6 +2,7 @@
 /.venv
 #environment variables and cache
 *.env
-*/__pycache__/*
+__pycache__/
 *.csv
+*.DS_Store
 /local_only
