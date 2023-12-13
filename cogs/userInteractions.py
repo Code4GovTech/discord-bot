@@ -177,7 +177,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        # self.update_contributors.start()
+        self.update_contributors.start()
 
     # Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command
     # @commands.command(aliases=['join'])
@@ -230,7 +230,10 @@ class UserHandler(commands.Cog):
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         for contributor in contributors:
-            member = await guild.fetch_member(contributor["discord_id"])
+            try:
+                member = await guild.fetch_member(contributor["discord_id"])
+            except Exception:
+                continue
             if contributor_role not in member.roles:
                 # Give Contributor Role
                 await member.add_roles(contributor_role)
