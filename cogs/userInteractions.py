@@ -177,7 +177,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        # self.update_contributors.start()
+        self.update_contributors.start()
 
     # Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command
     # @commands.command(aliases=['join'])
@@ -226,14 +226,19 @@ class UserHandler(commands.Cog):
 
     @tasks.loop(minutes=10)
     async def update_contributors(self):
-        contributors = SupabaseClient().read_all("contributors")
+        contributors = SupabaseClient().read_all("contributors_registration")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
+        count = 1
         for contributor in contributors:
-            member = await guild.fetch_member(contributor["discord_id"])
-            if contributor_role not in member.roles:
+            print(count)
+            count += 1
+            member = guild.get_member(contributor["discord_id"])
+            if member and contributor_role not in member.roles:
                 # Give Contributor Role
+                print(member.name)
                 await member.add_roles(contributor_role)
+            print("Given Roles")
             # add to discord engagement
             # SupabaseClient("discord_engagement").insert({"contributor": member.id})
 
@@ -394,7 +399,9 @@ Points are allocated on the following basis:bar_chart: :
         if isinstance(ctx.channel, discord.DMChannel):
             discord_id = ctx.author.id
             contributor = SupabaseClient().read(
-                table="contributors", query_key="discord_id", query_value=discord_id
+                table="contributors_registration",
+                query_key="discord_id",
+                query_value=discord_id,
             )
             print(contributor)
             github_id = contributor[0]["github_id"]
