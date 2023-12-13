@@ -229,14 +229,16 @@ class UserHandler(commands.Cog):
         contributors = SupabaseClient().read_all("contributors_registration")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
+        count = 1
         for contributor in contributors:
-            try:
-                member = await guild.fetch_member(contributor["discord_id"])
-            except Exception:
-                continue
-            if contributor_role not in member.roles:
+            print(count)
+            count += 1
+            member = guild.get_member(contributor["discord_id"])
+            if member and contributor_role not in member.roles:
                 # Give Contributor Role
+                print(member.name)
                 await member.add_roles(contributor_role)
+            print("Given Roles")
             # add to discord engagement
             # SupabaseClient("discord_engagement").insert({"contributor": member.id})
 
