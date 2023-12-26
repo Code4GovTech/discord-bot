@@ -177,7 +177,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.update_contributors.start()
+        # self.update_contributors.start()
 
     # Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command
     # @commands.command(aliases=['join'])
@@ -238,7 +238,7 @@ class UserHandler(commands.Cog):
                 # Give Contributor Role
                 print(member.name)
                 await member.add_roles(contributor_role)
-            print("Given Roles")
+            print(f"Given Roles to {member.name if member else 'None'}")
             # add to discord engagement
             # SupabaseClient("discord_engagement").insert({"contributor": member.id})
 
