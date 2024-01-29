@@ -11,7 +11,7 @@ class ServerConfig:
 
     @dataclass
     class Roles:
-        CONTRIBUTOR_ROLE: int = 973852365188907048
+        CONTRIBUTOR_ROLE: int = 1123967402175119482
 
         @classmethod
         def isCollegeChapter(roleName: str) -> bool:

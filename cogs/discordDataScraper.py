@@ -27,36 +27,37 @@ class DiscordDataScaper(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        contributor = SupabaseClient().read(
-            "discord_engagement", "contributor", message.author.id
-        )
-        print("message", len(message.content))
-        if not contributor:
-            SupabaseClient().insert(
-                "discord_engagement",
-                {
-                    "contributor": message.author.id,
-                    "has_introduced": False,
-                    "total_message_count": 1,
-                    "total_reaction_count": 0,
-                },
-            )
-            return
-        if len(message.content) > 20:
-            if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
-                print("intro")
-                SupabaseClient().update(
-                    "discord_engagement",
-                    {"has_introduced": True},
-                    "contributor",
-                    message.author.id,
-                )
-            SupabaseClient("discord_engagement").update(
-                "discord_engagement",
-                {"total_message_count": contributor[0]["total_message_count"] + 1},
-                "contributor",
-                message.author.id,
-            )
+        pass
+        # contributor = SupabaseClient().read(
+        #     "discord_engagement", "contributor", message.author.id
+        # )
+        # print("message", len(message.content))
+        # if not contributor:
+        #     SupabaseClient().insert(
+        #         "discord_engagement",
+        #         {
+        #             "contributor": message.author.id,
+        #             "has_introduced": False,
+        #             "total_message_count": 1,
+        #             "total_reaction_count": 0,
+        #         },
+        #     )
+        #     return
+        # if len(message.content) > 20:
+        #     if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
+        #         print("intro")
+        #         SupabaseClient().update(
+        #             "discord_engagement",
+        #             {"has_introduced": True},
+        #             "contributor",
+        #             message.author.id,
+        #         )
+        #     SupabaseClient("discord_engagement").update(
+        #         "discord_engagement",
+        #         {"total_message_count": contributor[0]["total_message_count"] + 1},
+        #         "contributor",
+        #         message.author.id,
+        #     )
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):

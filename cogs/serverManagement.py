@@ -23,41 +23,61 @@ class ServerManagement(commands.Cog):
         return ctx.author.id in authorised_users
 
     @commands.command(aliaes=["initiate"])
-    async def initiateServerData(self, ctx):
+    async def getServerData(self, ctx):
         # add all chapters
+        chapterRoles = []
         guild = self.bot.get_guild(serverConfig.SERVER)
+        ## Clear Error
+        oldRole = guild.get_role(973852365188907048)
+        print("started")
+        print(f"{len(oldRole.members)} have the old contributor role")
+        for member in oldRole.members:
+            print(member.joined_at)
+            if member.joined_at.timestamp() > datetime(2022, 12, 25).timestamp():
+                await member.remove_roles(oldRole, reason="mistakenly given")
+                print("Member removed")
+
         for role in guild.roles:
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: ") :]
+                chapterRoles.append(role)
                 SupabaseClient().addChapter(orgName=orgName, type="COLLEGE")
             elif role.name.startswith("Corporate:"):
                 orgName = role.name[len("Corporate: ") :]
+                chapterRoles.append(role)
                 SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
 
-        async for member in guild.fetch_members(
-            after=datetime(2023, 12, 1, 0, 0, 0), limit=None
-        ):
-            print(member.name)
-            SupabaseClient().updateContributor(member)
-        print("Done")
+        print("added chapters")
 
-    # async def notifs_on(self,ctx,channel: discord.TextChannel):
-    #     try:
-    #         SupabaseClient("discord_channels").update({"should_notify": True}, "channel_id", channel.id)
-    #         await ctx.send(f"Notifications have been turned on for {channel.name}")
-    #     except Exception as e:
-    #         print(e)
-    #         await ctx.send("An unexpected error occured")
+        contributorsGithub = SupabaseClient().read_all("contributors_registration")
+        contributorsDiscord = SupabaseClient().read_all("contributors_discord")
 
-    # async def notifs_off(self, ctx, channel: discord.TextChannel):
-    #     try:
-    #         SupabaseClient("discord_channels").update({"should_notify": False}, "channel_id", channel.id)
-    #         await ctx.send(f"Notifications have been turned on for {channel.name}")
-    #     except Exception as e:
-    #         print(e)
-    #         await ctx.send("An unexpected error occured")
+        ## Give contributor role
+        contributorIds = [
+            contributor["discord_id"] for contributor in contributorsGithub
+        ]
+        contributorRole = guild.get_role(serverConfig.Roles.CONTRIBUTOR_ROLE)
+        count = [0, 0, 0]
+        for member in guild.members:
+            count[0] += 1
+            if member.id in contributorIds:
+                count[1] += 1
+                if contributorRole not in member.roles:
+                    count[2] += 1
+                    await member.add_roles(contributorRole)
 
-    # async def
+        print(count)
+
+        SupabaseClient().updateContributors(guild.members)
+        recordedMembers = [
+            contributor["discord_id"] for contributor in contributorsDiscord
+        ]
+        print(f"{len(recordedMembers)} have their data saved")
+        currentMembers = [member.id for member in guild.members]
+        membersWhoLeft = list(set(recordedMembers) - set(currentMembers))
+        print(f"{len(membersWhoLeft)} members left")
+        SupabaseClient().deleteContributorDiscord(membersWhoLeft)
+        print("Updated Contributors")
 
 
 async def setup(bot):

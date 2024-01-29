@@ -93,3 +93,29 @@ class SupabaseClient:
             },
             on_conflict="discord_id",
         ).execute()
+
+    def updateContributors(self, contributors: [Member]):
+        table = "contributors_discord"
+        data = []
+        for contributor in contributors:
+            chapters = lookForChapterRoles(contributor.roles)
+            gender = lookForGenderRoles(contributor.roles)
+            data.append(
+                {
+                    "discord_id": contributor.id,
+                    "discord_username": contributor.name,
+                    "chapter": chapters[0] if chapters else None,
+                    "gender": gender,
+                    "joined_at": contributor.joined_at.isoformat(),
+                }
+            )
+
+        self.client.table(table).upsert(
+            data,
+            on_conflict="discord_id",
+        ).execute()
+
+    def deleteContributorDiscord(self, contributorDiscordIds):
+        table = "contributors_discord"
+        for id in contributorDiscordIds:
+            self.client.table(table).delete().eq("discord_id", id).execute()
