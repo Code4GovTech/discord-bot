@@ -332,18 +332,6 @@ But worry not, you can do so by solving issue tickets & earning more points✨
 ```[![C4GTGithubDisplay](https://kcavhjwafgtoqkqbbqrd.supabase.co/storage/v1/object/public/c4gt-github-profile/{ctx.author.id}githubdisplay.jpg)](https://github.com/Code4GovTech)
 Know more about: Code For GovTech ([Website](https://www.codeforgovtech.in) | [GitHub](https://github.com/Code4GovTech/C4GT/wiki)) | [Digital Public Goods (DPGs)](https://digitalpublicgoods.net/digital-public-goods/) | [India & DPGs](https://government.economictimes.indiatimes.com/blog/digital-public-goods-digital-public-infrastructure-an-evolving-india-story/99532036)```"""
                     )
-            # githubProfileInfoEmbed.set_footer(text="Respond with 🏆 to get the link")
-            # message = await ctx.send(embed=githubProfileInfoEmbed)
-            # await message.add_reaction("🏆")
-            # def check(reaction, user):
-            #     return user == ctx.message.author and str(reaction.emoji) in ['🏆']
-            # try:
-            #     reaction, user = await self.bot.wait_for('reaction_add', timeout=60.0, check=check)
-            # except asyncio.TimeoutError:
-            #     await ctx.send("You took too long to respond.")
-            # else:
-            #     if str(reaction.emoji) == '🏆':
-            #         await ctx.send(f'[![C4GTGithubDisplay](https://kcavhjwafgtoqkqbbqrd.supabase.co/storage/v1/object/public/c4gt-github-profile/{ctx.author.id}githubdisplay.jpg?maxAge=10)](https://github.com/Code4GovTech)')
 
     @update_contributors.before_loop
     async def before_update_loop(self):
@@ -406,10 +394,10 @@ Points are allocated on the following basis:bar_chart: :
             print(contributor)
             github_id = contributor[0]["github_id"]
             prs_raised = SupabaseClient().read(
-                table="pull_requests", query_key="raised_by", query_value=github_id
+                table="connected_prs", query_key="raised_by", query_value=github_id
             )
             prs_merged = SupabaseClient().read(
-                table="pull_requests", query_key="merged_by", query_value=github_id
+                table="connected_prs", query_key="merged_by", query_value=github_id
             )
             raise_points = 0
             merge_points = 0

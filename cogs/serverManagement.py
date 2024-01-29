@@ -27,6 +27,16 @@ class ServerManagement(commands.Cog):
         # add all chapters
         chapterRoles = []
         guild = self.bot.get_guild(serverConfig.SERVER)
+        ## Clear Error
+        oldRole = guild.get_role(973852365188907048)
+        print("started")
+        print(f"{len(oldRole.members)} have the old contributor role")
+        for member in oldRole.members:
+            print(member.joined_at)
+            if member.joined_at.timestamp() > datetime(2022, 12, 25).timestamp():
+                await member.remove_roles(oldRole, reason="mistakenly given")
+                print("Member removed")
+
         for role in guild.roles:
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: ") :]
@@ -43,23 +53,17 @@ class ServerManagement(commands.Cog):
         contributorsDiscord = SupabaseClient().read_all("contributors_discord")
 
         ## Give contributor role
-        print(1)
         contributorIds = [
             contributor["discord_id"] for contributor in contributorsGithub
         ]
-        print(2)
         contributorRole = guild.get_role(serverConfig.Roles.CONTRIBUTOR_ROLE)
-        print(3)
         count = [0, 0, 0]
         for member in guild.members:
             count[0] += 1
             if member.id in contributorIds:
                 count[1] += 1
                 if contributorRole not in member.roles:
-                    print(contributorRole)
-                    print(member.roles)
                     count[2] += 1
-                    print(4)
                     await member.add_roles(contributorRole)
 
         print(count)
@@ -68,8 +72,10 @@ class ServerManagement(commands.Cog):
         recordedMembers = [
             contributor["discord_id"] for contributor in contributorsDiscord
         ]
+        print(f"{len(recordedMembers)} have their data saved")
         currentMembers = [member.id for member in guild.members]
         membersWhoLeft = list(set(recordedMembers) - set(currentMembers))
+        print(f"{len(membersWhoLeft)} members left")
         SupabaseClient().deleteContributorDiscord(membersWhoLeft)
         print("Updated Contributors")
 

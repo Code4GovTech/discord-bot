@@ -160,10 +160,10 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
             github_id = contributorData[0]["github_id"]
             prData = {
                 "raised": SupabaseClient().read(
-                    table="pull_requests", query_key="raised_by", query_value=github_id
+                    table="connected_prs", query_key="raised_by", query_value=github_id
                 ),
-                "merged": SupabaseClient(table="pull_requests").read(
-                    table="pull_requests", query_key="merged_by", query_value=github_id
+                "merged": SupabaseClient(table="connected_prs").read(
+                    table="connected_prs", query_key="merged_by", query_value=github_id
                 ),
             }
             points = 0
