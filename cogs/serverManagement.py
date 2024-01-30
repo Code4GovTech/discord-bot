@@ -41,11 +41,15 @@ class ServerManagement(commands.Cog):
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: ") :]
                 chapterRoles.append(role)
-                SupabaseClient().addChapter(orgName=orgName, type="COLLEGE")
+                SupabaseClient().addChapter(
+                    roleId=role.id, orgName=orgName, type="COLLEGE"
+                )
             elif role.name.startswith("Corporate:"):
                 orgName = role.name[len("Corporate: ") :]
                 chapterRoles.append(role)
-                SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
+                SupabaseClient().addChapter(
+                    roleId=role.id, orgName=orgName, type="CORPORATE"
+                )
 
         print("added chapters")
 
