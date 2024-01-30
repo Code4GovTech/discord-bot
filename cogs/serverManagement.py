@@ -13,16 +13,6 @@ class ServerManagement(commands.Cog):
         self.bot: commands.Bot = bot
         self.assign_contributor_role.start()
 
-    def validUser(self, ctx):
-        authorised_users = [
-            1042682119035568178,
-            1120262151676895274,
-            1107555866422562926,
-            1107555866422562926,
-            599878601143222282,
-        ]  # bhavya, devaraj, navaneeth, venkatesh, sukhpreet
-        return ctx.author.id in authorised_users
-
     @commands.command(aliaes=["initiate"])
     async def getServerData(self, ctx):
         # add all chapters
