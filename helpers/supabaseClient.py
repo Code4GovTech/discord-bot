@@ -69,10 +69,22 @@ class SupabaseClient:
         else:
             return False
 
-    def addChapter(self, orgName: str, type: str):
+    def addChapter(self, roleId: int, orgName: str, type: str):
         data = (
             self.client.table("chapters")
-            .upsert({"type": type, "org_name": orgName}, on_conflict="org_name")
+            .upsert(
+                {"discord_role_id": roleId, "type": type, "org_name": orgName},
+                on_conflict="discord_role_id",
+            )
+            .execute()
+        )
+        return data.data
+
+    def deleteChapter(self, roleId: int):
+        data = (
+            self.client.table("chapters")
+            .delete()
+            .eq("discord_role_id", roleId)
             .execute()
         )
         return data.data

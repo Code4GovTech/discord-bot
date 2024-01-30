@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from discord.ext import commands
+from discord.ext import commands, tasks
 
 from config.server import ServerConfig
 from helpers.supabaseClient import SupabaseClient
@@ -11,6 +11,7 @@ serverConfig = ServerConfig()
 class ServerManagement(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
+        self.assign_contributor_role.start()
 
     def validUser(self, ctx):
         authorised_users = [
@@ -41,11 +42,15 @@ class ServerManagement(commands.Cog):
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: ") :]
                 chapterRoles.append(role)
-                SupabaseClient().addChapter(orgName=orgName, type="COLLEGE")
+                SupabaseClient().addChapter(
+                    roleId=role.id, orgName=orgName, type="COLLEGE"
+                )
             elif role.name.startswith("Corporate:"):
                 orgName = role.name[len("Corporate: ") :]
                 chapterRoles.append(role)
-                SupabaseClient().addChapter(orgName=orgName, type="CORPORATE")
+                SupabaseClient().addChapter(
+                    roleId=role.id, orgName=orgName, type="CORPORATE"
+                )
 
         print("added chapters")
 
@@ -78,6 +83,24 @@ class ServerManagement(commands.Cog):
         print(f"{len(membersWhoLeft)} members left")
         SupabaseClient().deleteContributorDiscord(membersWhoLeft)
         print("Updated Contributors")
+
+    @tasks.loop(minutes=30)
+    async def assign_contributor_role(self):
+        guild = self.bot.get_guild(serverConfig.SERVER)
+        contributorRole = guild.get_role(serverConfig.Roles.CONTRIBUTOR_ROLE)
+        contributorsGithub = SupabaseClient().read_all("contributors_registration")
+
+        contributorIds = [
+            contributor["discord_id"] for contributor in contributorsGithub
+        ]
+
+        for member in guild.members:
+            if member.id in contributorIds and contributorRole not in member.roles:
+                await member.add_roles(contributorRole)
+
+    @assign_contributor_role.before_loop
+    async def before_assign_contributor_role(self):
+        await self.bot.wait_until_ready()  # Wait until the bot is logged in and ready
 
 
 async def setup(bot):
