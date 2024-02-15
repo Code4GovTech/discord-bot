@@ -9,6 +9,7 @@ import discord
 import dotenv
 from discord.ext import commands
 
+from cogs.vcCog import VCView
 from helpers.supabaseClient import SupabaseClient
 
 # Since there are user defined packages, adding current directory to python path
@@ -207,6 +208,7 @@ class C4GTBot(commands.Bot):
         # If you have the message_id you can also pass it as a keyword argument, but for this example
         # we don't have one.
         self.add_view(RegistrationView())
+        self.add_view(VCView())
 
 
 client = C4GTBot()
@@ -214,9 +216,6 @@ client = C4GTBot()
 
 @client.command(aliases=["registration"])
 async def registerAsContributor(ctx, channel: discord.TextChannel):
-    # guild = ctx.guild
-    # channelID = 1167054801385820240
-    # channel = guild.get_channel_or_thread(channelID)
     await channel.send(
         "Please register using Github to sign up as a C4GT Contributor",
         view=RegistrationView(),
