@@ -101,6 +101,7 @@ class ServerManagement(commands.Cog):
     @assign_contributor_role.before_loop
     async def before_assign_contributor_role(self):
         await self.bot.wait_until_ready()  # Wait until the bot is logged in and ready
+        print("Assigning Roles")
 
 
 async def setup(bot):

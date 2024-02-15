@@ -32,7 +32,10 @@ class MessageEventsListener(commands.Cog):
     async def on_message(self, message: discord.Message):
         # Listen for Introduction
         if message.channel.id == serverConfig.Channels.INTRODUCTION_CHANNEL:
-            if await supabaseClient.memberIsAuthenticated(message.author):
+            memberIsAuthenticated = await supabaseClient.memberIsAuthenticated(
+                message.author
+            )
+            if memberIsAuthenticated:
                 await grantVerifiedRole(message.author)
         else:
             return
