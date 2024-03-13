@@ -19,7 +19,7 @@ with io.BytesIO(image_bytes) as image_file:
 
 
 class CommunityVCView(ui.View):
-    def __init__(self, *, timeout: float | None = None):
+    def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout)
 
     def isCommunityContributor(self, roles: list[Role]):
@@ -145,7 +145,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
 
 
 class DMPVCView(ui.View):
-    def __init__(self, *, timeout: float | None = None):
+    def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout)
 
     def isDMPContributor(self, roles: list[Role]):
@@ -211,7 +211,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
 
 
 class VCProgramSelection(ui.View):
-    def __init__(self, *, timeout: float | None = None):
+    def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout)
 
     async def resetSelectMenu(self, interaction):
