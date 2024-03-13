@@ -65,7 +65,7 @@ class SupabaseClient:
         data = self.client.table(table).insert(data).execute()
         return data.data
 
-    def memberIsAuthenticated(self, member: Member | User):
+    def memberIsAuthenticated(self, member: Member):
         data = (
             self.client.table("contributors_registration")
             .select("*")
