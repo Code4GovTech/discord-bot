@@ -12,6 +12,15 @@ class SupabaseClient:
         self.supabase_key = key if key else os.getenv("SUPABASE_KEY")
         self.client: Client = create_client(self.supabase_url, self.supabase_key)
 
+    def getStatsStorage(self, fileName):
+        return self.client.storage.from_("c4gt-github-profile").download(fileName)
+
+    def getLeaderboard(self, id: int):
+        data = (
+            self.client.table("leaderboard").select("*").eq("discord_id", id).execute()
+        )
+        return data.data
+
     def read(self, table, query_key, query_value, columns="*"):
         data = (
             self.client.table(table)
