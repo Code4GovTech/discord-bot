@@ -1,5 +1,6 @@
 #all files relating to python vitual env
 /.venv
+/myvenv
 #environment variables and cache
 *.env
 __pycache__/

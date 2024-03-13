@@ -9,7 +9,7 @@ import discord
 import dotenv
 from discord.ext import commands
 
-from cogs.vcCog import VCView
+from cogs.vcCog import VCProgramSelection
 from helpers.supabaseClient import SupabaseClient
 
 # Since there are user defined packages, adding current directory to python path
@@ -208,7 +208,7 @@ class C4GTBot(commands.Bot):
         # If you have the message_id you can also pass it as a keyword argument, but for this example
         # we don't have one.
         self.add_view(RegistrationView())
-        self.add_view(VCView())
+        self.add_view(VCProgramSelection())
 
 
 client = C4GTBot()
@@ -245,7 +245,7 @@ async def load():
 async def main():
     async with client:
         await load()
-        await client.start(os.getenv("TOKEN"))
+        await client.start(os.getenv("TESTING_TOKEN"))
 
 
 asyncio.run(main())
