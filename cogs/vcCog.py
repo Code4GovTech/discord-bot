@@ -72,6 +72,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
         custom_id=f"vc_view_button:my_cert:blurple",
     )
     async def serveCertificateLink(self, interaction: Interaction, button: ui.Button):
+        SupabaseClient().logVCAction(interaction.user, "My Certificate Button")
         contributor = self.getCommunityMember(interaction.user.id)
         if contributor["points"] < 10:
             await interaction.response.send_message(
@@ -98,6 +99,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
         custom_id=f"vc_view:my_profile:blurple",
     )
     async def serveDPGProfile(self, interaction: Interaction, button: ui.Button):
+        SupabaseClient().logVCAction(interaction.user, "DPG Profile Button")
         if not self.isCommunityContributor(interaction.user.roles):
             await interaction.response.send_message(
                 "You're not currently a registered contributor! Head over to <#1211992155673862204> and register as a Verified C4GT Community Contributor :fireworks:",
@@ -229,6 +231,7 @@ class VCProgramSelection(ui.View):
         ],
     )
     async def selectAProgram(self, interaction: Interaction, select: ui.Select):
+        SupabaseClient().logVCAction(interaction.user, "Clicked on Dropdown")
         selected_option = select.values[0]
         if selected_option == "ccbp":
             await interaction.response.send_message(
