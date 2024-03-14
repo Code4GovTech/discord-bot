@@ -15,6 +15,15 @@ class SupabaseClient:
     def getStatsStorage(self, fileName):
         return self.client.storage.from_("c4gt-github-profile").download(fileName)
 
+    def logVCAction(self, user, action):
+        return (
+            self.client.table("vc_logs")
+            .insert(
+                {"discord_id": user.id, "discord_name": user.name, "option": action}
+            )
+            .execute()
+        )
+
     def getLeaderboard(self, id: int):
         data = (
             self.client.table("leaderboard").select("*").eq("discord_id", id).execute()
