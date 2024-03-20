@@ -27,7 +27,7 @@ class RoleEventsListener(commands.Cog):
     @commands.Cog.listener()
     async def on_guild_role_update(self, before: discord.Role, after: discord.Role):
         if after.name.startswith("College:"):
-            orgName = after.name[len("College:") :]
+            orgName = after.name[len("College: ") :]
             SupabaseClient().addChapter(
                 roleId=after.id, orgName=orgName, type="COLLEGE"
             )
