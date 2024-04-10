@@ -135,6 +135,11 @@ class RegistrationModal(discord.ui.Modal):
         placeholder="To give you the recognition you deserve, could you please share your full name for the certificates!",
     )
 
+    country = discord.ui.TextInput(
+        label="Please Enter Your Country",
+        placeholder="We'd love to know where you're from!",
+    )
+
     async def on_submit(self, interaction: discord.Interaction):
         user = interaction.user
         await interaction.response.send_message(
@@ -142,7 +147,13 @@ class RegistrationModal(discord.ui.Modal):
             view=AuthenticationView(user.id),
             ephemeral=True,
         )
-        await self.post_data({"name": self.name.value, "discord_id": user.id})
+        await self.post_data(
+            {
+                "name": self.name.value,
+                "discord_id": user.id,
+                "country": self.country.value,
+            }
+        )
 
         verifiedContributorRoleID = 1123967402175119482
         print("User:", type(user))
@@ -215,8 +226,8 @@ client = C4GTBot()
 
 
 @client.command(aliases=["registration"])
-async def registerAsContributor(ctx, channel: discord.TextChannel):
-    await channel.send(
+async def registerAsContributor(ctx):
+    await ctx.channel.send(
         "Please register using Github to sign up as a C4GT Contributor",
         view=RegistrationView(),
     )
