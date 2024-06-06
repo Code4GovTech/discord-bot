@@ -155,7 +155,7 @@ class RegistrationModal(discord.ui.Modal):
             }
         )
 
-        verifiedContributorRoleID = 1123967402175119482
+        verifiedContributorRoleID = 1247854311191351307
         print("User:", type(user))
         if verifiedContributorRoleID in [role.id for role in user.roles]:
             return
