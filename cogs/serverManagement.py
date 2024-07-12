@@ -15,12 +15,10 @@ class ServerManagement(commands.Cog):
 
     def validUser(self, ctx):
         authorised_users = [
-            1042682119035568178,
             1120262151676895274,
             1107555866422562926,
-            1107555866422562926,
-            599878601143222282,
-        ]  # bhavya, devaraj, navaneeth, venkatesh, sukhpreet
+            1059343450312544266,
+        ]  # devaraj, venkatesh, karn
         return ctx.author.id in authorised_users
 
     @commands.command(aliaes=["initiate"])
@@ -54,8 +52,8 @@ class ServerManagement(commands.Cog):
 
         print("added chapters")
 
-        contributorsGithub = SupabaseClient().read_all("contributors_registration")
-        contributorsDiscord = SupabaseClient().read_all("contributors_discord")
+        contributorsGithub = SupabaseClient().read_all_active("contributors_registration")
+        contributorsDiscord = SupabaseClient().read_all_active("contributors_discord")
 
         ## Give contributor role
         contributorIds = [
