@@ -52,7 +52,7 @@ class ServerManagement(commands.Cog):
 
         print("added chapters")
 
-        contributorsGithub = SupabaseClient().read_all_active("contributors_registration")
+        contributorsGithub = SupabaseClient().read_all("contributors_registration")
         contributorsDiscord = SupabaseClient().read_all_active("contributors_discord")
 
         ## Give contributor role
