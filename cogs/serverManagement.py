@@ -22,7 +22,7 @@ class ServerManagement(commands.Cog):
         return ctx.author.id in authorised_users
 
     @commands.command(aliaes=["initiate"])
-    async def getServerData(self, ctx):
+    async def updateServerData(self, ctx):
         # add all chapters
         chapterRoles = []
         guild = self.bot.get_guild(serverConfig.SERVER)
