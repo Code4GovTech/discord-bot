@@ -79,7 +79,7 @@ class ServerManagement(commands.Cog):
         currentMembers = [member.id for member in guild.members]
         membersWhoLeft = list(set(recordedMembers) - set(currentMembers))
         print(f"{len(membersWhoLeft)} members left")
-        SupabaseClient().deleteContributorDiscord(membersWhoLeft)
+        SupabaseClient().invalidateContributorDiscord(membersWhoLeft)
         print("Updated Contributors")
 
     @tasks.loop(minutes=30)
