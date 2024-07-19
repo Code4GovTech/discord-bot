@@ -15,16 +15,14 @@ class ServerManagement(commands.Cog):
 
     def validUser(self, ctx):
         authorised_users = [
-            1042682119035568178,
             1120262151676895274,
             1107555866422562926,
-            1107555866422562926,
-            599878601143222282,
-        ]  # bhavya, devaraj, navaneeth, venkatesh, sukhpreet
+            1059343450312544266,
+        ]  # devaraj, venkatesh, karn
         return ctx.author.id in authorised_users
 
     @commands.command(aliaes=["initiate"])
-    async def getServerData(self, ctx):
+    async def updateServerData(self, ctx):
         # add all chapters
         chapterRoles = []
         guild = self.bot.get_guild(serverConfig.SERVER)
@@ -55,7 +53,7 @@ class ServerManagement(commands.Cog):
         print("added chapters")
 
         contributorsGithub = SupabaseClient().read_all("contributors_registration")
-        contributorsDiscord = SupabaseClient().read_all("contributors_discord")
+        contributorsDiscord = SupabaseClient().read_all_active("contributors_discord")
 
         ## Give contributor role
         contributorIds = [
@@ -81,7 +79,7 @@ class ServerManagement(commands.Cog):
         currentMembers = [member.id for member in guild.members]
         membersWhoLeft = list(set(recordedMembers) - set(currentMembers))
         print(f"{len(membersWhoLeft)} members left")
-        SupabaseClient().deleteContributorDiscord(membersWhoLeft)
+        SupabaseClient().invalidateContributorDiscord(membersWhoLeft)
         print("Updated Contributors")
 
     @tasks.loop(minutes=30)
