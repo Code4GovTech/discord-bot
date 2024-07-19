@@ -63,6 +63,10 @@ class SupabaseClient:
     def read_all(self, table):
         data = self.client.table(table).select("*").execute()
         return data.data
+    
+    def read_all_active(self, table):
+        data = self.client.table(table).select("*").eq('is_active', 'true').execute()
+        return data.data
 
     def update(self, table, update, query_key, query_value):
         data = (
@@ -137,6 +141,7 @@ class SupabaseClient:
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
                     "joined_at": contributor.joined_at.isoformat(),
+                    "is_active": 'true'
                 }
             )
 
@@ -149,3 +154,8 @@ class SupabaseClient:
         table = "contributors_discord"
         for id in contributorDiscordIds:
             self.client.table(table).delete().eq("discord_id", id).execute()
+
+    def invalidateContributorDiscord(self, contributorDiscordIds):
+        table = "contributors_discord"
+        for id in contributorDiscordIds:
+            self.client.table(table).update({ 'is_active': 'false' }).eq('discord_id', id).execute()
