@@ -147,6 +147,7 @@ class RegistrationModal(discord.ui.Modal):
             view=AuthenticationView(user.id),
             ephemeral=True,
         )
+        print(self)
         await self.post_data(
             {
                 "name": self.name.value,
