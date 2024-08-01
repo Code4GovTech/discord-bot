@@ -59,38 +59,3 @@ def lookForRoles(roles: [Role]):
         "experience": experience
     }
     return user_roles
-    
-
-# def lookForChapterRoles(roles: [Role]):
-#     chapter_roles = []
-#     for role in roles:
-#         if role.name.startswith("College:"):
-#             chapter_roles.append(role.name[len("College: ") :])
-#         elif role.name.startswith("Corporate:"):
-#             chapter_roles.append(role).name[len("Corporate: ") :]
-#     return chapter_roles
-
-
-# def lookForGenderRoles(roles: [Role]):
-#     for role in roles:
-#         if role.name in ["M", "F", "NB"]:
-#             return role.name
-#     return None
-
-# def lookForCountryRoles(roles: [Role]):
-#     for role in roles:
-#         if role.name in ["India", "Asia (Outside India)", "Europe", "Africa", "North America", "South America", "Australia"]:
-#             return role.name
-#     return None
-    
-# def lookForCityRoles(roles: [Role]):
-#     for role in roles:
-#         if role.name in ["Delhi", "Bangalore", "Mumbai", "Pune", "Hyderabad", "Chennai", "Kochi"]:
-#             return role.name
-#     return None
-    
-# def lookForExperienceRoles(roles: [Role]):
-#     for role in roles:
-#         if role.name in ["Tech Freshman", "Tech Sophomore", "Tech Junior", "Tech Senior", "Junior Developer", "Senior Developer", "Super Senior Developer", "Champion Developer"]:
-#             return role.name
-#     return None

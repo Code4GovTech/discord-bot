@@ -115,15 +115,6 @@ class SupabaseClient:
         table = "contributors_discord"
 
         user_roles = lookForRoles(contributor.roles)
-        # print(user_roles) 
-
-        # chapters = lookForChapterRoles(contributor.roles)
-        # gender = lookForGenderRoles(contributor.roles)
-
-        # #country, city, experience
-        # country = lookForCountryRoles(contributor.roles)
-        # city = lookForCityRoles(contributor.roles)
-        # experience = lookForExperienceRoles(contributor.roles)
 
         self.client.table(table).upsert(
             {
