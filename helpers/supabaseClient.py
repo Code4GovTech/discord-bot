@@ -3,7 +3,7 @@ import os
 from discord import Member, User
 from supabase import Client, create_client
 
-from helpers.roleHelpers import lookForChapterRoles, lookForGenderRoles
+from helpers.roleHelpers import lookForRoles
 
 
 class SupabaseClient:
@@ -114,16 +114,27 @@ class SupabaseClient:
     def updateContributor(self, contributor: Member):
         table = "contributors_discord"
 
-        chapters = lookForChapterRoles(contributor.roles)
-        gender = lookForGenderRoles(contributor.roles)
+        user_roles = lookForRoles(contributor.roles)
+        # print(user_roles) 
+
+        # chapters = lookForChapterRoles(contributor.roles)
+        # gender = lookForGenderRoles(contributor.roles)
+
+        # #country, city, experience
+        # country = lookForCountryRoles(contributor.roles)
+        # city = lookForCityRoles(contributor.roles)
+        # experience = lookForExperienceRoles(contributor.roles)
 
         self.client.table(table).upsert(
             {
                 "discord_id": contributor.id,
                 "discord_username": contributor.name,
-                "chapter": chapters[0] if chapters else None,
-                "gender": gender,
+                "chapter": user_roles["chapter_roles"][0] if user_roles["chapter_roles"] else None,
+                "gender": user_roles["gender"],
                 "joined_at": contributor.joined_at.isoformat(),
+                "country": user_roles["country"],
+                "city": user_roles["city"],
+                "experience": user_roles["experience"]
             },
             on_conflict="discord_id",
         ).execute()
@@ -132,8 +143,9 @@ class SupabaseClient:
         table = "contributors_discord"
         data = []
         for contributor in contributors:
-            chapters = lookForChapterRoles(contributor.roles)
-            gender = lookForGenderRoles(contributor.roles)
+            user_roles = lookForRoles(contributor.roles)
+            chapters = user_roles["chapter_roles"]
+            gender = user_roles["gender"]
             data.append(
                 {
                     "discord_id": contributor.id,
