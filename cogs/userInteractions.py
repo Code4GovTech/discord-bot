@@ -4,7 +4,7 @@ import os
 import discord
 from discord.ext import commands, tasks
 
-from helpers.supabaseClient import SupabaseClient
+from helpers.supabaseClient import PostgresClient
 
 VERIFIED_CONTRIBUTOR_ROLE_ID = 1123967402175119482
 NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]
@@ -226,7 +226,7 @@ class UserHandler(commands.Cog):
 
     @tasks.loop(minutes=10)
     async def update_contributors(self):
-        contributors = SupabaseClient().read_all("contributors_registration")
+        contributors = PostgresClient().read_all("contributors_registration")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         count = 1
@@ -240,31 +240,31 @@ class UserHandler(commands.Cog):
                 await member.add_roles(contributor_role)
             print(f"Given Roles to {member.name if member else 'None'}")
             # add to discord engagement
-            # SupabaseClient("discord_engagement").insert({"contributor": member.id})
+            # PostgresClient("discord_engagement").insert({"contributor": member.id})
 
         # update engagement
         # for contributor in contributors:
-        #     contributorData = SupabaseClient("discord_engagement").read("contributor", contributor["discord_id"])[0]
+        #     contributorData = PostgresClient("discord_engagement").read("contributor", contributor["discord_id"])[0]
         #     member = await guild.fetch_member(contributorData["contributor"])
         #     print(f"-----Contributor-----{member.name}-------")
         #     badges = Badges(member.name)
         #     if contributorData:
         #         if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
-        #             SupabaseClient("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
+        #             PostgresClient("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
         #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
         #             await dmchannel.send(embed=badges.converseBadge)
         #         if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
-        #             SupabaseClient("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
+        #             PostgresClient("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
         #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
         #             await dmchannel.send(embed=badges.rockstarBadge)
         #         if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
-        #             SupabaseClient("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
+        #             PostgresClient("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
         #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
         #             await dmchannel.send(embed=badges.apprenticeBadge)
         #     github_id = contributor["github_id"]
         #     prData = {
-        #         "raised": SupabaseClient(table="pull_requests").read(query_key="raised_by", query_value=github_id),
-        #         "merged":SupabaseClient(table="pull_requests").read(query_key="merged_by", query_value=github_id)
+        #         "raised": PostgresClient(table="pull_requests").read(query_key="raised_by", query_value=github_id),
+        #         "merged":PostgresClient(table="pull_requests").read(query_key="merged_by", query_value=github_id)
         #     }
         #     points = 0
         #     for action in prData.keys():
@@ -272,10 +272,10 @@ class UserHandler(commands.Cog):
         #         for pr in prs:
         #             points+=pr["points"]
         #     if len(prData["raised"])+len(prData["merged"])>0and not contributorData["enthusiastBadge"]:
-        #         SupabaseClient("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
+        #         PostgresClient("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
         #         await dmchannel.send(embed=Badges(member.name, points=points).enthusiastBadge)
         #     if points>=30 and not contributorData["risingStarBadge"]:
-        #         SupabaseClient("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
+        #         PostgresClient("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
         #         await dmchannel.send(embed=badges.risingStarBadge)
 
         return
@@ -316,7 +316,7 @@ But worry not, you can do so by solving issue tickets & earning more points✨
 **Know more about [badges & points](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors)**🧗"""
 
             noPointsGithubProfileEmbed = discord.Embed(title="", description=desc)
-            user = SupabaseClient().read(
+            user = PostgresClient().read(
                 "github_profile_data", "discord_id", ctx.author.id
             )
             if len(user) == 0:
@@ -386,17 +386,17 @@ Points are allocated on the following basis:bar_chart: :
     async def get_points(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             discord_id = ctx.author.id
-            contributor = SupabaseClient().read(
+            contributor = PostgresClient().read(
                 table="contributors_registration",
                 query_key="discord_id",
                 query_value=discord_id,
             )
             print(contributor)
             github_id = contributor[0]["github_id"]
-            prs_raised = SupabaseClient().read(
+            prs_raised = PostgresClient().read(
                 table="connected_prs", query_key="raised_by", query_value=github_id
             )
-            prs_merged = SupabaseClient().read(
+            prs_merged = PostgresClient().read(
                 table="connected_prs", query_key="merged_by", query_value=github_id
             )
             raise_points = 0

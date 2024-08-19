@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from helpers.supabaseClient import SupabaseClient
+from helpers.supabaseClient import PostgresClient
 
 
 class BadgeModal(discord.ui.Modal, title="Your Badges"):
@@ -133,7 +133,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
         userBadges = {"points": [], "achievements": []}
         if (
             len(
-                SupabaseClient().read(
+                PostgresClient().read(
                     "contributors_registration",
                     query_key="discord_id",
                     query_value=discord_id,
@@ -143,7 +143,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
         ):
             userBadges["achievements"].append(self.discordXGithubBadge)
 
-        discordMemberData = SupabaseClient().read(
+        discordMemberData = PostgresClient().read(
             "discord_engagement", "contributor", discord_id
         )
         if discordMemberData:
@@ -153,16 +153,16 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
                 userBadges["achievements"].append(self.rockstarBadge)
             if discordMemberData[0]["has_introduced"]:
                 userBadges["achievements"].append(self.apprenticeBadge)
-        contributorData = SupabaseClient().read(
+        contributorData = PostgresClient().read(
             "contributors_registration", query_key="discord_id", query_value=discord_id
         )
         if contributorData:
             github_id = contributorData[0]["github_id"]
             prData = {
-                "raised": SupabaseClient().read(
+                "raised": PostgresClient().read(
                     table="connected_prs", query_key="raised_by", query_value=github_id
                 ),
-                "merged": SupabaseClient(table="connected_prs").read(
+                "merged": PostgresClient(table="connected_prs").read(
                     table="connected_prs", query_key="merged_by", query_value=github_id
                 ),
             }

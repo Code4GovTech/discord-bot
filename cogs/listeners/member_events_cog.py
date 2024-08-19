@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-from helpers.supabaseClient import SupabaseClient
+from helpers.supabaseClient import PostgresClient
 
 
 class MemberEventsListener(commands.Cog):
@@ -11,7 +11,7 @@ class MemberEventsListener(commands.Cog):
 
     @commands.Cog.listener("on_member_join")
     async def on_member_join(self, member: discord.Member):
-        SupabaseClient().updateContributor(member)
+        PostgresClient().updateContributor(member)
 
     @commands.Cog.listener("on_member_remove")
     async def on_member_remove(self, member: discord.Member):
@@ -20,7 +20,7 @@ class MemberEventsListener(commands.Cog):
 
     @commands.Cog.listener("on_member_update")
     async def on_member_update(self, before: discord.Member, after: discord.Member):
-        SupabaseClient().updateContributor(after)
+        PostgresClient().updateContributor(after)
 
 
 async def setup(bot: commands.Bot):
