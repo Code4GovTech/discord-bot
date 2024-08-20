@@ -67,6 +67,10 @@ class SupabaseClient:
     def read_all(self, table):
         data = self.client.table(table).select("*").execute()
         return data.data
+    
+    def read_all_active(self, table):
+        data = self.client.table(table).select("*").eq('is_active', 'true').execute()
+        return data.data
 
     def update(self, table, update, query_key, query_value):
         data = (
@@ -141,6 +145,7 @@ class SupabaseClient:
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
                     "joined_at": contributor.joined_at.isoformat(),
+                    "is_active": 'true'
                 }
             )
 
@@ -153,6 +158,7 @@ class SupabaseClient:
         table = "contributors_discord"
         for id in contributorDiscordIds:
             self.client.table(table).delete().eq("discord_id", id).execute()
+
             
 class PostgresClient:
     def __init__(self):
@@ -403,4 +409,24 @@ class PostgresClient:
             print("Error deleting contributors:", e)
             self.session.rollback()
             return False
+        
+    
 
+    def read_all_active(self, table):      
+        if table == "contributors_discord":
+            table = ContributorsDiscord 
+        data = self.session.query(table).where(table.is_active == True).all()
+        return self.convert_dict(data)
+    
+    def invalidateContributorDiscord(self, contributorDiscordIds):
+        table = ContributorsDiscord
+        for id in contributorDiscordIds:           
+            try:
+                stmt = (update(table).where(table.discord_id == id).values({ 'is_active': 'false' }))
+                self.session.execute(stmt)
+                self.session.commit()                    
+            except Exception as e:
+                print(e)
+                self.session.rollback()
+                continue
+                

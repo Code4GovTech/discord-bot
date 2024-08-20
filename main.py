@@ -112,7 +112,7 @@ class RegistrationModal(discord.ui.Modal):
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
 
     async def post_data(self, data):
-        url = "https://kcavhjwafgtoqkqbbqrd.supabase.co/rest/v1/contributor_names"
+        url = os.getenv("SUPABASE_URL")
         headers = {
             "apikey": f"{os.getenv('SUPABASE_KEY')}",
             "Authorization": f"Bearer {os.getenv('SUPABASE_KEY')}",
