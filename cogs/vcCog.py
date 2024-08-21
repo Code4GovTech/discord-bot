@@ -6,7 +6,7 @@ from discord import Embed, File, Interaction, Member, Role, SelectOption, enums,
 from discord.ext import commands
 
 from config.server import ServerConfig
-from helpers.supabaseClient import SupabaseClient
+from helpers.supabaseClient import PostgresClient
 
 """
 with io.BytesIO(image_bytes) as image_file:
@@ -29,7 +29,7 @@ class CommunityVCView(ui.View):
         return False
 
     def getCommunityMember(self, memberId: Member):
-        data = SupabaseClient().getLeaderboard(memberId)
+        data = PostgresClient().getLeaderboard(memberId)
         if data:
             contributor = data[0]
             return contributor
@@ -59,7 +59,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
 
     def getStatsShowcaseImage(self, discordId=None, type=None):
         print(f"{discordId}-c4gt-contributions.jpeg")
-        imageBytes = SupabaseClient().getStatsStorage(
+        imageBytes = PostgresClient().getStatsStorage(
             f"{discordId}-c4gt-contributions.jpeg"
         )
         with BytesIO(imageBytes) as imageFile:
@@ -72,7 +72,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
         custom_id=f"vc_view_button:my_cert:blurple",
     )
     async def serveCertificateLink(self, interaction: Interaction, button: ui.Button):
-        SupabaseClient().logVCAction(interaction.user, "My Certificate Button")
+        PostgresClient().logVCAction(interaction.user, "My Certificate Button")
         contributor = self.getCommunityMember(interaction.user.id)
         if contributor["points"] < 10:
             await interaction.response.send_message(
@@ -99,7 +99,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
         custom_id=f"vc_view:my_profile:blurple",
     )
     async def serveDPGProfile(self, interaction: Interaction, button: ui.Button):
-        SupabaseClient().logVCAction(interaction.user, "DPG Profile Button")
+        PostgresClient().logVCAction(interaction.user, "DPG Profile Button")
         if not self.isCommunityContributor(interaction.user.roles):
             await interaction.response.send_message(
                 "You're not currently a registered contributor! Head over to <#1211992155673862204> and register as a Verified C4GT Community Contributor :fireworks:",
@@ -231,7 +231,7 @@ class VCProgramSelection(ui.View):
         ],
     )
     async def selectAProgram(self, interaction: Interaction, select: ui.Select):
-        SupabaseClient().logVCAction(interaction.user, "Clicked on Dropdown")
+        PostgresClient().logVCAction(interaction.user, "Clicked on Dropdown")
         selected_option = select.values[0]
         if selected_option == "ccbp":
             await interaction.response.send_message(

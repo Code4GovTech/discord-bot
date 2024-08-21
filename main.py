@@ -10,7 +10,7 @@ import dotenv
 from discord.ext import commands
 
 from cogs.vcCog import VCProgramSelection
-from helpers.supabaseClient import SupabaseClient
+from helpers.supabaseClient import PostgresClient
 
 # Since there are user defined packages, adding current directory to python path
 current_directory = os.getcwd()
@@ -147,6 +147,7 @@ class RegistrationModal(discord.ui.Modal):
             view=AuthenticationView(user.id),
             ephemeral=True,
         )
+        print(self,"self")
         await self.post_data(
             {
                 "name": self.name.value,
@@ -163,13 +164,13 @@ class RegistrationModal(discord.ui.Modal):
 
             async def hasIntroduced():
                 print("Checking...")
-                authentication = SupabaseClient().read(
+                authentication = PostgresClient().read(
                     "contributors_registration", "discord_id", user.id
                 )
                 while not authentication:
                     await asyncio.sleep(30)
                 print("Found!")
-                discordEngagement = SupabaseClient().read(
+                discordEngagement = PostgresClient().read(
                     "discord_engagement", "contributor", user.id
                 )[0]
                 return discordEngagement["has_introduced"]

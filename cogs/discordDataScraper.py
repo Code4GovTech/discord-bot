@@ -9,7 +9,7 @@ from discord import Member
 from discord.channel import TextChannel
 from discord.ext import commands, tasks
 
-from helpers.supabaseClient import SupabaseClient
+from helpers.supabaseClient import PostgresClient
 
 with open("config.json") as config_file:
     config_data = json.load(config_file)
@@ -28,12 +28,12 @@ class DiscordDataScaper(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         pass
-        # contributor = SupabaseClient().read(
+        # contributor = PostgresClient().read(
         #     "discord_engagement", "contributor", message.author.id
         # )
         # print("message", len(message.content))
         # if not contributor:
-        #     SupabaseClient().insert(
+        #     PostgresClient().insert(
         #         "discord_engagement",
         #         {
         #             "contributor": message.author.id,
@@ -46,13 +46,13 @@ class DiscordDataScaper(commands.Cog):
         # if len(message.content) > 20:
         #     if message.channel.id == INTRODUCTIONS_CHANNEL_ID:
         #         print("intro")
-        #         SupabaseClient().update(
+        #         PostgresClient().update(
         #             "discord_engagement",
         #             {"has_introduced": True},
         #             "contributor",
         #             message.author.id,
         #         )
-        #     SupabaseClient("discord_engagement").update(
+        #     PostgresClient("discord_engagement").update(
         #         "discord_engagement",
         #         {"total_message_count": contributor[0]["total_message_count"] + 1},
         #         "contributor",
@@ -62,11 +62,11 @@ class DiscordDataScaper(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         message = reaction.message
-        contributor = SupabaseClient().read(
+        contributor = PostgresClient().read(
             "discord_engagement", "contributor", message.author.id
         )[0]
         if not contributor:
-            SupabaseClient().insert(
+            PostgresClient().insert(
                 "discord_engagement",
                 {
                     "contributor": message.author.id,
@@ -77,7 +77,7 @@ class DiscordDataScaper(commands.Cog):
             )
             return
         print("reaction")
-        SupabaseClient().update(
+        PostgresClient().update(
             "discord_engagement",
             {"total_reaction_count": contributor["total_reaction_count"] + 1},
             "contributor",
@@ -89,7 +89,7 @@ class DiscordDataScaper(commands.Cog):
         await ctx.channel.send("started")
 
         def addEngagmentData(data):
-            client = SupabaseClient()
+            client = PostgresClient()
             client.insert("discord_engagement", data)
             return
 
@@ -145,7 +145,7 @@ class DiscordDataScaper(commands.Cog):
         channels = await guild.fetch_channels()
         enabled = [
             channel["channel_id"]
-            for channel in SupabaseClient().read_all("discord_channels")
+            for channel in PostgresClient().read_all("discord_channels")
         ]
         for channel in channels:
             try:
@@ -156,7 +156,7 @@ class DiscordDataScaper(commands.Cog):
                     webhook = await channel.create_webhook(name="New Ticket Alert")
                     feedback = f"""URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}"""
                     await ctx.send(feedback)
-                    SupabaseClient().insert(
+                    PostgresClient().insert(
                         "discord_channels",
                         {
                             "channel_id": channel.id,
@@ -177,7 +177,7 @@ class DiscordDataScaper(commands.Cog):
             await ctx.send("Member List Count: " + str(len(members)))
             for member in members:
                 try:
-                    SupabaseClient().insert(
+                    PostgresClient().insert(
                         "applicant",
                         {"sheet_username": member.name, "discord_id": member.id},
                     )
@@ -216,12 +216,12 @@ class DiscordDataScaper(commands.Cog):
 
     async def add_messages(self):
         def addMessageData(data):
-            client = SupabaseClient()
+            client = PostgresClient()
             client.insert("unstructured discord data", data)
             return
 
         def getLastMessageObject(channelId):
-            last_message = SupabaseClient().read_by_order_limit(
+            last_message = PostgresClient().read_by_order_limit(
                 table="unstructured discord data",
                 query_key="channel",
                 query_value=channelId,
