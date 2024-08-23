@@ -181,10 +181,35 @@ class PostgresClient:
             return data
         except Exception as e:
             print(e)
-            raise Exception
+            raise Exception  
         
-    def getStatsStorage(self, fileName):
-        return self.client.storage.from_("c4gt-github-profile").download(fileName)
+    def getStatsStorage(file_name,bucket_name):
+        try:
+            from minio import Minio
+            from minio.error import S3Error
+
+            # Set up MinIO client
+            ACCESS_KEY = os.getenv("MINIO_ACCESS_KEY")
+            SECRET_KEY = os.getenv("MINIO_SECRET_KEY")
+            MINIO_API_HOST = os.getenv("MINIO_API_HOST")
+            bucket_name = "c4gt-github-profile"
+
+            minio_client = Minio(
+                endpoint=MINIO_API_HOST,
+                access_key=ACCESS_KEY,
+                secret_key=SECRET_KEY,
+                secure=False
+            )
+
+            response = minio_client.get_object(bucket_name, file_name)            
+            file_content = response.read()
+            response.close()
+            response.release_conn()
+            return file_content
+
+        except S3Error as exc:
+            print(f"Error occurred while retrieving '{file_name}':", exc)
+            return None
 
     
     def logVCAction(self,user, action):
