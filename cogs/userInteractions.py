@@ -168,7 +168,7 @@ class AuthenticationView(discord.ui.View):
         button = discord.ui.Button(
             label="Authenticate Github",
             style=discord.ButtonStyle.url,
-            url=f"https://github-app.c4gt.samagra.io/authenticate/{discord_userdata}",
+            url=f"https://backend.c4gt.samagra.io/authenticate/{discord_userdata}",
         )
         self.add_item(button)
         self.message = None
