@@ -177,24 +177,6 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        # self.update_contributors.start()
-
-    # Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command
-    # @commands.command(aliases=['join'])
-    # async def join_as_contributor(self, ctx):
-    #     #create a direct messaging channel with the one who executed the command
-    #     if isinstance(ctx.channel, discord.DMChannel):
-    #         userdata = str(ctx.author.id)
-    #         view = AuthenticationView(userdata)
-    #         await ctx.send("Please authenticate your github account to register in the C4GT Community", view=view)
-    #     # Command logic for DMs
-    #     else:
-    #     # Command logic for other channels (e.g., servers, groups)
-    #         await ctx.send("Please use this command in Bot DMs.")
-    #     # Command logic for DMs
-    #     userdata = str(ctx.author.id)
-    #     view = AuthenticationView(userdata)
-    #     # await dmchannel.send("Please authenticate your github account to register for Code for GovTech 2023", view=view)
 
     @commands.command(aliases=["badges"])
     async def list_badges(self, ctx):
@@ -220,10 +202,6 @@ class UserHandler(commands.Cog):
 
         return
 
-    # @commands.command()
-    # async def give_badges(self, ctx):
-    #     self.give_discord_badges.start()
-
     @tasks.loop(minutes=10)
     async def update_contributors(self):
         contributors = SupabaseClient().read_all("contributors_registration")
@@ -239,45 +217,6 @@ class UserHandler(commands.Cog):
                 print(member.name)
                 await member.add_roles(contributor_role)
             print(f"Given Roles to {member.name if member else 'None'}")
-            # add to discord engagement
-            # SupabaseClient("discord_engagement").insert({"contributor": member.id})
-
-        # update engagement
-        # for contributor in contributors:
-        #     contributorData = SupabaseClient("discord_engagement").read("contributor", contributor["discord_id"])[0]
-        #     member = await guild.fetch_member(contributorData["contributor"])
-        #     print(f"-----Contributor-----{member.name}-------")
-        #     badges = Badges(member.name)
-        #     if contributorData:
-        #         if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
-        #             SupabaseClient("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
-        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #             await dmchannel.send(embed=badges.converseBadge)
-        #         if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
-        #             SupabaseClient("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
-        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #             await dmchannel.send(embed=badges.rockstarBadge)
-        #         if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
-        #             SupabaseClient("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
-        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #             await dmchannel.send(embed=badges.apprenticeBadge)
-        #     github_id = contributor["github_id"]
-        #     prData = {
-        #         "raised": SupabaseClient(table="pull_requests").read(query_key="raised_by", query_value=github_id),
-        #         "merged":SupabaseClient(table="pull_requests").read(query_key="merged_by", query_value=github_id)
-        #     }
-        #     points = 0
-        #     for action in prData.keys():
-        #         prs = prData[action]
-        #         for pr in prs:
-        #             points+=pr["points"]
-        #     if len(prData["raised"])+len(prData["merged"])>0and not contributorData["enthusiastBadge"]:
-        #         SupabaseClient("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
-        #         await dmchannel.send(embed=Badges(member.name, points=points).enthusiastBadge)
-        #     if points>=30 and not contributorData["risingStarBadge"]:
-        #         SupabaseClient("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
-        #         await dmchannel.send(embed=badges.risingStarBadge)
-
         return
 
     @commands.command()
