@@ -17,6 +17,8 @@ current_directory = os.getcwd()
 sys.path.append(current_directory)
 
 dotenv.load_dotenv(".env")
+
+
 class AuthenticationView(discord.ui.View):
     def __init__(self, discord_userdata):
         super().__init__()
@@ -27,6 +29,7 @@ class AuthenticationView(discord.ui.View):
         )
         self.add_item(button)
         self.message = None
+
 
 class RegistrationModal(discord.ui.Modal):
     def __init__(
@@ -87,22 +90,25 @@ class RegistrationModal(discord.ui.Modal):
         if verifiedContributorRoleID in [role.id for role in user.roles]:
             return
         else:
-
             async def hasIntroduced():
-                print("Checking...")
+                print("Checking hasIntroduced...")
                 authentication = SupabaseClient().read(
                     "contributors_registration", "discord_id", user.id
                 )
+                print("Authentication: "+authentication)
                 while not authentication:
+                    print("Not authenticated")
                     await asyncio.sleep(30)
                 print("Found!")
                 discordEngagement = SupabaseClient().read(
                     "discord_engagement", "contributor", user.id
                 )[0]
+                print("Discord engagement: "+discordEngagement)
                 return discordEngagement["has_introduced"]
 
             try:
                 await asyncio.wait_for(hasIntroduced(), timeout=1000)
+                print("Timedout on hasIntroduced")
                 verifiedContributorRole = user.guild.get_role(verifiedContributorRoleID)
                 if verifiedContributorRole:
                     if verifiedContributorRole not in user.roles:
