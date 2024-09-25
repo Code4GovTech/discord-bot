@@ -204,6 +204,7 @@ class UserHandler(commands.Cog):
 
     @tasks.loop(minutes=10)
     async def update_contributors(self):
+        print("update_contributors running")
         contributors = SupabaseClient().read_all("contributors_registration")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
