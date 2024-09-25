@@ -72,6 +72,7 @@ class RegistrationModal(discord.ui.Modal):
 
     async def on_submit(self, interaction: discord.Interaction):
         user = interaction.user
+        supaClient = SupabaseClient()
         await interaction.response.send_message(
             "Thanks! Now please sign in via Github!",
             view=AuthenticationView(user.id),
@@ -92,15 +93,18 @@ class RegistrationModal(discord.ui.Modal):
         else:
             async def hasIntroduced():
                 print("Checking hasIntroduced...")
-                authentication = SupabaseClient().read(
-                    "contributors_registration", "discord_id", user.id
-                )
+                try: 
+                    authentication = supaClient.read(
+                        "contributors_registration", "discord_id", user.id
+                    )
+                except Exception as e:
+                    print("Failed hasIntroduced"+e)
                 print("Authentication: "+authentication)
                 while not authentication:
                     print("Not authenticated")
                     await asyncio.sleep(30)
                 print("Found!")
-                discordEngagement = SupabaseClient().read(
+                discordEngagement = supaClient.read(
                     "discord_engagement", "contributor", user.id
                 )[0]
                 print("Discord engagement: "+discordEngagement)
