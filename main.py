@@ -89,17 +89,19 @@ class RegistrationModal(discord.ui.Modal):
         verifiedContributorRoleID = 1247854311191351307
         print("User:", type(user))
         if verifiedContributorRoleID in [role.id for role in user.roles]:
+            print("User already verified. Returning")
             return
         else:
             async def hasIntroduced():
                 print("Checking hasIntroduced...")
                 try:
                     print("Trying has authenticated")
-                    authentication = supaClient.read(
-                        "contributors_registration", "discord_id", user.id
-                    )
+                    #authentication = supaClient.read(
+                       # "contributors_registration", "discord_id", user.id
+                    #)
                 except Exception as e:
                     print("Failed hasIntroduced: "+e)
+                authentication = False
                 print("Authentication: "+authentication)
                 while not authentication:
                     print("Not authenticated")
