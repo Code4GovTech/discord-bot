@@ -177,6 +177,7 @@ class AuthenticationView(discord.ui.View):
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.update_contributors.start()
 
     @commands.command(aliases=["badges"])
     async def list_badges(self, ctx):
@@ -210,14 +211,13 @@ class UserHandler(commands.Cog):
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         count = 1
         for contributor in contributors:
-            print(count)
+            print("Member count: "+count)
             count += 1
             member = guild.get_member(contributor["discord_id"])
             if member and contributor_role not in member.roles:
                 # Give Contributor Role
-                print(member.name)
                 await member.add_roles(contributor_role)
-            print(f"Given Roles to {member.name if member else 'None'}")
+                print(f"Given Roles to {member.name if member else 'None'}")
         return
 
     @commands.command()
