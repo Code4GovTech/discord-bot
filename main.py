@@ -42,7 +42,10 @@ class RegistrationModal(discord.ui.Modal):
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
 
     async def post_data(self, table_name, data):
+        print("PostData: "+table_name)
+        print("PostData: "+data)
         url = f"{os.getenv('SUPABASE_URL')}/rest/v1/{table_name}",
+        print("PostData: "+url)
         headers = {
             "apikey": f"{os.getenv('SUPABASE_KEY')}",
             "Authorization": f"Bearer {os.getenv('SUPABASE_KEY')}",
@@ -71,6 +74,7 @@ class RegistrationModal(discord.ui.Modal):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
+        print("On_Submit")
         user = interaction.user
         supaClient = SupabaseClient()
         await interaction.response.send_message(
@@ -78,13 +82,12 @@ class RegistrationModal(discord.ui.Modal):
             view=AuthenticationView(user.id),
             ephemeral=True,
         )
-        await self.post_data("contributors_discord",
-                             {
-                                 "name": self.name.value,
-                                 "discord_id": user.id,
-                                 "country": self.country.value
-                             }
-                             )
+        user_data = {
+            "name": self.name.value,
+            "discord_id": user.id,
+            "country": self.country.value
+        }
+        await self.post_data("contributors_discord", user_data)
 
         verifiedContributorRoleID = 1247854311191351307
         print("User:", type(user))
@@ -94,13 +97,13 @@ class RegistrationModal(discord.ui.Modal):
         else:
             async def hasIntroduced():
                 print("Checking hasIntroduced...")
-                try:
-                    print("Trying has authenticated")
-                    #authentication = supaClient.read(
-                       # "contributors_registration", "discord_id", user.id
-                    #)
-                except Exception as e:
-                    print("Failed hasIntroduced: "+e)
+                # try:
+                # print("Trying has authenticated")
+                # authentication = supaClient.read(
+                # "contributors_registration", "discord_id", user.id
+                # )
+                # except Exception as e:
+                # print("Failed hasIntroduced: "+e)
                 authentication = False
                 print("Authentication: "+authentication)
                 while not authentication:
