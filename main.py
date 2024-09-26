@@ -41,8 +41,8 @@ class RegistrationModal(discord.ui.Modal):
     ) -> None:
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
 
-    async def post_data(self, data):
-        url = os.getenv("SUPABASE_URL")
+    async def post_data(self, table_name, data):
+        url = f"{os.getenv('SUPABASE_KEY')}/rest/v1/{table_name}",
         headers = {
             "apikey": f"{os.getenv('SUPABASE_KEY')}",
             "Authorization": f"Bearer {os.getenv('SUPABASE_KEY')}",
@@ -78,23 +78,23 @@ class RegistrationModal(discord.ui.Modal):
             view=AuthenticationView(user.id),
             ephemeral=True,
         )
-        await self.post_data(
-            {
-                "name": self.name.value,
-                "discord_id": user.id,
-                "country": self.country.value,
-            }
-        )
+        await self.post_data("contributors_discord",
+                             {
+                                 "name": self.name.value,
+                                 "discord_id": user.id,
+                                 "country": self.country.value
+                             }
+                             )
 
         verifiedContributorRoleID = 1247854311191351307
         print("User:", type(user))
         if verifiedContributorRoleID in [role.id for role in user.roles]:
             return
         else:
-            
+
             async def hasIntroduced():
                 print("Checking hasIntroduced...")
-                try: 
+                try:
                     print("Trying has authenticated")
                     authentication = supaClient.read(
                         "contributors_registration", "discord_id", user.id
@@ -111,7 +111,7 @@ class RegistrationModal(discord.ui.Modal):
                 )[0]
                 print("Discord engagement: "+discordEngagement)
                 return discordEngagement["has_introduced"]
-            
+
             try:
                 print("Trying hasIntroduced")
                 await asyncio.wait_for(hasIntroduced(), timeout=1000)
