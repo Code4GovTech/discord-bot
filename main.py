@@ -42,7 +42,7 @@ class RegistrationModal(discord.ui.Modal):
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
 
     async def post_data(self, table_name, data):
-        url = f"{os.getenv('SUPABASE_KEY')}/rest/v1/{table_name}",
+        url = f"{os.getenv('SUPABASE_URL')}/rest/v1/{table_name}",
         headers = {
             "apikey": f"{os.getenv('SUPABASE_KEY')}",
             "Authorization": f"Bearer {os.getenv('SUPABASE_KEY')}",
