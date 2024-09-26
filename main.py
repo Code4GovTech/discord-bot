@@ -91,14 +91,16 @@ class RegistrationModal(discord.ui.Modal):
         if verifiedContributorRoleID in [role.id for role in user.roles]:
             return
         else:
+            
             async def hasIntroduced():
                 print("Checking hasIntroduced...")
                 try: 
+                    print("Trying has authenticated")
                     authentication = supaClient.read(
                         "contributors_registration", "discord_id", user.id
                     )
                 except Exception as e:
-                    print("Failed hasIntroduced"+e)
+                    print("Failed hasIntroduced: "+e)
                 print("Authentication: "+authentication)
                 while not authentication:
                     print("Not authenticated")
@@ -109,8 +111,9 @@ class RegistrationModal(discord.ui.Modal):
                 )[0]
                 print("Discord engagement: "+discordEngagement)
                 return discordEngagement["has_introduced"]
-
+            
             try:
+                print("Trying hasIntroduced")
                 await asyncio.wait_for(hasIntroduced(), timeout=1000)
                 print("Timedout on hasIntroduced")
                 verifiedContributorRole = user.guild.get_role(verifiedContributorRoleID)
