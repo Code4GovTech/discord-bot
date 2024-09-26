@@ -91,7 +91,6 @@ class RegistrationModal(discord.ui.Modal):
         if verifiedContributorRoleID in [role.id for role in user.roles]:
             return
         else:
-
             async def hasIntroduced():
                 print("Checking hasIntroduced...")
                 try:
