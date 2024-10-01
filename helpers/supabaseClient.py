@@ -1,12 +1,9 @@
 import os
 
 from discord import Member, User
-import dotenv
 from supabase import Client, create_client
 
 from helpers.roleHelpers import lookForRoles
-
-dotenv.load_dotenv(".env")
 
 class SupabaseClient:
     def __init__(self, url=None, key=None) -> None:

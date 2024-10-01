@@ -177,7 +177,7 @@ async def load():
 async def main():
     async with client:
         await load()
-        await client.start(os.getenv("TESTING_TOKEN"))
+        await client.start(os.getenv("TOKEN"))
 
 
 asyncio.run(main())
