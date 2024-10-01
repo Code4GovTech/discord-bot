@@ -73,6 +73,7 @@ class RegistrationModal(discord.ui.Modal):
                 ephemeral=True,
             )
         else:
+            # User is not verified. Make them link with github and run polling to check when auth is done.
             await interaction.response.send_message(
                 "Thanks! Now please sign in via Github!.\n\n*Please Note: Post Github Authentication it may take upto 10 mins for you to be verified on this discord server. If there is a delay, please check back.*",
                 view=AuthenticationView(user.id),
@@ -85,10 +86,8 @@ class RegistrationModal(discord.ui.Modal):
                     print("Not authenticated. Waiting")
                     await asyncio.sleep(15)
                     authentication = supaClient.read("contributors_registration", "discord_id", user.id)
-                discordEngagement = supaClient.read(
-                    "discord_engagement", "contributor", user.id
-                )[0]
                 print("User has authenticated")
+                discordEngagement = supaClient.read("discord_engagement", "contributor", user.id)[0]
                 return discordEngagement["has_introduced"]
 
             try:
