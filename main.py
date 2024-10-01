@@ -1,31 +1,31 @@
 import asyncio
-import json
 import os
 import sys
 from typing import Union
 
-import aiohttp
 import discord
-import dotenv
 from discord.ext import commands
 
 from cogs.vcCog import VCProgramSelection
 from helpers.supabaseClient import SupabaseClient
+from dotenv import load_dotenv, find_dotenv
+
 
 # Since there are user defined packages, adding current directory to python path
 current_directory = os.getcwd()
 sys.path.append(current_directory)
 
-dotenv.load_dotenv(".env")
+load_dotenv(find_dotenv())
 
 
 class AuthenticationView(discord.ui.View):
     def __init__(self, discord_userdata):
         super().__init__()
+        github_auth_url = os.getenv("GITHUB_AUTHENTICATION_URL")
         button = discord.ui.Button(
             label="Authenticate Github",
             style=discord.ButtonStyle.url,
-            url=f"https://backend.c4gt.samagra.io/authenticate/{discord_userdata}",
+            url=f"{github_auth_url}/{discord_userdata}",
         )
         self.add_item(button)
         self.message = None
@@ -41,28 +41,6 @@ class RegistrationModal(discord.ui.Modal):
     ) -> None:
         super().__init__(title=title, timeout=timeout, custom_id=custom_id)
 
-    async def post_data(self, table_name, data):
-        print("PostData: "+table_name)
-        print("PostData: "+data)
-        url = f"{os.getenv('SUPABASE_URL')}/rest/v1/{table_name}",
-        print("PostData: "+url)
-        headers = {
-            "apikey": f"{os.getenv('SUPABASE_KEY')}",
-            "Authorization": f"Bearer {os.getenv('SUPABASE_KEY')}",
-            "Content-Type": "application/json",
-            "Prefer": "return=minimal",
-        }
-
-        async with aiohttp.ClientSession() as session:
-            async with session.post(
-                url, headers=headers, data=json.dumps(data)
-            ) as response:
-                if response.status == 200:
-                    print("Data posted successfully")
-                else:
-                    print("Failed to post data")
-                    print("Status Code:", response.status)
-
     name = discord.ui.TextInput(
         label="Please Enter Your Name",
         placeholder="To give you the recognition you deserve, could you please share your full name for the certificates!",
@@ -74,61 +52,61 @@ class RegistrationModal(discord.ui.Modal):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        print("On_Submit")
         user = interaction.user
-        supaClient = SupabaseClient()
-        await interaction.response.send_message(
-            "Thanks! Now please sign in via Github!",
-            view=AuthenticationView(user.id),
-            ephemeral=True,
-        )
+
+        # Upsert user data to db
         user_data = {
             "name": self.name.value,
             "discord_id": user.id,
             "country": self.country.value
         }
-        await self.post_data("contributors_discord", user_data)
+        supaClient = SupabaseClient()
+        response = (supaClient.client.table("contributors_discord")
+                    .upsert(user_data, on_conflict="discord_id").execute())
+        print("DB updated for user:", response.data[0]["discord_id"])
 
-        verifiedContributorRoleID = 1247854311191351307
-        print("User:", type(user))
+        verifiedContributorRoleID = int(os.getenv("VERIFIED_ROLE_ID"))
         if verifiedContributorRoleID in [role.id for role in user.roles]:
-            print("User already verified. Returning")
-            return
+            print("Already a verified contributor. Stopping.")
+            await interaction.response.send_message(
+                "Thanks! You are already a verified contributor on our server!",
+                ephemeral=True,
+            )
         else:
+            await interaction.response.send_message(
+                "Thanks! Now please sign in via Github!.\n\n*Please Note: Post Github Authentication it may take upto 10 mins for you to be verified on this discord server. If there is a delay, please check back.*",
+                view=AuthenticationView(user.id),
+                ephemeral=True,
+            )
+
             async def hasIntroduced():
-                print("Checking hasIntroduced...")
-                # try:
-                # print("Trying has authenticated")
-                # authentication = supaClient.read(
-                # "contributors_registration", "discord_id", user.id
-                # )
-                # except Exception as e:
-                # print("Failed hasIntroduced: "+e)
                 authentication = False
-                print("Authentication: "+authentication)
                 while not authentication:
-                    print("Not authenticated")
-                    await asyncio.sleep(30)
-                print("Found!")
+                    print("Not authenticated. Waiting")
+                    await asyncio.sleep(15)
+                    authentication = supaClient.read("contributors_registration", "discord_id", user.id)
                 discordEngagement = supaClient.read(
                     "discord_engagement", "contributor", user.id
                 )[0]
-                print("Discord engagement: "+discordEngagement)
+                print("User has authenticated")
                 return discordEngagement["has_introduced"]
 
             try:
-                print("Trying hasIntroduced")
-                await asyncio.wait_for(hasIntroduced(), timeout=1000)
-                print("Timedout on hasIntroduced")
+                await asyncio.wait_for(hasIntroduced(), timeout=300)
                 verifiedContributorRole = user.guild.get_role(verifiedContributorRoleID)
                 if verifiedContributorRole:
-                    if verifiedContributorRole not in user.roles:
+                    try:
                         await user.add_roles(
                             verifiedContributorRole,
                             reason="Completed Auth and Introduction",
                         )
+                        print("Added " + verifiedContributorRole.name + " role for: "+str(user.id))
+                    except Exception as e:
+                        print(e)
+                else:
+                    print("Verified contributor role not found with ID")
             except asyncio.TimeoutError:
-                print("Timed out waiting for authentication")
+                print("Timed out waiting for authentication for: "+str(user.id))
 
 
 class RegistrationView(discord.ui.View):
@@ -200,7 +178,7 @@ async def load():
 async def main():
     async with client:
         await load()
-        await client.start(os.getenv("TOKEN"))
+        await client.start(os.getenv("TESTING_TOKEN"))
 
 
 asyncio.run(main())

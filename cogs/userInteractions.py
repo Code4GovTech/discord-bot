@@ -3,8 +3,11 @@ import os
 
 import discord
 from discord.ext import commands, tasks
+from dotenv import find_dotenv, load_dotenv
 
 from helpers.supabaseClient import SupabaseClient
+
+load_dotenv(find_dotenv())
 
 VERIFIED_CONTRIBUTOR_ROLE_ID = 1247854311191351307
 NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]
@@ -165,10 +168,11 @@ class AuthenticationView(discord.ui.View):
     def __init__(self, discord_userdata):
         super().__init__()
         self.timeout = None
+        github_auth_url = os.getenv("GITHUB_AUTHENTICATION_URL")
         button = discord.ui.Button(
             label="Authenticate Github",
             style=discord.ButtonStyle.url,
-            url=f"https://backend.c4gt.samagra.io/authenticate/{discord_userdata}",
+            url=f"{github_auth_url}/{discord_userdata}",
         )
         self.add_item(button)
         self.message = None
@@ -207,12 +211,12 @@ class UserHandler(commands.Cog):
     async def update_contributors(self):
         print("update_contributors running")
         contributors = SupabaseClient().read_all("contributors_registration")
-        print("Contributor lenght: "+len(contributors))
+        print("Contributor length: ", len(contributors))
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         count = 1
         for contributor in contributors:
-            print("Member count: "+count)
+            print("Member count: ", count)
             count += 1
             member = guild.get_member(contributor["discord_id"])
             if member and contributor_role not in member.roles:
