@@ -5,7 +5,6 @@ from supabase import Client, create_client
 
 from helpers.roleHelpers import lookForRoles
 
-
 class SupabaseClient:
     def __init__(self, url=None, key=None) -> None:
         self.supabase_url = url if url else os.getenv("SUPABASE_URL")
@@ -63,7 +62,7 @@ class SupabaseClient:
     def read_all(self, table):
         data = self.client.table(table).select("*").execute()
         return data.data
-    
+
     def read_all_active(self, table):
         data = self.client.table(table).select("*").eq('is_active', 'true').execute()
         return data.data
@@ -161,4 +160,4 @@ class SupabaseClient:
     def invalidateContributorDiscord(self, contributorDiscordIds):
         table = "contributors_discord"
         for id in contributorDiscordIds:
-            self.client.table(table).update({ 'is_active': 'false' }).eq('discord_id', id).execute()
+            self.client.table(table).update({'is_active': 'false'}).eq('discord_id', id).execute()
