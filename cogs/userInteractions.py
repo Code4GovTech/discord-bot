@@ -24,8 +24,6 @@ class UserHandler(commands.Cog):
         print("Contributors in DB: ", len(contributors))
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
-        # TODO remove before prod 
-        return
         for contributor in contributors:
             discord_id = contributor["discord_id"]
             try:
