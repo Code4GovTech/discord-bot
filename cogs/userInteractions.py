@@ -26,16 +26,19 @@ class UserHandler(commands.Cog):
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         for contributor in contributors:
             discord_id = contributor["discord_id"]
-            member = guild.get_member(discord_id)
-            if member:
+            try:
+                member = await guild.fetch_member(discord_id)
                 if contributor_role not in member.roles:
-                    await member.add_roles(contributor_role)
-                    print(f"Given {contributor_role.name} Role to {member.name}")
+                    try:
+                        await member.add_roles(contributor_role)
+                        print(f"Gave {contributor_role.name} role to {member.name}")
+                    except Exception as e:
+                        print(f"{member.name} could not be given verified contributor role")
                 else:
-                    print(f"{member.name} is already {contributor_role.name}")
-            else:
-                print(f"{discord_id} is not a member on discord")
-                ## TODO delete from supabase as well?
+                    print(f"{member.name} is already a {contributor_role.name}")
+            except:
+                print(f"User with discord_id: {discord_id} is not a member of our server anymore")
+                # TODO delete from supabase as well?
         return
 
     @commands.command(aliases=["badges"])
