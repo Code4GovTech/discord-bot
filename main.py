@@ -61,9 +61,12 @@ class RegistrationModal(discord.ui.Modal):
             "country": self.country.value
         }
         supaClient = SupabaseClient()
-        response = (supaClient.client.table("contributors_discord")
-                    .upsert(user_data, on_conflict="discord_id").execute())
-        print("DB updated for user:", response.data[0]["discord_id"])
+        try:
+            response = (supaClient.client.table("contributors_discord")
+                        .upsert(user_data, on_conflict="discord_id").execute())
+            print("DB updated for user:", response.data[0]["discord_id"])
+        except Exception as e:
+            print("Failed to update credentials for user: "+e)
 
         verifiedContributorRoleID = int(os.getenv("VERIFIED_ROLE_ID"))
         if verifiedContributorRoleID in [role.id for role in user.roles]:
