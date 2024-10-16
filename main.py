@@ -90,8 +90,7 @@ class RegistrationModal(discord.ui.Modal):
                     await asyncio.sleep(15)
                     authentication = supaClient.read("contributors_registration", "discord_id", user.id)
                 print("User has authenticated")
-                discordEngagement = supaClient.read("discord_engagement", "contributor", user.id)[0]
-                return discordEngagement["has_introduced"]
+                return True
 
             try:
                 await asyncio.wait_for(hasIntroduced(), timeout=300)
