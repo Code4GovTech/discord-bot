@@ -10,6 +10,7 @@ from models import *
 
 load_dotenv()
 
+
 class SupabaseClient:
     def __init__(self, url=None, key=None) -> None:
         self.supabase_url = url if url else os.getenv("SUPABASE_URL")
@@ -67,7 +68,7 @@ class SupabaseClient:
     def read_all(self, table):
         data = self.client.table(table).select("*").execute()
         return data.data
-    
+
     def read_all_active(self, table):
         data = self.client.table(table).select("*").eq('is_active', 'true').execute()
         return data.data
@@ -118,16 +119,18 @@ class SupabaseClient:
     def updateContributor(self, contributor: Member):
         table = "contributors_discord"
 
-        chapters = lookForChapterRoles(contributor.roles)
-        gender = lookForGenderRoles(contributor.roles)
+        user_roles = lookForRoles(contributor.roles)
 
         self.client.table(table).upsert(
             {
                 "discord_id": contributor.id,
                 "discord_username": contributor.name,
-                "chapter": chapters[0] if chapters else None,
-                "gender": gender,
+                "chapter": user_roles["chapter_roles"][0] if user_roles["chapter_roles"] else None,
+                "gender": user_roles["gender"],
                 "joined_at": contributor.joined_at.isoformat(),
+                "country": user_roles["country"],
+                "city": user_roles["city"],
+                "experience": user_roles["experience"]
             },
             on_conflict="discord_id",
         ).execute()
@@ -136,8 +139,9 @@ class SupabaseClient:
         table = "contributors_discord"
         data = []
         for contributor in contributors:
-            chapters = lookForChapterRoles(contributor.roles)
-            gender = lookForGenderRoles(contributor.roles)
+            user_roles = lookForRoles(contributor.roles)
+            chapters = user_roles["chapter_roles"]
+            gender = user_roles["gender"]
             data.append(
                 {
                     "discord_id": contributor.id,
@@ -419,14 +423,6 @@ class PostgresClient:
         return self.convert_dict(data)
     
     def invalidateContributorDiscord(self, contributorDiscordIds):
-        table = ContributorsDiscord
-        for id in contributorDiscordIds:           
-            try:
-                stmt = (update(table).where(table.discord_id == id).values({ 'is_active': 'false' }))
-                self.session.execute(stmt)
-                self.session.commit()                    
-            except Exception as e:
-                print(e)
-                self.session.rollback()
-                continue
-                
+        table = "contributors_discord"
+        for id in contributorDiscordIds:
+            self.client.table(table).update({'is_active': 'false'}).eq('discord_id', id).execute()

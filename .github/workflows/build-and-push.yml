@@ -4,9 +4,8 @@ on:
   push:
     branches:
       - main
-      - dev
-  release:
-    types: [published]
+  workflow_dispatch:
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}

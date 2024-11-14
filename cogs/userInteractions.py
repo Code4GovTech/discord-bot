@@ -3,198 +3,43 @@ import os
 
 import discord
 from discord.ext import commands, tasks
+from dotenv import find_dotenv, load_dotenv
 
 from helpers.supabaseClient import PostgresClient
 
-VERIFIED_CONTRIBUTOR_ROLE_ID = 1123967402175119482
-NON_CONTRIBUTOR_ROLES = [973852321870118914, 976345770477387788, 973852439054782464]
-NON_CONTRIBUTOR_MEMBERS = [
-    704738663883472967,
-    703157062825410590,
-    697080616046559352,
-    694445371816149062,
-    677090546694619168,
-    662243718354698240,
-    637512076084117524,
-    636277951540887553,
-    599878601143222282,
-    476285280811483140,
-    459239263192612874,
-    365127154847186945,
-    314379504157982721,
-    291548601228722177,
-    280019116755124226,
-    262810519184998400,
-    222905396610859010,
-    761623930531741788,
-    760775460178755614,
-    759107287322329128,
-    753909213859938385,
-    749287051035148328,
-    730733764891770950,
-    727567753246146633,
-    722313444325457921,
-    720297291105304627,
-    712557512926298153,
-    788670744120786976,
-    805863967284920352,
-    804299931543535626,
-    902553914916896808,
-    882206400074358835,
-    1016564507394457663,
-    1010140041789571072,
-    1008331310806335618,
-    989823092283035678,
-    987081239892750376,
-    986500267858083860,
-    986245349129740338,
-    973537784537186304,
-    971297678401089556,
-    969115972059406376,
-    967973710617247796,
-    965956645895147610,
-    963733651529531444,
-    961904402459947018,
-    961529037610713098,
-    961283715382775818,
-    960435521786617856,
-    948478097508954122,
-    937569989689487420,
-    936118598102028319,
-    935911019828641812,
-    933651897502535690,
-    1087744252408246373,
-    1086529617013252167,
-    1083352549660307466,
-    1079268207917027348,
-    1077912548571095092,
-    1075013295221768213,
-    1070737923483389972,
-    1059343450312544266,
-    1052565902748553236,
-    1050037458286420099,
-    1049311176716206164,
-    1045238281740230656,
-    1044876122191581194,
-    1044532981857001502,
-    1043440759061352588,
-    1042682119035568178,
-    1039880103934570517,
-    1037956974039535636,
-    1036590822201757696,
-    1024552723280052294,
-    1018398460598308915,
-    1108763601231171594,
-    1108657717100429312,
-    1108649642633199636,
-    1108649434251792514,
-    1108649344242040883,
-    1108649032978538497,
-    1108618174477369426,
-    1108613175697481749,
-    1108269782668681276,
-    1107943353632432208,
-    1107933295930511431,
-    1107927044962144286,
-    1107910689370165248,
-    1107899551974686831,
-    1107656943809593395,
-    1107618486232039454,
-    1107555866422562926,
-    1107504062175391815,
-    1101892125328679024,
-    1100365706362626098,
-    1099938102555975690,
-    1098923182439796818,
-    1093415042860466268,
-    1091224095770816552,
-    1120262010752471112,
-    1115908663207530577,
-    1115622606440239184,
-    1115538129672224880,
-    1115537984972931173,
-    1115171977934688296,
-    1114795277518389391,
-]
+load_dotenv(find_dotenv())
 
-
-class Announcement:
-    def __init__(self, member):
-        self.member = member
-
-    async def create_embed(self):
-        embed = discord.Embed(
-            title=f"Hey {self.member.name}!",
-            description=f"""
-If you submitted a proposal and did not make it to the C4GT mentoring program  or you missed the deadline for applying, worry not!
-
-**We have launched the C4GT Community Program Today!**🚀 🚀
-
-Through this program you can contribute to multiple projects, build your skills & get exclusive rewards & goodies.
-
-How will the Community Program work?🤔
-- **Explore Projects** 📋 - Explore [projects](https://www.codeforgovtech.in/community-projects) as per your skills, interest in the domain & more.
-- **Get Coding** 💻  - Interact with mentors for clarity if required & solve the project
-- **Points & Rewards** 🎁 - On each PR merged, you will get points. These points will give you badges & C4GT goodies. Read more about the point system [here](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors)
-
-How can you participate?
-- **Link Discord & GitHub** 🤝 - Use this [link]({os.getenv('FLASK_HOST')}/authenticate/{self.member.id})  to connect these platforms, so we can track your activity & calculate points
-- **Explore Issues Listed** 🖥️ - Keep an eye on our project page as more issues will be released every week.
-- **Ask Questions** ❓ - Ask away your queries on the #c4gtcommunitychannel
-
-So what are you waiting for? Let's get started!!""",
-            color=0x00FFFF,
-        )
-
-        # embed.add_field(name="How will the Community Program work?🤔",
-        #                 value="- **Explore Projects** 📋 - Explore [projects](https://c4gt-ccbp-projects.vercel.app/) as per your skills, interest in the domain & more.\n- **Get Coding** 💻 - Interact with mentors for clarity if required & solve the project\n- **Points & Rewards** 🎁 - On each PR merged, you will get points. These points will give you badges & C4GT goodies. Read more about the point system [here](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors)")
-
-        # embed.add_field(name="How can you participate?",
-        #                 value=f"- **Link Discord & GitHub** 🤝 - Use this [link]({os.getenv('''FLASK_HOST''')}/authenticate/{self.member.id}) to connect these platforms, so we can track your activity & calculate points\n- **Explore Issues Listed** 🖥️ - Keep an eye on our project page as more issues will be released every week.\n- **Ask Questions** ❓ - Ask away your queries on the #c4gtcommunitychannel")
-        # embed.add_field(name="So what are you waiting for? Let's get started!!", value='')
-        return embed
-
-
-# This is a Discord View that is a set of UI elements that can be sent together in a message in discord.
-# This view send a link to Github Auth through c4gt flask app in the form of a button.
-class RegistrationModal(discord.ui.Modal, title="Contributor Registration"):
-    name = discord.ui.TextInput(label="Name")
-
-
-class AuthenticationView(discord.ui.View):
-    def __init__(self, discord_userdata):
-        super().__init__()
-        self.timeout = None
-        button = discord.ui.Button(
-            label="Authenticate Github",
-            style=discord.ButtonStyle.url,
-            url=f"https://github-app.c4gt.samagra.io/authenticate/{discord_userdata}",
-        )
-        self.add_item(button)
-        self.message = None
+VERIFIED_CONTRIBUTOR_ROLE_ID = int(os.getenv("VERIFIED_ROLE_ID"))
 
 
 class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        # self.update_contributors.start()
+        self.update_contributors.start()
 
-    # Executing this command sends a link to Github OAuth App via a Flask Server in the DM channel of the one executing the command
-    # @commands.command(aliases=['join'])
-    # async def join_as_contributor(self, ctx):
-    #     #create a direct messaging channel with the one who executed the command
-    #     if isinstance(ctx.channel, discord.DMChannel):
-    #         userdata = str(ctx.author.id)
-    #         view = AuthenticationView(userdata)
-    #         await ctx.send("Please authenticate your github account to register in the C4GT Community", view=view)
-    #     # Command logic for DMs
-    #     else:
-    #     # Command logic for other channels (e.g., servers, groups)
-    #         await ctx.send("Please use this command in Bot DMs.")
-    #     # Command logic for DMs
-    #     userdata = str(ctx.author.id)
-    #     view = AuthenticationView(userdata)
-    #     # await dmchannel.send("Please authenticate your github account to register for Code for GovTech 2023", view=view)
+    @tasks.loop(minutes=60)
+    async def update_contributors(self):
+        print("update_contributors running")
+        contributors = PostgresClient().read_all("contributors_registration")
+        print("Contributors in DB: ", len(contributors))
+        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
+        contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
+        for contributor in contributors:
+            discord_id = contributor["discord_id"]
+            try:
+                member = await guild.fetch_member(discord_id)
+                if contributor_role not in member.roles:
+                    try:
+                        await member.add_roles(contributor_role)
+                        print(f"Gave {contributor_role.name} role to {member.name}")
+                    except Exception as e:
+                        print(f"{member.name} could not be given verified contributor role")
+                else:
+                    print(f"{member.name} is already a {contributor_role.name}")
+            except:
+                print(f"User with discord_id: {discord_id} is not a member of our server anymore")
+                # TODO delete from supabase as well?
+        return
 
     @commands.command(aliases=["badges"])
     async def list_badges(self, ctx):
@@ -335,7 +180,6 @@ Know more about: Code For GovTech ([Website](https://www.codeforgovtech.in) | [G
 
     @update_contributors.before_loop
     async def before_update_loop(self):
-        print("starting auto-badge")
         await self.bot.wait_until_ready()
 
     async def read_members_csv(self, file_path):
