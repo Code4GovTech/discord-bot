@@ -18,4 +18,4 @@ urllib3==2.0.2
 yarl==1.9.2
 supabase==1.0.3
 SQLAlchemy==2.0.32
-psycopg2==2.9.9
+psycopg2-binary==2.9.9
