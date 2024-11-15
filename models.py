@@ -744,9 +744,6 @@ class MentorshipProgramSiteStructure(Base):
     website_directory_label = Column(Text, nullable=True)
     directory_url = Column(Text, nullable=True)
 
-    # project = relationship('MentorshipProgramProjects', back_populates='site_structures')
-    # contributor = relationship('MentorshipProgramSelectedContributors', back_populates='site_structures')
-
     def __repr__(self):
         return f"<MentorshipProgramSiteStructure(id={self.id})>"
 
@@ -889,9 +886,6 @@ class MentorshipProgramWebsiteHasUpdated(Base):
             'all_links': self.all_links
         }
 
-
-
-##
 
 class MentorshipProgramWebsitePullRequest(Base):
     __tablename__ = 'mentorship_program_website_pull_request'
@@ -1060,9 +1054,6 @@ class PointsMapping(Base):
             'updated_at': self.updated_at
         }
 
-
-
-###
 
 class PrHistory(Base):
     __tablename__ = 'pr_history'
@@ -1370,10 +1361,6 @@ class UserCertificates(Base):
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
-
-
-
-###
 
 class UserPointsMapping(Base):
     __tablename__ = 'user_points_mapping'

@@ -227,7 +227,6 @@ class VCProgramSelection(ui.View):
         placeholder="Which program are you seeking credentials for?",
         options=[
             SelectOption(label="Community Program", value="ccbp"),
-            # SelectOption(label="Mentoring Program", value="dmp")
         ],
     )
     async def selectAProgram(self, interaction: Interaction, select: ui.Select):
@@ -237,8 +236,6 @@ class VCProgramSelection(ui.View):
             await interaction.response.send_message(
                 view=CommunityVCView(), ephemeral=True
             )
-        # elif selected_option == "dmp":
-        #     await interaction.response.send_message(view=DMPVCView(), ephemeral=True)
         else:
             await interaction.response.send_message(
                 "Unknown selection.", ephemeral=True

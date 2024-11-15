@@ -2,7 +2,7 @@ import os
 
 from discord import Member, User
 from supabase import Client, create_client
-from helpers.roleHelpers import lookForChapterRoles, lookForGenderRoles
+from helpers.roleHelpers import lookForRoles
 from dotenv import load_dotenv            
 from sqlalchemy import create_engine,select,desc,update,delete
 from sqlalchemy.orm import sessionmaker
@@ -335,8 +335,8 @@ class PostgresClient:
         try:
             if table_class == None:
                 table_class = ContributorsDiscord
-            chapters = lookForChapterRoles(contributor.roles)
-            gender = lookForGenderRoles(contributor.roles)
+            chapters = lookForRoles(contributor.roles)["chapter_roles"]
+            gender = lookForRoles(contributor.roles)["gender"]
 
             # Prepare the data to be upserted
             update_data = {
@@ -371,8 +371,8 @@ class PostgresClient:
     def updateContributors(self, contributors: [Member], table_class):
         try:
             for contributor in contributors:
-                chapters = lookForChapterRoles(contributor.roles)
-                gender = lookForGenderRoles(contributor.roles)
+                chapters = lookForRoles(contributor.roles)["chapter_roles"]
+                gender = lookForRoles(contributor.roles)["gender"]
                 update_data = {
                     "discord_id": contributor.id,
                     "discord_username": contributor.name,

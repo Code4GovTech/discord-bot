@@ -65,10 +65,6 @@ class UserHandler(commands.Cog):
 
         return
 
-    # @commands.command()
-    # async def give_badges(self, ctx):
-    #     self.give_discord_badges.start()
-
     @tasks.loop(minutes=10)
     async def update_contributors(self):
         contributors = PostgresClient().read_all("contributors_registration")
@@ -84,45 +80,7 @@ class UserHandler(commands.Cog):
                 print(member.name)
                 await member.add_roles(contributor_role)
             print(f"Given Roles to {member.name if member else 'None'}")
-            # add to discord engagement
-            # PostgresClient("discord_engagement").insert({"contributor": member.id})
-
-        # update engagement
-        # for contributor in contributors:
-        #     contributorData = PostgresClient("discord_engagement").read("contributor", contributor["discord_id"])[0]
-        #     member = await guild.fetch_member(contributorData["contributor"])
-        #     print(f"-----Contributor-----{member.name}-------")
-        #     badges = Badges(member.name)
-        #     if contributorData:
-        #         if contributorData["total_message_count"]>10 and not contributorData["converserBadge"]:
-        #             PostgresClient("discord_engagement").update({"converserBadge":True},"contributor", contributorData["contributor"])
-        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #             await dmchannel.send(embed=badges.converseBadge)
-        #         if contributorData["total_reaction_count"]>5 and not contributorData["rockstarBadge"]:
-        #             PostgresClient("discord_engagement").update({"rockstarBadge":True},"contributor", contributorData["contributor"])
-        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #             await dmchannel.send(embed=badges.rockstarBadge)
-        #         if contributorData["has_introduced"] and not contributorData["apprenticeBadge"]:
-        #             PostgresClient("discord_engagement").update({"apprenticeBadge":True},"contributor", contributorData["contributor"])
-        #             dmchannel = member.dm_channel if member.dm_channel else await member.create_dm()
-        #             await dmchannel.send(embed=badges.apprenticeBadge)
-        #     github_id = contributor["github_id"]
-        #     prData = {
-        #         "raised": PostgresClient(table="pull_requests").read(query_key="raised_by", query_value=github_id),
-        #         "merged":PostgresClient(table="pull_requests").read(query_key="merged_by", query_value=github_id)
-        #     }
-        #     points = 0
-        #     for action in prData.keys():
-        #         prs = prData[action]
-        #         for pr in prs:
-        #             points+=pr["points"]
-        #     if len(prData["raised"])+len(prData["merged"])>0and not contributorData["enthusiastBadge"]:
-        #         PostgresClient("discord_engagement").update({"enthusiastBadge":True},"contributor", contributorData["contributor"])
-        #         await dmchannel.send(embed=Badges(member.name, points=points).enthusiastBadge)
-        #     if points>=30 and not contributorData["risingStarBadge"]:
-        #         PostgresClient("discord_engagement").update({"risingStarBadge":True},"contributor", contributorData["contributor"])
-        #         await dmchannel.send(embed=badges.risingStarBadge)
-
+           
         return
 
     @commands.command()

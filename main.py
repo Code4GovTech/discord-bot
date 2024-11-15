@@ -73,10 +73,11 @@ class RegistrationModal(discord.ui.Modal):
             "discord_id": user.id,
             "country": self.country.value
         }
-        supaClient = SupabaseClient()
+        # supaClient = SupabaseClient()
         try:
-            response = (supaClient.client.table("contributors_discord")
-                        .upsert(user_data, on_conflict="discord_id").execute())
+            # response = (supaClient.client.table("contributors_discord")
+            #             .upsert(user_data, on_conflict="discord_id").execute())
+            response = PostgresClient().updateContributor(user_data)
             print("DB updated for user:", response.data[0]["discord_id"])
         except Exception as e:
             print("Failed to update credentials for user: "+e)
