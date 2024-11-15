@@ -12,6 +12,7 @@ class ServerManagement(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
         self.assign_contributor_role.start()
+        self.postgres_client = PostgresClient()
 
     def validUser(self, ctx):
         authorised_users = [
@@ -40,20 +41,20 @@ class ServerManagement(commands.Cog):
             if role.name.startswith("College:"):
                 orgName = role.name[len("College: ") :]
                 chapterRoles.append(role)
-                PostgresClient().addChapter(
+                self.postgres_client.addChapter(
                     roleId=role.id, orgName=orgName, type="COLLEGE"
                 )
             elif role.name.startswith("Corporate:"):
                 orgName = role.name[len("Corporate: ") :]
                 chapterRoles.append(role)
-                PostgresClient().addChapter(
+                self.postgres_client.addChapter(
                     roleId=role.id, orgName=orgName, type="CORPORATE"
                 )
 
         print("added chapters")
 
-        contributorsGithub = PostgresClient().read_all("contributors_registration")
-        contributorsDiscord = PostgresClient().read_all_active("contributors_discord")
+        contributorsGithub = self.postgres_client.read_all("contributors_registration")
+        contributorsDiscord = self.postgres_client.read_all_active("contributors_discord")
 
         ## Give contributor role
         contributorIds = [
@@ -71,7 +72,7 @@ class ServerManagement(commands.Cog):
 
         print(count)
 
-        PostgresClient().updateContributors(guild.members)
+        self.postgres_client.updateContributors(guild.members)
         recordedMembers = [
             contributor["discord_id"] for contributor in contributorsDiscord
         ]
@@ -79,14 +80,14 @@ class ServerManagement(commands.Cog):
         currentMembers = [member.id for member in guild.members]
         membersWhoLeft = list(set(recordedMembers) - set(currentMembers))
         print(f"{len(membersWhoLeft)} members left")
-        PostgresClient().invalidateContributorDiscord(membersWhoLeft)
+        self.postgres_client.invalidateContributorDiscord(membersWhoLeft)
         print("Updated Contributors")
 
     @tasks.loop(minutes=30)
     async def assign_contributor_role(self):
         guild = self.bot.get_guild(serverConfig.SERVER)
         contributorRole = guild.get_role(serverConfig.Roles.CONTRIBUTOR_ROLE)
-        contributorsGithub = PostgresClient().read_all("contributors_registration")
+        contributorsGithub = self.postgres_client.read_all("contributors_registration")
 
         contributorIds = [
             contributor["discord_id"] for contributor in contributorsGithub

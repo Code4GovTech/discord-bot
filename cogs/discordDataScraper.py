@@ -24,6 +24,7 @@ TIME_DURATION = config_data["TIME_DURATION"]
 class DiscordDataScaper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
+        self.postgres_client = PostgresClient()
 
     @commands.Cog.listener()
     async def on_message(self, message):
@@ -33,11 +34,11 @@ class DiscordDataScaper(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
         message = reaction.message
-        contributor = PostgresClient().read(
+        contributor = self.postgres_client.read(
             "discord_engagement", "contributor", message.author.id
         )[0]
         if not contributor:
-            PostgresClient().insert(
+            self.postgres_client.insert(
                 "discord_engagement",
                 {
                     "contributor": message.author.id,
@@ -48,7 +49,7 @@ class DiscordDataScaper(commands.Cog):
             )
             return
         print("reaction")
-        PostgresClient().update(
+        self.postgres_client.update(
             "discord_engagement",
             {"total_reaction_count": contributor["total_reaction_count"] + 1},
             "contributor",
@@ -60,7 +61,7 @@ class DiscordDataScaper(commands.Cog):
         await ctx.channel.send("started")
 
         def addEngagmentData(data):
-            client = PostgresClient()
+            client = self.postgres_client
             client.insert("discord_engagement", data)
             return
 
@@ -116,7 +117,7 @@ class DiscordDataScaper(commands.Cog):
         channels = await guild.fetch_channels()
         enabled = [
             channel["channel_id"]
-            for channel in PostgresClient().read_all("discord_channels")
+            for channel in self.postgres_client.read_all("discord_channels")
         ]
         for channel in channels:
             try:
@@ -127,7 +128,7 @@ class DiscordDataScaper(commands.Cog):
                     webhook = await channel.create_webhook(name="New Ticket Alert")
                     feedback = f"""URL: {webhook.url}\n Token:{"Yes" if webhook.token else "No"}"""
                     await ctx.send(feedback)
-                    PostgresClient().insert(
+                    self.postgres_client.insert(
                         "discord_channels",
                         {
                             "channel_id": channel.id,
@@ -148,7 +149,7 @@ class DiscordDataScaper(commands.Cog):
             await ctx.send("Member List Count: " + str(len(members)))
             for member in members:
                 try:
-                    PostgresClient().insert(
+                    self.postgres_client.insert(
                         "applicant",
                         {"sheet_username": member.name, "discord_id": member.id},
                     )
@@ -187,12 +188,12 @@ class DiscordDataScaper(commands.Cog):
 
     async def add_messages(self):
         def addMessageData(data):
-            client = PostgresClient()
+            client = self.postgres_client
             client.insert("unstructured discord data", data)
             return
 
         def getLastMessageObject(channelId):
-            last_message = PostgresClient().read_by_order_limit(
+            last_message = self.postgres_client.read_by_order_limit(
                 table="unstructured discord data",
                 query_key="channel",
                 query_value=channelId,

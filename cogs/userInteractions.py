@@ -16,11 +16,12 @@ class UserHandler(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
         self.update_contributors.start()
+        self.postgres_client = PostgresClient()
 
     @tasks.loop(minutes=60)
     async def update_contributors(self):
         print("update_contributors running")
-        contributors = PostgresClient().read_all("contributors_registration")
+        contributors = self.postgres_client.read_all("contributors_registration")
         print("Contributors in DB: ", len(contributors))
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
@@ -67,7 +68,7 @@ class UserHandler(commands.Cog):
 
     @tasks.loop(minutes=10)
     async def update_contributors(self):
-        contributors = PostgresClient().read_all("contributors_registration")
+        contributors = self.postgres_client.read_all("contributors_registration")
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         count = 1
@@ -119,7 +120,7 @@ But worry not, you can do so by solving issue tickets & earning more points✨
 **Know more about [badges & points](https://github.com/Code4GovTech/C4GT/wiki/Point-System-for-Contributors)**🧗"""
 
             noPointsGithubProfileEmbed = discord.Embed(title="", description=desc)
-            user = PostgresClient().read(
+            user = self.postgres_client.read(
                 "github_profile_data", "discord_id", ctx.author.id
             )
             if len(user) == 0:
@@ -188,17 +189,17 @@ Points are allocated on the following basis:bar_chart: :
     async def get_points(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
             discord_id = ctx.author.id
-            contributor = PostgresClient().read(
+            contributor = self.postgres_client.read(
                 table="contributors_registration",
                 query_key="discord_id",
                 query_value=discord_id,
             )
             print(contributor)
             github_id = contributor[0]["github_id"]
-            prs_raised = PostgresClient().read(
+            prs_raised = self.postgres_client.read(
                 table="connected_prs", query_key="raised_by", query_value=github_id
             )
-            prs_merged = PostgresClient().read(
+            prs_merged = self.postgres_client.read(
                 table="connected_prs", query_key="merged_by", query_value=github_id
             )
             raise_points = 0
