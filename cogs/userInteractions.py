@@ -66,24 +66,6 @@ class UserHandler(commands.Cog):
 
         return
 
-    @tasks.loop(minutes=10)
-    async def update_contributors(self):
-        contributors = self.postgres_client.read_all("contributors_registration")
-        guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
-        contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
-        count = 1
-        for contributor in contributors:
-            print(count)
-            count += 1
-            member = guild.get_member(contributor["discord_id"])
-            if member and contributor_role not in member.roles:
-                # Give Contributor Role
-                print(member.name)
-                await member.add_roles(contributor_role)
-            print(f"Given Roles to {member.name if member else 'None'}")
-           
-        return
-
     @commands.command()
     async def github_profile(self, ctx):
         if isinstance(ctx.channel, discord.DMChannel):
