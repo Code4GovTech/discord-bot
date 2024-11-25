@@ -11,7 +11,6 @@ serverConfig = ServerConfig()
 class ServerManagement(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.assign_contributor_role.start()
         self.postgres_client = PostgresClient()
 
     def validUser(self, ctx):
@@ -82,25 +81,6 @@ class ServerManagement(commands.Cog):
         print(f"{len(membersWhoLeft)} members left")
         self.postgres_client.invalidateContributorDiscord(membersWhoLeft)
         print("Updated Contributors")
-
-    @tasks.loop(minutes=30)
-    async def assign_contributor_role(self):
-        guild = self.bot.get_guild(serverConfig.SERVER)
-        contributorRole = guild.get_role(serverConfig.Roles.CONTRIBUTOR_ROLE)
-        contributorsGithub = self.postgres_client.read_all("contributors_registration")
-
-        contributorIds = [
-            contributor["discord_id"] for contributor in contributorsGithub
-        ]
-
-        for member in guild.members:
-            if member.id in contributorIds and contributorRole not in member.roles:
-                await member.add_roles(contributorRole)
-
-    @assign_contributor_role.before_loop
-    async def before_assign_contributor_role(self):
-        await self.bot.wait_until_ready()  # Wait until the bot is logged in and ready
-
 
 async def setup(bot):
     await bot.add_cog(ServerManagement(bot))
