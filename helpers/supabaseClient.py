@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine,select,desc,update,delete
 from sqlalchemy.orm import sessionmaker
 from models import *
+from sqlalchemy.ext.declarative import DeclarativeMeta
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
 load_dotenv()
 
@@ -171,9 +173,12 @@ class PostgresClient:
         DB_USER = os.getenv('POSTGRES_DB_USER')
         DB_PASS = os.getenv('POSTGRES_DB_PASS')
         
-        engine = create_engine(f'postgresql://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}')
-        Session = sessionmaker(bind=engine)
-        self.session = Session()
+        engine = create_async_engine(f'postgresql+asyncpg://{DB_USER}:{DB_PASS}@{DB_HOST}/{DB_NAME}')
+        async_session = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+        self.session = async_session
+    
+    def get_instance():
+        return PostgresClient()
 
     def convert_dict(self,data):
         try:
@@ -227,7 +232,16 @@ class PostgresClient:
             print(f"Error reading data from table '{table_class}':", e)
             return None
         
-      
+    def get_class_by_tablename(self,tablename):
+        try:
+            for cls in Base.registry._class_registry.values():
+                if isinstance(cls, DeclarativeMeta):
+                    if hasattr(cls, '__tablename__') and cls.__tablename__ == tablename:
+                        return cls
+            return None
+        except Exception as e:
+            print(f"ERROR get_class_by_tablename - {e}")
+            return None    
 
     def read_by_order_limit(self, table_class, query_key, query_value, order_column, order_by=False, limit=1, columns="*"):
         try:
@@ -255,9 +269,20 @@ class PostgresClient:
             print("Error reading data:", e)
             return None
 
-    def read_all(self, table):       
-        data = self.session.query(table).all()
-        return self.convert_dict(data)
+    async def read_all(self,table_class):
+        try:
+            table = self.get_class_by_tablename(table_class)
+            # Query all records from the specified table class            
+            async with self.session() as session:
+                stmt = select(table)
+                result = await session.execute(stmt)                
+                
+                data = result.scalars().all()
+                result = self.convert_dict(data)
+            return result
+        except Exception as e:
+            print(f"An error occurred -read_all_from_table : {e}")
+            return None
 
     def update(self, table_class, update_data, query_key, query_value):
         try:
@@ -331,38 +356,43 @@ class PostgresClient:
             print("Error deleting chapter:", e)
             return None
         
-    def updateContributor(self, contributor: Member, table_class=None):
+    async def updateContributor(self, contributor: Member, table_class=None):
         try:
-            if table_class == None:
-                table_class = ContributorsDiscord
-            chapters = lookForRoles(contributor.roles)["chapter_roles"]
-            gender = lookForRoles(contributor.roles)["gender"]
+            async with self.session() as session:
+                if table_class == None:
+                    table_class = ContributorsDiscord
+                chapters = lookForRoles(contributor.roles)["chapter_roles"]
+                gender = lookForRoles(contributor.roles)["gender"]
 
-            # Prepare the data to be upserted
-            update_data = {
-                "discord_id": contributor.id,
-                "discord_username": contributor.name,
-                "chapter": chapters[0] if chapters else None,
-                "gender": gender,
-                "joined_at": contributor.joined_at,
-            }
+                # Prepare the data to be upserted
+                update_data = {
+                    "discord_id": contributor.id,
+                    "discord_username": contributor.name,
+                    "chapter": chapters[0] if chapters else None,
+                    "gender": gender,
+                    "joined_at": contributor.joined_at,
+                }
 
-            existing_record = self.session.query(table_class).filter_by(discord_id=contributor.id).first()
+                stmt = select(ContributorsDiscord).where(ContributorsDiscord.discord_id == contributor.id)
+                result = await session.execute(stmt)
+                existing_record = result.scalars().first()
 
-            if existing_record:
-                stmt = (
-                    update(table_class)
-                    .where(table_class.discord_id == contributor.id)
-                    .values(update_data)
-                )
-                self.session.execute(stmt)
-            else:
-                new_record = table_class(**update_data)
-                self.session.add(new_record)
+                # existing_record = self.session.query(table_class).filter_by(discord_id=contributor.id).first()
 
-            # Commit the transaction
-            self.session.commit()
-            return True
+                if existing_record:
+                    stmt = (
+                        update(table_class)
+                        .where(table_class.discord_id == contributor.id)
+                        .values(update_data)
+                    )
+                    self.session.execute(stmt)
+                else:
+                    new_record = table_class(**update_data)
+                    self.session.add(new_record)
+
+                # Commit the transaction
+                self.session.commit()
+                return True
         except Exception as e:
             print("Error updating contributor:", e)
             return False
