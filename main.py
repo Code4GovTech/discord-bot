@@ -53,31 +53,16 @@ class RegistrationModal(discord.ui.Modal):
 
     async def on_submit(self, interaction: discord.Interaction):
         user = interaction.user
-        await interaction.response.send_message(
-            "Thanks! Now please sign in via Github!",
-            view=AuthenticationView(user.id),
-            ephemeral=True,
-        )
-        print(self,"self")
-        await self.post_data(
-            {
-                "name": self.name.value,
-                "discord_id": user.id,
-                "country": self.country.value,
-            }
-        )
-
         # Upsert user data to db
         user_data = {
             "name": self.name.value,
             "discord_id": user.id,
             "country": self.country.value
         }
-        # supaClient = SupabaseClient()
         try:
             # response = (supaClient.client.table("contributors_discord")
             #             .upsert(user_data, on_conflict="discord_id").execute())
-            response = PostgresClient().updateContributor(user_data)
+            response = await PostgresClient().updateContributor(user_data)
             print("DB updated for user:", response.data[0]["discord_id"])
         except Exception as e:
             print("Failed to update credentials for user: "+e)
