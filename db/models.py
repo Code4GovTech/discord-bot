@@ -404,6 +404,7 @@ class DmpOrgs(Base):
     description = Column(Text, nullable=False)
     link = Column(Text, nullable=False)
     repo_owner = Column(Text, nullable=False)
+    version = Column(Text, nullable=True)
     
     # issues = relationship('Issues', backref='organization', lazy='joined')
 
