@@ -183,7 +183,7 @@ async def load():
 async def main():
     async with client:
         await load()
-        print(os.getenv("TOKEN"))
+        print("Token is: "+os.getenv("TOKEN"))
         await client.start(os.getenv("TOKEN"))
 
 
