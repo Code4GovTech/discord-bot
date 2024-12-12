@@ -21,8 +21,10 @@ class UserHandler(commands.Cog):
     @tasks.loop(minutes=60)
     async def update_contributors(self):
         print("update_contributors running")
-        contributors = self.postgres_client.read_all("contributors_registration")
+        contributors = await self.postgres_client.read_all("contributors_registration")
         print("Contributors in DB: ", len(contributors))
+        ##TODO remove return
+        # return
         guild = await self.bot.fetch_guild(os.getenv("SERVER_ID"))
         contributor_role = guild.get_role(VERIFIED_CONTRIBUTOR_ROLE_ID)
         for contributor in contributors:

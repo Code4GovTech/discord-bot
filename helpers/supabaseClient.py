@@ -211,14 +211,52 @@ class PostgresClient:
         data = self.session.query(Leaderboard).where(Leaderboard.discord_id == id).all()
         return self.convert_dict(data)
 
-    
-    def read(self, table_class, query_key, query_value, columns=None):
+    async def read(self, table, query_key, query_value, columns=None):
+        """
+        Reads a single record from a table in the database using SQLAlchemy ORM.
+        
+        Args:
+            table (str): The name of the table to query.
+            query_key (str): The column name to filter by.
+            query_value (Any): The value to filter for in the specified column.
+            columns (list, optional): A list of column names to retrieve. Defaults to None (all columns).
+
+        Returns:
+            dict: The record as a dictionary, or None if no record is found.
+        """
         try:
-            stmt = select(table_class)           
-            stmt = stmt.where(getattr(table_class, query_key) == query_value)
+            table_class = self.get_class_by_tablename(table)
+            
+            # Build the query
+            if columns:
+                stmt = select([getattr(table_class, col) for col in columns]).where(
+                    getattr(table_class, query_key) == query_value
+                )
+            else:
+                stmt = select(table_class).where(
+                    getattr(table_class, query_key) == query_value
+                )
+            
+            # Execute the query
+            async with self.session() as session:
+                result = await session.execute(stmt)
+                record = result.scalar_one_or_none()  # Fetch a single result or None
+            
+            # Convert the result to a dictionary if a record is found
+            return record.to_dict() if record else None
+
+        except Exception as e:
+            print(f"An error occurred - read: {e}")
+            return None
+        
+    def read_old(self, table_class, query_key, query_value, columns=None):
+        try:
+            table = self.get_class_by_tablename(table_class)
+            stmt = select(table)           
+            stmt = stmt.where(getattr(table, query_key) == query_value)
             
             if columns:
-                stmt = stmt.with_only_columns(*(getattr(table_class, col) for col in columns))
+                stmt = stmt.with_only_columns(*(getattr(table, col) for col in columns))
                 result = self.session.execute(stmt)
                 rows = result.fetchall()
                 column_names = [col.name for col in stmt.columns]
@@ -358,78 +396,48 @@ class PostgresClient:
         
     async def updateContributor(self, contributor: Member, table_class=None):
         try:
-            async with self.session() as session:
-                if table_class == None:
+            async with self.session() as session:  # Ensure self.session is AsyncSession
+                if table_class is None:
                     table_class = ContributorsDiscord
-                chapters = lookForRoles(contributor.roles)["chapter_roles"]
-                gender = lookForRoles(contributor.roles)["gender"]
 
-                # Prepare the data to be upserted
+                # Extract roles
+                chapters = lookForRoles(contributor["roles"])["chapter_roles"]
+                gender = lookForRoles(contributor["roles"])["gender"]
+
+                # Prepare data for upsert
                 update_data = {
-                    "discord_id": contributor.id,
-                    "discord_username": contributor.name,
+                    "discord_id": contributor["discord_id"],
+                    "discord_username": contributor["name"],
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
-                    "joined_at": contributor.joined_at,
+                    "email": "jaanbaaz@test.com",
+                    "joined_at": contributor["joined_at"].replace(tzinfo=None),  # Ensure naive datetime
                 }
 
-                stmt = select(ContributorsDiscord).where(ContributorsDiscord.discord_id == contributor.id)
+                # Check if the record exists
+                stmt = select(table_class).where(table_class.discord_id == contributor["discord_id"])
                 result = await session.execute(stmt)
                 existing_record = result.scalars().first()
 
-                # existing_record = self.session.query(table_class).filter_by(discord_id=contributor.id).first()
-
                 if existing_record:
+                    # Update existing record
                     stmt = (
                         update(table_class)
-                        .where(table_class.discord_id == contributor.id)
-                        .values(update_data)
+                        .where(table_class.discord_id == contributor["discord_id"])
+                        .values(**update_data)  # Pass the data as keyword arguments
                     )
-                    self.session.execute(stmt)
+                    await session.execute(stmt)
+                    await session.commit()  # Commit changes after executing the update
                 else:
+                    # Insert new record
                     new_record = table_class(**update_data)
-                    self.session.add(new_record)
-
-                # Commit the transaction
-                self.session.commit()
+                    session.add(new_record)  # Add to session
+                    await session.commit()  # Commit changes after adding
                 return True
         except Exception as e:
             print("Error updating contributor:", e)
             return False
-
-
-    def updateContributors(self, contributors: [Member], table_class):
-        try:
-            for contributor in contributors:
-                chapters = lookForRoles(contributor.roles)["chapter_roles"]
-                gender = lookForRoles(contributor.roles)["gender"]
-                update_data = {
-                    "discord_id": contributor.id,
-                    "discord_username": contributor.name,
-                    "chapter": chapters[0] if chapters else None,
-                    "gender": gender,
-                    "joined_at": contributor.joined_at,
-                }
-                existing_record = self.session.query(table_class).filter_by(discord_id=contributor.id).first()
-
-                if existing_record:
-                    stmt = (
-                        update(table_class)
-                        .where(table_class.discord_id == contributor.id)
-                        .values(update_data)
-                    )
-                    self.session.execute(stmt)
-                else:
-                    new_record = table_class(**update_data)
-                    self.session.add(new_record)
-
-            self.session.commit()
-            return True
-        except Exception as e:
-            print("Error updating contributors:", e)
-            return False
-
-    
+   
     def deleteContributorDiscord(self, contributorDiscordIds, table_class=None):
         try:
             if table_class == None:

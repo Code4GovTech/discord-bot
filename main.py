@@ -52,33 +52,22 @@ class RegistrationModal(discord.ui.Modal):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        user = interaction.user
-        await interaction.response.send_message(
-            "Thanks! Now please sign in via Github!",
-            view=AuthenticationView(user.id),
-            ephemeral=True,
-        )
-        print(self,"self")
-        await self.post_data(
-            {
+        try:
+            print('inside on submit')
+            user = interaction.user
+            # Upsert user data to db
+            user_data = {
                 "name": self.name.value,
                 "discord_id": user.id,
                 "country": self.country.value,
+                "roles": user.roles,
+                "joined_at": user.joined_at
             }
-        )
-
-        # Upsert user data to db
-        user_data = {
-            "name": self.name.value,
-            "discord_id": user.id,
-            "country": self.country.value
-        }
-        # supaClient = SupabaseClient()
+        except Exception as e:
+            print('exception e ', e)
         try:
-            # response = (supaClient.client.table("contributors_discord")
-            #             .upsert(user_data, on_conflict="discord_id").execute())
-            response = PostgresClient().updateContributor(user_data)
-            print("DB updated for user:", response.data[0]["discord_id"])
+            response = await PostgresClient().updateContributor(user_data)
+            print("DB updated for user:", user_data["discord_id"])
         except Exception as e:
             print("Failed to update credentials for user: "+e)
 
@@ -103,7 +92,7 @@ class RegistrationModal(discord.ui.Modal):
                 while not authentication:
                     print("Not authenticated. Waiting")
                     await asyncio.sleep(15)
-                    authentication = PostgresClient().read("contributors_registration", "discord_id", user.id)
+                    authentication = await PostgresClient().read("contributors_registration", "discord_id", user.id)
                 print("User has authenticated")
                 return True
 
