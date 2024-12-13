@@ -411,7 +411,7 @@ class PostgresClient:
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
                     "email": contributor["email"],
-                    "is_active": True,
+                    "is_active": contributor["email"],
                     "joined_at": contributor["joined_at"].replace(tzinfo=None),  # Ensure naive datetime
                 }
 

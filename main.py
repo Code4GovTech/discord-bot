@@ -61,7 +61,8 @@ class RegistrationModal(discord.ui.Modal):
                 "discord_id": user.id,
                 "country": self.country.value,
                 "roles": user.roles,
-                "joined_at": user.joined_at
+                "joined_at": user.joined_at,
+                "is_active": True,
             }
         except Exception as e:
             print('exception e ', e)
