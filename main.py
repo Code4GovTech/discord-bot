@@ -63,6 +63,7 @@ class RegistrationModal(discord.ui.Modal):
                 "roles": user.roles,
                 "joined_at": user.joined_at,
                 "is_active": True,
+                "email":""
             }
         except Exception as e:
             print('exception e ', e)
