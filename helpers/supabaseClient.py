@@ -410,7 +410,8 @@ class PostgresClient:
                     "discord_username": contributor["name"],
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
-                    "email": "jaanbaaz@test.com",
+                    "email": contributor["email"],
+                    "is_active": True,
                     "joined_at": contributor["joined_at"].replace(tzinfo=None),  # Ensure naive datetime
                 }
 
