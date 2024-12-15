@@ -410,7 +410,7 @@ class PostgresClient:
                     "discord_username": contributor["name"],
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
-                    "email": contributor["email"],
+                    "email": contributor["email"] if contributor["email"] else "",
                     "is_active": contributor["is_active"],
                     "joined_at": contributor["joined_at"].replace(tzinfo=None),  # Ensure naive datetime
                 }
@@ -419,6 +419,8 @@ class PostgresClient:
                 stmt = select(table_class).where(table_class.discord_id == contributor["discord_id"])
                 result = await session.execute(stmt)
                 existing_record = result.scalars().first()
+
+                print('existing record ', existing_record)
 
                 if existing_record:
                     # Update existing record
