@@ -2,7 +2,7 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from db.models import shared_metadata
+from db.models import shared_metadata, Base
 
 from alembic import context
 
@@ -26,7 +26,8 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = shared_metadata
+# target_metadata = shared_metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -65,16 +66,28 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+    # connectable = engine_from_config(
+    #     config.get_section(config.config_ini_section, {}),
+    #     prefix="sqlalchemy.",
+    #     poolclass=pool.NullPool,
+    # )
 
-    with connectable.connect() as connection:
+    # with connectable.connect() as connection:
+    #     context.configure(
+    #         connection=connection, target_metadata=target_metadata
+    #     )
+
+    #     with context.begin_transaction():
+    #         context.run_migrations()
+    engine = engine_from_config(
+                config.get_section(config.config_ini_section), prefix='sqlalchemy.')
+
+    with engine.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+                    connection=connection,
+                    target_metadata=target_metadata,
+                    compare_type=True
+                    )
 
         with context.begin_transaction():
             context.run_migrations()

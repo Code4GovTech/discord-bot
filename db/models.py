@@ -578,7 +578,7 @@ class GithubInstallations(Base):
     github_ids = Column(Text, nullable=True, comment="Identifiers on the github database, prolly won't be used")
     permissions_and_events = Column(Text, nullable=True)
     created_at = Column(DateTime, nullable=True)
-    organisation = Column(Text, ForeignKey('community_organisations.name'), nullable=True)
+    organisation = Column(Text, ForeignKey('community_orgs.name'), nullable=True)
 
     def __repr__(self):
         return f"<GithubInstallations(id={self.id})>"
@@ -747,8 +747,8 @@ class MentorshipProgramSiteStructure(Base):
 
     id = Column(BigInteger, primary_key=True)
     product_id = Column(BigInteger, ForeignKey('product.id'), nullable=True)
-    project_id = Column(BigInteger, ForeignKey('mentorship_program_projects.id'), nullable=True)
-    contributor_id = Column(BigInteger, ForeignKey('mentorship_program_selected_contributors.id'), nullable=True)
+    project_id = Column(BigInteger, nullable=True)
+    contributor_id = Column(BigInteger, nullable=True)
     website_directory_label = Column(Text, nullable=True)
     directory_url = Column(Text, nullable=True)
 
@@ -844,7 +844,7 @@ class MentorshipProgramWebsiteHasUpdated(Base):
     __tablename__ = 'mentorship_program_website_has_updated'
 
     id = Column(BigInteger, primary_key=True)
-    project_id = Column(BigInteger, ForeignKey('mentorship_program_projects.id'), nullable=True)
+    project_id = Column(BigInteger, nullable=True)
     week1_update_date = Column(DateTime, nullable=True)
     week2_update_date = Column(DateTime, nullable=True)
     week3_update_date = Column(DateTime, nullable=True)
