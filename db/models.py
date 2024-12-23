@@ -378,6 +378,7 @@ class DmpIssues(Base):
     org_id = Column(BigInteger, ForeignKey('dmp_orgs.id'), nullable=False)
     description = Column(Text, nullable=False)
     repo = Column(Text, nullable=False)
+    repo_owner = Column(Text, nullable=False)
 
     def __repr__(self):
         return f"<DmpIssues(id={self.id}, title={self.title})>"
@@ -392,7 +393,8 @@ class DmpIssues(Base):
             'title': self.title,
             'org_id': self.org_id,
             'description': self.description,
-            'repo': self.repo
+            'repo': self.repo,
+            'repo_owner': self.repo_owner
         }
 
 class DmpOrgs(Base):
@@ -404,7 +406,6 @@ class DmpOrgs(Base):
     description = Column(Text, nullable=False)
     link = Column(Text, nullable=False)
     repo_owner = Column(Text, nullable=False)
-    version = Column(Text, nullable=True)
     
     # issues = relationship('Issues', backref='organization', lazy='joined')
 
