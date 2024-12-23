@@ -67,7 +67,7 @@ class DmpAPIQueries:
         try:           
             async with async_session() as session:
                 response = await session.execute(
-                    select(DmpIssues).filter_by(id=issue_id)
+                    select(DmpIssues).filter_by(id=int(issue_id))
                 )
             results = response.scalars().all()  # Fetch all matching rows as objects
             results = [val.to_dict() for val in results]  # Convert objects to dicts
@@ -81,7 +81,7 @@ class DmpAPIQueries:
         try:
             async with async_session() as session:
                 response = await session.execute(
-                    select(DmpIssueUpdates).filter_by(dmp_id=dmp_issue_id)
+                    select(DmpIssueUpdates).filter_by(dmp_id=int(dmp_issue_id))
             )
             results = response.scalars().all()  # Fetch all matching rows as objects
             results = [val.to_dict() for val in results]  # Convert objects to dicts
@@ -95,7 +95,7 @@ class DmpAPIQueries:
         try:       
             async with async_session() as session:
                 response = await session.execute(
-                    select(DmpPrUpdates).filter_by(dmp_id=dmp_issue_id)
+                    select(DmpPrUpdates).filter_by(dmp_id=int(dmp_issue_id))
                 )
             pr_updates = response.scalars().all()  # Fetch all matching rows as objects
             pr_updates_dict = [pr_update.to_dict() for pr_update in pr_updates]  # Convert objects to dicts
