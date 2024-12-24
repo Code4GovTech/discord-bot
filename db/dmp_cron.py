@@ -1,5 +1,5 @@
 from sqlalchemy.future import select
-from models import *
+from .models import *
 from sqlalchemy import update
 # from app import async_session
 from sqlalchemy.dialects.postgresql import insert
@@ -70,9 +70,9 @@ class DmpCronQueries:
                     issue_dict = row._asdict()  # Convert row to dict
                     dmp_orgs = issue_dict.pop('dmp_orgs')  # Extract JSON object from row
                     issue_dict['dmp_orgs'] = dmp_orgs
-                    issue_dict.update(issue_dict['DmpIssue'].to_dict())
+                    issue_dict.update(issue_dict['DmpIssues'].to_dict())
                     # Add JSON object back to dict
-                    del issue_dict['DmpIssue']
+                    del issue_dict['DmpIssues']
                     data.append(issue_dict)
                     
             return data

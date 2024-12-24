@@ -1,4 +1,4 @@
-from models import *
+from .models import *
 from sqlalchemy import func
 import os
 from dotenv import load_dotenv

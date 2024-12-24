@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker, aliased
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.pool import NullPool
 from sqlalchemy.ext.declarative import DeclarativeMeta
-from models import Base, ContributorsRegistration,GithubClassroomData, IssueContributors
+from .models import Base, ContributorsRegistration,GithubClassroomData, IssueContributors
 from sqlalchemy import delete, insert
 from sqlalchemy import select, asc, desc,update, join
 from sqlalchemy.exc import IntegrityError
@@ -14,7 +14,7 @@ from sqlalchemy.sql import exists
 from datetime import datetime
 from sqlalchemy import cast, String ,and_
 from sqlalchemy.dialects.postgresql import ARRAY
-from models import Issues, CommunityOrgs, PointSystem, PrHistory
+from .models import Issues, CommunityOrgs, PointSystem, PrHistory
 
 # dotenv.load_dotenv(".env")
 
