@@ -407,7 +407,8 @@ class PostgresClient:
                 # Prepare data for upsert
                 update_data = {
                     "discord_id": contributor["discord_id"],
-                    "discord_username": contributor["name"],
+                    "discord_username": contributor["discord_username"],
+                    "field_name": contributor["name"],
                     "chapter": chapters[0] if chapters else None,
                     "gender": gender,
                     "email": contributor["email"] if contributor["email"] else "",
