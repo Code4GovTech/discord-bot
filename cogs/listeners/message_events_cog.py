@@ -2,10 +2,11 @@ import discord
 from discord.ext import commands
 
 from config.server import ServerConfig
-from helpers.supabaseClient import PostgresClient
+# from helpers.supabaseClient import PostgresClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 
 serverConfig = ServerConfig()
-postgresClient = PostgresClient()
+postgresClient = DiscordBotQueries()
 
 
 async def grantVerifiedRole(member: discord.Member):

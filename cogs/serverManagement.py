@@ -3,7 +3,8 @@ from datetime import datetime
 from discord.ext import commands, tasks
 
 from config.server import ServerConfig
-from helpers.supabaseClient import PostgresClient
+# from helpers.supabaseClient import PostgresClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 
 serverConfig = ServerConfig()
 
@@ -11,7 +12,7 @@ serverConfig = ServerConfig()
 class ServerManagement(commands.Cog):
     def __init__(self, bot):
         self.bot: commands.Bot = bot
-        self.postgres_client = PostgresClient()
+        self.postgres_client = DiscordBotQueries()
 
     def validUser(self, ctx):
         authorised_users = [

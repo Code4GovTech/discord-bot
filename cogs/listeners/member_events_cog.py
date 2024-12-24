@@ -1,13 +1,14 @@
 import discord
 from discord.ext import commands
 
-from helpers.supabaseClient import PostgresClient
+# from helpers.supabaseClient import PostgresClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 
 
 class MemberEventsListener(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.postgres_client = PostgresClient()
+        self.postgres_client = DiscordBotQueries()
         super().__init__()
 
     @commands.Cog.listener("on_member_join")
