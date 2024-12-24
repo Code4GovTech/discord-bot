@@ -66,6 +66,7 @@ class RegistrationModal(discord.ui.Modal):
                 "discord_username": user.display_name,
                 "email":""
             }
+            print('user data before updating contributor is ', user_data)
         except Exception as e:
             print('exception e ', e)
         try:
