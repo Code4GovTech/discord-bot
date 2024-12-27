@@ -6,7 +6,8 @@ from helpers.roleHelpers import lookForRoles
 from dotenv import load_dotenv            
 from sqlalchemy import create_engine,select,desc,update,delete
 from sqlalchemy.orm import sessionmaker
-from models import *
+# from models import *
+from shared_migrations.db.models import *
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 
