@@ -6,7 +6,6 @@ from discord import Embed, File, Interaction, Member, Role, SelectOption, enums,
 from discord.ext import commands
 
 from config.server import ServerConfig
-# from helpers.supabaseClient import PostgresClient
 from shared_migrations.db.discord_bot import DiscordBotQueries
 
 """

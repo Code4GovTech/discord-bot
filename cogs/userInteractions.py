@@ -5,7 +5,6 @@ import discord
 from discord.ext import commands, tasks
 from dotenv import find_dotenv, load_dotenv
 
-# from helpers.supabaseClient import PostgresClient
 from shared_migrations.db.discord_bot import DiscordBotQueries
 
 load_dotenv(find_dotenv())

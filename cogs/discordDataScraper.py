@@ -9,7 +9,6 @@ from discord import Member
 from discord.channel import TextChannel
 from discord.ext import commands, tasks
 
-# from helpers.supabaseClient import PostgresClient
 from shared_migrations.db.discord_bot import DiscordBotQueries
 
 with open("config.json") as config_file:

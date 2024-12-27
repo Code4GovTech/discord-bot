@@ -7,7 +7,6 @@ import discord
 from discord.ext import commands
 
 from cogs.vcCog import VCProgramSelection
-# from helpers.supabaseClient import PostgresClient
 from shared_migrations.db.discord_bot import DiscordBotQueries
 from dotenv import load_dotenv, find_dotenv
 

@@ -3,7 +3,6 @@ import asyncio
 import discord
 from discord.ext import commands
 
-# from helpers.supabaseClient import PostgresClient
 from shared_migrations.db.discord_bot import DiscordBotQueries
 
 
