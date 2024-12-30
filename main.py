@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from cogs.vcCog import VCProgramSelection
-from helpers.supabaseClient import PostgresClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 from dotenv import load_dotenv, find_dotenv
 
 
@@ -70,7 +70,7 @@ class RegistrationModal(discord.ui.Modal):
         except Exception as e:
             print('exception e ', e)
         try:
-            response = await PostgresClient().updateContributor(user_data)
+            response = await DiscordBotQueries().updateContributor(user_data)
             print("DB updated for user:", user_data["discord_id"])
         except Exception as e:
             print("Failed to update credentials for user: "+e)
@@ -96,7 +96,7 @@ class RegistrationModal(discord.ui.Modal):
                 while not authentication:
                     print("Not authenticated. Waiting")
                     await asyncio.sleep(15)
-                    authentication = await PostgresClient().read("contributors_registration", "discord_id", user.id)
+                    authentication = await DiscordBotQueries().read("contributors_registration", "discord_id", user.id)
                 print("User has authenticated")
                 return True
 

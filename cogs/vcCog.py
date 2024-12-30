@@ -6,8 +6,7 @@ from discord import Embed, File, Interaction, Member, Role, SelectOption, enums,
 from discord.ext import commands
 
 from config.server import ServerConfig
-from helpers.supabaseClient import PostgresClient
-
+from shared_migrations.db.discord_bot import DiscordBotQueries
 """
 with io.BytesIO(image_bytes) as image_file:
             # Create a discord.File object from this file-like object
@@ -21,7 +20,7 @@ with io.BytesIO(image_bytes) as image_file:
 class CommunityVCView(ui.View):
     def __init__(self, *, timeout=None):
         super().__init__(timeout=timeout)
-        self.postgres_client = PostgresClient()
+        self.postgres_client = DiscordBotQueries()
 
     def isCommunityContributor(self, roles: list[Role]):
         CommunityContributorRoleID = ServerConfig.Roles.CONTRIBUTOR_ROLE
@@ -215,7 +214,7 @@ Click [here]({}) to access your certificate :page_with_curl:"""
 
 class VCProgramSelection(ui.View):
     def __init__(self, *, timeout=None):
-        self.postgres_client = PostgresClient()
+        self.postgres_client = DiscordBotQueries()
         super().__init__(timeout=timeout)
 
     async def resetSelectMenu(self, interaction):
