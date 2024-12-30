@@ -9,7 +9,7 @@ from discord import Member
 from discord.channel import TextChannel
 from discord.ext import commands, tasks
 
-from helpers.supabaseClient import PostgresClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 
 with open("config.json") as config_file:
     config_data = json.load(config_file)
@@ -24,7 +24,7 @@ TIME_DURATION = config_data["TIME_DURATION"]
 class DiscordDataScaper(commands.Cog):
     def __init__(self, bot) -> None:
         self.bot = bot
-        self.postgres_client = PostgresClient()
+        self.postgres_client = DiscordBotQueries()
 
     @commands.Cog.listener()
     async def on_message(self, message):

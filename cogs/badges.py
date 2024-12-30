@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from helpers.supabaseClient import PostgresClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 
 
 class BadgeModal(discord.ui.Modal, title="Your Badges"):
@@ -17,7 +17,7 @@ class BadgeModal(discord.ui.Modal, title="Your Badges"):
 
 class BadgeContents:
     def __init__(self, name) -> None:
-        self.postgres_client = PostgresClient()
+        self.postgres_client = DiscordBotQueries()
         apprentinceDesc = f"""Welcome *{name}*!!
         
 
