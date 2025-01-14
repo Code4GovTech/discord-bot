@@ -2,10 +2,9 @@ import discord
 from discord.ext import commands
 
 from config.server import ServerConfig
-from helpers.supabaseClient import SupabaseClient
-
+from shared_migrations.db.discord_bot import DiscordBotQueries
 serverConfig = ServerConfig()
-supabaseClient = SupabaseClient()
+postgresClient = DiscordBotQueries()
 
 
 async def grantVerifiedRole(member: discord.Member):
@@ -32,7 +31,7 @@ class MessageEventsListener(commands.Cog):
     async def on_message(self, message: discord.Message):
         # Listen for Introduction
         if message.channel.id == serverConfig.Channels.INTRODUCTION_CHANNEL:
-            if await supabaseClient.memberIsAuthenticated(message.author):
+            if await postgresClient.memberIsAuthenticated(message.author):
                 await grantVerifiedRole(message.author)
         else:
             return

@@ -7,7 +7,7 @@ import discord
 from discord.ext import commands
 
 from cogs.vcCog import VCProgramSelection
-from helpers.supabaseClient import SupabaseClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 from dotenv import load_dotenv, find_dotenv
 
 
@@ -52,19 +52,26 @@ class RegistrationModal(discord.ui.Modal):
     )
 
     async def on_submit(self, interaction: discord.Interaction):
-        user = interaction.user
-
-        # Upsert user data to db
-        user_data = {
-            "name": self.name.value,
-            "discord_id": user.id,
-            "country": self.country.value
-        }
-        supaClient = SupabaseClient()
         try:
-            response = (supaClient.client.table("contributors_discord")
-                        .upsert(user_data, on_conflict="discord_id").execute())
-            print("DB updated for user:", response.data[0]["discord_id"])
+            print('inside on submit')
+            user = interaction.user
+            # Upsert user data to db
+            user_data = {
+                "name": self.name.value,
+                "discord_id": user.id,
+                "country": self.country.value,
+                "roles": user.roles,
+                "joined_at": user.joined_at,
+                "is_active": True,
+                "discord_username": user.display_name,
+                "email":""
+            }
+            print('user data before updating contributor is ', user_data)
+        except Exception as e:
+            print('exception e ', e)
+        try:
+            response = await DiscordBotQueries().updateContributor(user_data)
+            print("DB updated for user:", user_data["discord_id"])
         except Exception as e:
             print("Failed to update credentials for user: "+e)
 
@@ -84,11 +91,12 @@ class RegistrationModal(discord.ui.Modal):
             )
 
             async def hasIntroduced():
+                print("Checking...")
                 authentication = False
                 while not authentication:
                     print("Not authenticated. Waiting")
                     await asyncio.sleep(15)
-                    authentication = supaClient.read("contributors_registration", "discord_id", user.id)
+                    authentication = await DiscordBotQueries().read("contributors_registration", "discord_id", user.id)
                 print("User has authenticated")
                 return True
 
@@ -179,6 +187,7 @@ async def load():
 async def main():
     async with client:
         await load()
+        print("Token is: "+os.getenv("TOKEN"))
         await client.start(os.getenv("TOKEN"))
 
 

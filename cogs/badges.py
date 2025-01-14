@@ -3,7 +3,7 @@ import asyncio
 import discord
 from discord.ext import commands
 
-from helpers.supabaseClient import SupabaseClient
+from shared_migrations.db.discord_bot import DiscordBotQueries
 
 
 class BadgeModal(discord.ui.Modal, title="Your Badges"):
@@ -17,7 +17,9 @@ class BadgeModal(discord.ui.Modal, title="Your Badges"):
 
 class BadgeContents:
     def __init__(self, name) -> None:
+        self.postgres_client = DiscordBotQueries()
         apprentinceDesc = f"""Welcome *{name}*!!
+        
 
 
 Congratulations! 🎉 You have taken the first step to join & introduce yourself to this awesome community and earned the **Apprentice Badge**! 🎓 This badge shows that you are eager to learn and grow with our community! 😎 We are so happy to have you here and we can’t wait to see what you will create and solve! 🚀"""
@@ -133,7 +135,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
         userBadges = {"points": [], "achievements": []}
         if (
             len(
-                SupabaseClient().read(
+                self.postgres_client.read(
                     "contributors_registration",
                     query_key="discord_id",
                     query_value=discord_id,
@@ -143,7 +145,7 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
         ):
             userBadges["achievements"].append(self.discordXGithubBadge)
 
-        discordMemberData = SupabaseClient().read(
+        discordMemberData = self.postgres_client.read(
             "discord_engagement", "contributor", discord_id
         )
         if discordMemberData:
@@ -153,17 +155,17 @@ This really showcases your exceptional skills and abilities.🛠️ You have rea
                 userBadges["achievements"].append(self.rockstarBadge)
             if discordMemberData[0]["has_introduced"]:
                 userBadges["achievements"].append(self.apprenticeBadge)
-        contributorData = SupabaseClient().read(
+        contributorData = self.postgres_client.read(
             "contributors_registration", query_key="discord_id", query_value=discord_id
         )
         if contributorData:
             github_id = contributorData[0]["github_id"]
             prData = {
-                "raised": SupabaseClient().read(
+                "raised": self.postgres_client.read(
                     table="connected_prs", query_key="raised_by", query_value=github_id
                 ),
-                "merged": SupabaseClient(table="connected_prs").read(
-                    table="connected_prs", query_key="merged_by", query_value=github_id
+                "merged": self.postgres_client.read(
+                    "connected_prs", query_key="merged_by", query_value=github_id
                 ),
             }
             points = 0
